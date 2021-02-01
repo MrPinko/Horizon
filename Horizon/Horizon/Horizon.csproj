@@ -1,0 +1,102 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\change_theme.png" />
+    <None Remove="Assets\CustomButton\controllerSwitch.png" />
+    <None Remove="Assets\CustomButton\controllerSwitch2.png" />
+    <None Remove="Assets\CustomButton\joystick.png" />
+    <None Remove="Assets\ImageHD\earth.png" />
+    <None Remove="Assets\ImageHD\jupiter.png" />
+    <None Remove="Assets\ImageHD\mars.png" />
+    <None Remove="Assets\ImageHD\mercury.png" />
+    <None Remove="Assets\ImageHD\moon.png" />
+    <None Remove="Assets\ImageHD\neptune.png" />
+    <None Remove="Assets\ImageHD\saturn.png" />
+    <None Remove="Assets\ImageHD\sun.png" />
+    <None Remove="Assets\ImageHD\uranus.png" />
+    <None Remove="Assets\ImageHD\venus.png" />
+    <None Remove="Assets\Image\earth.png" />
+    <None Remove="Assets\Image\jupiter.png" />
+    <None Remove="Assets\Image\mars.png" />
+    <None Remove="Assets\Image\mercury.png" />
+    <None Remove="Assets\Image\moon.png" />
+    <None Remove="Assets\Image\neptune.png" />
+    <None Remove="Assets\Image\saturn.png" />
+    <None Remove="Assets\Image\sun.png" />
+    <None Remove="Assets\Image\uranus.png" />
+    <None Remove="Assets\Image\venus.png" />
+    <None Remove="Assets\menuButton\btn2D.png" />
+    <None Remove="Assets\menuButton\btn3D.png" />
+    <None Remove="Assets\Theme1.png" />
+    <None Remove="Assets\Theme2.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\change_theme.png" />
+    <EmbeddedResource Include="Assets\CustomButton\controllerSwitch.png" />
+    <EmbeddedResource Include="Assets\CustomButton\controllerSwitch2.png" />
+    <EmbeddedResource Include="Assets\CustomButton\joystick.png" />
+    <EmbeddedResource Include="Assets\ImageHD\earth.png" />
+    <EmbeddedResource Include="Assets\ImageHD\jupiter.png" />
+    <EmbeddedResource Include="Assets\ImageHD\mars.png" />
+    <EmbeddedResource Include="Assets\ImageHD\mercury.png" />
+    <EmbeddedResource Include="Assets\ImageHD\moon.png" />
+    <EmbeddedResource Include="Assets\ImageHD\neptune.png" />
+    <EmbeddedResource Include="Assets\ImageHD\saturn.png" />
+    <EmbeddedResource Include="Assets\ImageHD\sun.png" />
+    <EmbeddedResource Include="Assets\ImageHD\uranus.png" />
+    <EmbeddedResource Include="Assets\ImageHD\venus.png" />
+    <EmbeddedResource Include="Assets\Image\earth.png" />
+    <EmbeddedResource Include="Assets\Image\jupiter.png" />
+    <EmbeddedResource Include="Assets\Image\mars.png" />
+    <EmbeddedResource Include="Assets\Image\mercury.png" />
+    <EmbeddedResource Include="Assets\Image\moon.png" />
+    <EmbeddedResource Include="Assets\Image\neptune.png" />
+    <EmbeddedResource Include="Assets\Image\saturn.png" />
+    <EmbeddedResource Include="Assets\Image\sun.png" />
+    <EmbeddedResource Include="Assets\Image\uranus.png" />
+    <EmbeddedResource Include="Assets\Image\venus.png" />
+    <EmbeddedResource Include="Assets\CustomButton\Theme1.png" />
+    <EmbeddedResource Include="Assets\CustomButton\Theme2.png" />
+    <EmbeddedResource Include="Assets\menuButton\btn2D.png" />
+    <EmbeddedResource Include="Assets\menuButton\btn3D.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="SkiaSharp.Views.Forms" Version="2.80.2" />
+    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1451" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Mono.Android">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v9.0\Mono.Android.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Camera2D.xaml.cs">
+      <DependentUpon>Camera2D.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Camera2D.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="LoadingPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

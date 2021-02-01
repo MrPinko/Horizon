@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Horizon.Camera3D"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
+             Title="MainDrawPage">
+
+    <skia:SKCanvasView x:Name="canvasView"
+                       PaintSurface="canvasView_PaintSurface"
+                       Touch="canvasView_Touch"
+                       EnableTouchEvents="True">
+
+        <skia:SKCanvasView.GestureRecognizers >
+            <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"></PanGestureRecognizer>
+            
+        </skia:SKCanvasView.GestureRecognizers>
+        
+    </skia:SKCanvasView>
+    
+</ContentPage>

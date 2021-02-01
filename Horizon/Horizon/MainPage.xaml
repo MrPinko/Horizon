@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Horizon.MainPage">
+
+    <ContentPage.Content>
+        <StackLayout
+            VerticalOptions="CenterAndExpand"
+            HorizontalOptions="CenterAndExpand"
+        >
+            <Button  
+                Pressed="Button_Pressed_2D"
+                x:Name="btn2D"
+                ImageSource = "btn2D.png"
+                BorderWidth = "0"
+            />
+            <Button 
+                Pressed="Button_Pressed_3D"
+                x:Name="btn3D"
+                ImageSource = "btn3D.png"
+                BorderWidth = "0"
+            />
+        </StackLayout>
+    </ContentPage.Content>
+    
+</ContentPage>

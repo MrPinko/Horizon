@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Horizon.Camera2D"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
+             Title="MainDrawPage">
+
+	<AbsoluteLayout>
+		<skia:SKCanvasView x:Name="canvasView"
+                       PaintSurface="canvasView_PaintSurface"
+                       Touch="canvasView_Touch"
+                       EnableTouchEvents="True"
+						AbsoluteLayout.LayoutBounds="0,0,1,1"
+						AbsoluteLayout.LayoutFlags="HeightProportional,WidthProportional">
+
+			<skia:SKCanvasView.GestureRecognizers >
+				<PinchGestureRecognizer PinchUpdated="PinchGestureRecognizer_PinchUpdated"></PinchGestureRecognizer>
+				<PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"></PanGestureRecognizer>
+			</skia:SKCanvasView.GestureRecognizers>
+
+		</skia:SKCanvasView>
+
+
+		<Label x:Name="LabelPlanetname" 
+			IsVisible="false"
+			HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+			FontSize="50" FontFamily="Georgia"
+			TextColor="#c3c3c3"
+			AbsoluteLayout.LayoutBounds="0.5,0.05,0.85,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
+		</Label>
+
+		<ScrollView
+			x:Name="ScroolView"
+			IsVisible="false"
+			VerticalScrollBarVisibility="Always"
+			AbsoluteLayout.LayoutBounds="0.5,0.8,0.8,0.5"
+			AbsoluteLayout.LayoutFlags="All">
+			<Grid>
+				<Grid.RowDefinitions>
+
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="40"/>
+
+
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+
+					<ColumnDefinition Width="120" />
+					<ColumnDefinition Width="20" />
+					<ColumnDefinition Width="*" />
+
+				</Grid.ColumnDefinitions>
+
+
+				<Label  x:Name="LeftData0"  HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="0" Grid.Column="0" TextColor="#c3c3c3"/>
+				<Label x:Name="RightData0" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="0" Grid.Column="2" TextColor="#c3c3c3"/>
+
+				<Label x:Name="LeftData1" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="1" Grid.Column="0" TextColor="#c3c3c3"/>
+				<Label x:Name="RightData1" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="1" Grid.Column="2" TextColor="#c3c3c3"/>
+
+				<Label x:Name="LeftData2" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="2" Grid.Column="0" TextColor="#c3c3c3"/>
+				<Label x:Name="RightData2" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="2" Grid.Column="2" TextColor="#c3c3c3"/>
+
+				<Label x:Name="LeftData3" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="3" Grid.Column="0" TextColor="#c3c3c3"/>
+				<Label x:Name="RightData3" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="3" Grid.Column="2" TextColor="#c3c3c3"/>
+
+				<Label x:Name="LeftData4" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="4" Grid.Column="0" TextColor="#c3c3c3"/>
+				<Label x:Name="RightData4" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="4" Grid.Column="2" TextColor="#c3c3c3"/>
+
+				<Label x:Name="LeftData5" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="5" Grid.Column="0" TextColor="#c3c3c3"/>
+				<Label x:Name="RightData5" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="5" Grid.Column="2" TextColor="#c3c3c3"/>
+
+				<Label x:Name="LeftData6" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="6" Grid.Column="0" TextColor="#c3c3c3"/>
+				<Label x:Name="RightData6" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="6" Grid.Column="2" TextColor="#c3c3c3"/>
+
+				<Label x:Name="LeftData7" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="7" Grid.Column="0" TextColor="#c3c3c3"/>
+				<Label x:Name="RightData7" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="7" Grid.Column="2" TextColor="#c3c3c3"/>
+
+				<Label x:Name="LeftData8" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="8" Grid.Column="0" TextColor="#c3c3c3"/>
+				<Label x:Name="RightData8" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="8" Grid.Column="2" TextColor="#c3c3c3"/>
+
+				<Label x:Name="LeftData9" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="9" Grid.Column="0" TextColor="#c3c3c3"/>
+				<Label x:Name="RightData9" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="9" Grid.Column="2" TextColor="#c3c3c3"/>
+
+				<Label x:Name="LeftData10" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="10" Grid.Column="0" TextColor="#c3c3c3"/>
+				<Label x:Name="RightData10" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="10" Grid.Column="2" TextColor="#c3c3c3"/>
+			
+			</Grid>
+
+		</ScrollView>
+
+	</AbsoluteLayout>
+
+
+</ContentPage>
