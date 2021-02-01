@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -14,6 +15,7 @@ namespace Horizon
 
 		private const float popUpScale = 4;             //zoom ottimale popup
 		private const float velocity = 10;                 //velocità delle animazioni zoon in/out
+		private double dpi = DeviceDisplay.MainDisplayInfo.Density;
 
 		private Point center;
 		private List<Planet> pl;        //ARRAY DEI PIANETI (TERRA COMPRESA) [0]=SOLE [1]=TERRA
@@ -124,7 +126,8 @@ namespace Horizon
 
 					center.X = -pl[iPlanet].coord.X + width / 2 - pl[iPlanet].Size / 2;
 					center.Y = (-pl[iPlanet].coord.Y + height / 2 - pl[iPlanet].Size / 2) - (height / 4) / scale;
-					pl[iPlanet].Size = 100;
+					pl[iPlanet].Size =(float) (30 * dpi);              // 80 = valore che voglio ottenere con uno schermo con un dpi di 2.6 quindi 30+2.6 e sarà ugguale ad uno schermo con 3 dpi 
+					
 				}
 
 			}
@@ -414,14 +417,14 @@ namespace Horizon
 			pl[0].coord.Y = 0;
 
 			//SETTO LA TERRA
-			pl[1].coord = setPlanet((int)pl[0].coord.X, (int)pl[0].coord.Y, (pl[0].RA + 180) % 360, pl[0].dist2D);
+			pl[1].coord = setPlanet((int)pl[0].coord.X, (int)pl[0].coord.Y, (pl[0].RA + 180) % 360, pl[0].dist2D,1);
 
 			//SETTO I PIANETI RIMANENTI
 			for (int i = 2; i < pl.Count; i++)
-				pl[i].coord = setPlanet((int)pl[1].coord.X, (int)pl[1].coord.Y, pl[i].RA, pl[i].dist2D);
+				pl[i].coord = setPlanet((int)pl[1].coord.X, (int)pl[1].coord.Y, pl[i].RA, pl[i].dist2D, i);
 		}
 
-		private Point setPlanet(int x, int y, float RA, float dis2D)   //SETTO UN PIANETA
+		private Point setPlanet(int x, int y, float RA, float dis2D, int i)   //SETTO UN PIANETA
 		{
 			float disPx = maxDistancePx * dis2D / maxDistanceKm;
 			int deltaX = (int)(Math.Cos((Math.PI / 180) * RA) * disPx);
