@@ -34,7 +34,7 @@ namespace Horizon
 
 		private float panSens = 2f;  //la sensibilità del muoversi con un dito
 
-		public Camera2D(MainPage main,List<Planet> pl, double height, double width, string theme)   //COSTRUTTORE SERIO
+		public Camera2D(MainPage main, List<Planet> pl, double height, double width, string theme)   //COSTRUTTORE SERIO
 		{
 			InitializeComponent();
 
@@ -71,7 +71,7 @@ namespace Horizon
 			main.stopTimer2D = true;
 			return base.OnBackButtonPressed();
 		}
-		
+
 		//------------------------------------------------------------------------------------------------------------------\\
 		//FUNZIONI DISEGNO
 		public List<Point> test = new List<Point>();
@@ -79,16 +79,16 @@ namespace Horizon
 		//disegno
 		private SKRect topPopUp, downPopUp;
 
-		private void canvasView_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
+		private void canvasView_PaintSurface(object sender, SKPaintSurfaceEventArgs e)             //AREA DI DISEGNO
 		{
 			SKCanvas canvas = e.Surface.Canvas;
 			canvas.Clear();
 
+
 			//creazione orbite
-			if(!openPopUp)
+			if (!openPopUp)
 				dottedOrbit(canvas);
 
-			//creazione dei pianeti
 			createPlanet(canvas);
 
 			//visibilità joystick
@@ -100,51 +100,26 @@ namespace Horizon
 				switchJoyStick.draw(canvas);
 			}
 
+
 			//movimento con il joystick
-			if (top)
-				center.Y -= (2f / scale);
+			joyStickMovementListener();
 
-			if (right)
-				center.X += 2f / scale;
 
-			if (down)
-				center.Y += 2f / scale;
-
-			if (left)
-				center.X -= 2f / scale;
 
 			if (clickedPlanet)                      //pre apertura popup
-			{
-				if (scale >= popUpScale)
-				{
-					openPopUp = true;
-					clickedPlanet = false;
-				}
-				else if (scale < popUpScale)
-				{
-					scale += velocity / 30;
+				planetTranslationFunction();
 
-					center.X = -pl[iPlanet].coord.X + width / 2 - pl[iPlanet].Size / 2;
-					center.Y = (-pl[iPlanet].coord.Y + height / 2 - pl[iPlanet].Size / 2) - (height / 4) / scale;
-					pl[iPlanet].Size =(float) (30 * dpi);              // 80 = valore che voglio ottenere con uno schermo con un dpi di 2.6 quindi 30+2.6 e sarà ugguale ad uno schermo con 3 dpi 
-					
-				}
 
-			}
 
-			if (restoreCamera)
-			{
-				if (scale <= oldScale)
-					restoreCamera = false;
-				else
-					if (scale > oldScale)
-					if (scale * velocity / 30 > 0)
-						scale -= velocity / 30;
-			}
+			if (restoreCamera)             //riportare lo zoom alla posizione prima dello zoom
+				restoreCameraFunction();
+
 
 			//creazione del popup con i suoi dati
-			if(openPopUp)
+			if (openPopUp)
 				createPopUp(canvas);
+
+			
 		}
 
 		//creazione del popup con i suoi dati
@@ -162,7 +137,7 @@ namespace Horizon
 			{
 				for (int i = 0; i < pl.Count; i++)
 				{
-					canvas.DrawCircle((float)getPlanetPoint(pl[i]).X, (float)getPlanetPoint(pl[i]).Y, pl[i].Size * scale, pl[i].paint);
+					canvas.DrawCircle((float)getPlanetPoint(pl[i]).X - (pl[i].Size * scale) / 2, (float)getPlanetPoint(pl[i]).Y - (pl[i].Size * scale) / 2, pl[i].Size * scale, pl[i].paint);
 					//canvas.DrawRect(pl[i].hitBox(getPlanetPoint(pl[i]).X-(pl[i].Size*scale), getPlanetPoint(pl[i]).Y-(pl[i].Size*scale),(float)pl[i].Size*scale,scale),pl[i].paint);
 				}
 			}
@@ -173,10 +148,10 @@ namespace Horizon
 					if (openPopUp)
 					{
 						if (i == iPlanet)           //disegno solo il pianeta selezionato
-							canvas.DrawBitmap(pl[i].texture, SKRect.Create((float)getPlanetPoint(pl[i]).X, (float)getPlanetPoint(pl[i]).Y, pl[i].Size * scale, pl[i].Size * scale), null);
+							canvas.DrawBitmap(pl[i].texture, SKRect.Create((float)getPlanetPoint(pl[i]).X - (pl[i].Size * scale) / 2, (float)getPlanetPoint(pl[i]).Y - (pl[i].Size * scale) / 2, pl[i].Size * scale, pl[i].Size * scale), null);
 					}
 					else
-						canvas.DrawBitmap(pl[i].texture, SKRect.Create((float)getPlanetPoint(pl[i]).X, (float)getPlanetPoint(pl[i]).Y, pl[i].Size * scale, pl[i].Size * scale), null);
+						canvas.DrawBitmap(pl[i].texture, SKRect.Create((float)getPlanetPoint(pl[i]).X - (pl[i].Size * scale) / 2, (float)getPlanetPoint(pl[i]).Y - (pl[i].Size * scale) / 2, pl[i].Size * scale, pl[i].Size * scale), null);
 				}
 			}
 
@@ -205,18 +180,18 @@ namespace Horizon
 				if (pl[j].name == "moon")
 					continue;
 
-				float cx = (float)getPlanetPoint(pl[0]).X + (pl[iPlanet].Size * scale) / 2;        //centro cerchio x
-				float cy = (float)getPlanetPoint(pl[0]).Y + (pl[iPlanet].Size * scale) / 2;           //centro cerchio y
+				float cx = (float)getPlanetPoint(pl[0]).X;        //centro cerchio x
+				float cy = (float)getPlanetPoint(pl[0]).Y;           //centro cerchio y
 				float r = (float)Math.Sqrt(                                                                               //raggio
-						Math.Pow((getPlanetPoint(pl[j]).Y + (pl[iPlanet].Size * scale) / 2) - (getPlanetPoint(pl[0]).Y + (pl[iPlanet].Size * scale) / 2), 2) +
-						Math.Pow((getPlanetPoint(pl[j]).X + (pl[iPlanet].Size * scale) / 2) - (getPlanetPoint(pl[0]).X + (pl[iPlanet].Size * scale) / 2), 2)
+						Math.Pow(getPlanetPoint(pl[j]).Y - (getPlanetPoint(pl[0]).Y ), 2) +
+						Math.Pow(getPlanetPoint(pl[j]).X - (getPlanetPoint(pl[0]).X ), 2)
 						);
 				double p = r * 2 * Math.PI;
 
 				double x;
-				if ( j < 5 )
+				if (j < 5)
 					x = (72 * p) / 1620;    //costante grafica				//FARE UN RAPPORTO TRA LA DISTANZA DEL SOLE E '3240'
-				else if( j == 5)
+				else if (j == 5)
 					x = (72 * p) / 2430;
 				else
 					x = (72 * p) / 3240;
@@ -257,10 +232,53 @@ namespace Horizon
 			RightData5.Text = pl[iPlanet].planetData[5].ToString();
 			RightData6.Text = pl[iPlanet].planetData[6].ToString();
 			RightData7.Text = pl[iPlanet].planetData[7].ToString();
-			RightData8.Text = pl[iPlanet].planetData[8].ToString();    
+			RightData8.Text = pl[iPlanet].planetData[8].ToString();
 			RightData9.Text = pl[iPlanet].planetData[9].ToString();
 			RightData10.Text = pl[iPlanet].planetData[10].ToString();
 
+		}
+
+		public void joyStickMovementListener()
+		{
+			if (top)
+				center.Y -= (2f / scale);
+
+			if (right)
+				center.X += 2f / scale;
+
+			if (down)
+				center.Y += 2f / scale;
+
+			if (left)
+				center.X -= 2f / scale;
+		}
+
+		public void planetTranslationFunction()
+		{
+			if (scale >= popUpScale)
+			{
+				openPopUp = true;
+				clickedPlanet = false;
+			}
+			else if (scale < popUpScale)
+			{
+				scale += velocity / 30;
+
+				center.X = -pl[iPlanet].coord.X + width / 2 - pl[iPlanet].Size / 2;
+				center.Y = (-pl[iPlanet].coord.Y + height / 2 - pl[iPlanet].Size / 2) - (height / 4) / scale;
+				pl[iPlanet].Size = (float)(30 * dpi);              // 80 = valore che voglio ottenere con uno schermo con un dpi di 2.6 quindi 30+2.6 e sarà ugguale ad uno schermo con 3 dpi 
+
+			}
+		}
+
+		public void restoreCameraFunction()
+		{
+			if (scale <= oldScale)
+				restoreCamera = false;
+			else
+					if (scale > oldScale)
+				if (scale * velocity / 30 > 0)
+					scale -= velocity / 30;
 		}
 
 		private Boolean restoreCamera = false;
@@ -273,7 +291,7 @@ namespace Horizon
 		private int dir = 0;        //da implementare
 		private Boolean top = false, right = false, down = false, left = false;
 		private int zoomGesture = 0;             //questa variabile può avere 3 stati [ 0 se non sto zommando ], [ 1 se ho finito di zoomare*], [ 2 se non sto zoommando]
-													//*se ho finito di zoomare devo anche completare lo stato di movimento con variabili nulle cosi da resettare tutto 
+												 //*se ho finito di zoomare devo anche completare lo stato di movimento con variabili nulle cosi da resettare tutto 
 
 		private void canvasView_Touch(object sender, SKTouchEventArgs e)
 		{
@@ -352,7 +370,10 @@ namespace Horizon
 				ScroolView.IsVisible = false;
 
 				restoreCamera = true;
-				pl[iPlanet].Size = 70;         //ripristino le dimensioni del pianeta quando esco dalla visualizzazione popup
+				if (iPlanet == 2)      //luna
+					pl[iPlanet].Size = 20;
+				else
+					pl[iPlanet].Size = 70;         //ripristino le dimensioni del pianeta quando esco dalla visualizzazione popup
 			}
 
 			//rilascio la pressione su un tasto del joystick
@@ -369,9 +390,9 @@ namespace Horizon
 
 		private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)  //dito che preme e si muove in giro
 		{
-			if (!clickedPlanet && !openPopUp && !joyStickVisible && zoomGesture!=2)
+			if (!clickedPlanet && !openPopUp && !joyStickVisible && zoomGesture != 2)
 			{
-				if (e.StatusType.ToString() == "Running" && zoomGesture!=1)
+				if (e.StatusType.ToString() == "Running" && zoomGesture != 1)
 				{
 					panPoint.X = e.TotalX * panSens / scale;  //panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
 					panPoint.Y = e.TotalY * panSens / scale;
@@ -398,7 +419,8 @@ namespace Horizon
 					if (scale * (float)e.Scale <= 4)
 						scale *= (float)e.Scale;
 					zoomGesture = 2;
-				}else if(e.Status.ToString() == "Completed")
+				}
+				else if (e.Status.ToString() == "Completed")
 				{
 					zoomGesture = 1;
 				}
@@ -417,14 +439,14 @@ namespace Horizon
 			pl[0].coord.Y = 0;
 
 			//SETTO LA TERRA
-			pl[1].coord = setPlanet((int)pl[0].coord.X, (int)pl[0].coord.Y, (pl[0].RA + 180) % 360, pl[0].dist2D,1);
+			pl[1].coord = setPlanet((int)pl[0].coord.X, (int)pl[0].coord.Y, (pl[0].RA + 180) % 360, pl[0].dist2D);
 
 			//SETTO I PIANETI RIMANENTI
 			for (int i = 2; i < pl.Count; i++)
-				pl[i].coord = setPlanet((int)pl[1].coord.X, (int)pl[1].coord.Y, pl[i].RA, pl[i].dist2D, i);
+				pl[i].coord = setPlanet((int)pl[1].coord.X, (int)pl[1].coord.Y, pl[i].RA, pl[i].dist2D);
 		}
 
-		private Point setPlanet(int x, int y, float RA, float dis2D, int i)   //SETTO UN PIANETA
+		private Point setPlanet(int x, int y, float RA, float dis2D)   //SETTO UN PIANETA
 		{
 			float disPx = maxDistancePx * dis2D / maxDistanceKm;
 			int deltaX = (int)(Math.Cos((Math.PI / 180) * RA) * disPx);
