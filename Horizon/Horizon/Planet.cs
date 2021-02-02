@@ -14,12 +14,16 @@ namespace Horizon
         public float RA;
         public float DEC;
         public float dist2D;
+        public float sunDist = 1;
 
         public float distanceKm;
         public float distanceLight;
 
         public float printSize;
         public float Size;
+
+        public Point originalCoord;
+        public double orbitRateo;
 
         public List<double> planetData = new List<double>();
         public List<String> planetDataString = new List<string>();
