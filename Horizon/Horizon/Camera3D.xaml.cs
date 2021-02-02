@@ -4,7 +4,6 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using SkiaSharp.Views.Forms;
 using SkiaSharp;
-using System.Numerics;
 
 namespace Horizon
 {
@@ -24,7 +23,7 @@ namespace Horizon
         public Boolean useSensor = true;
         public Boolean sensorExists = true;
 
-        private const float baseAmp = 72 / 2; //con 180 gradi ho una visione a 360 gradi (LOL NO) 72 e 90 best imho
+        private const float baseAmp = 72 / 2; //72 e 90 best imho
         private double RA;
         private double DEC;
         private int width;
@@ -39,17 +38,21 @@ namespace Horizon
         public float baseX;
         public float baseY;
 
+        private Constellations constellations;
 
-        SKPaint uselessPaint = new SKPaint
-        {
+        //paint per le cose inutili (nord, sud, cerchio nell'equatore)
+        public SKPaint uselessPaint = new SKPaint{
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(255, 255, 255)
-        };
+            Color = new SKColor(255, 255, 255)};
 
-        public Camera3D()
-        {
-            InitializeComponent();
-        }
+        //paint per le linee delle costellazioni
+        public SKPaint constellationPaint = new SKPaint{
+            Style = SKPaintStyle.Fill,
+            Color = new SKColor(255, 255, 255)};
+
+
+        //-------------------------------------------------------------------------------------------------------------------\\
+        #region COSE PRINCIPALI
 
         //COSTRUTTORE
         public Camera3D(MainPage main, List<Planet> planets, float RA, float DEC, int height, int width, String theme)    //quel dec è dove guardiamo se guardiamo in alto
@@ -70,6 +73,9 @@ namespace Horizon
             setTextureHD();
             changeButton = new CustomButton.ChangeTextureButton((float)width, (float)height, 150, 150);
             switchJoyStick = new CustomButton.SwitchJoyStick((float)width, (float)height, 100, 100);
+
+            this.constellations = new Constellations(this, stars);
+            this.constellations.printText = true;
         }
 
         //BACK
@@ -78,37 +84,64 @@ namespace Horizon
             main.stopTimer3D = true;
             return base.OnBackButtonPressed();
         }
-
-        //BOTTONI
-        private void canvasView_Touch(object sender, SKTouchEventArgs e)
+        
+        //STAMPA
+        private void canvasView_PaintSurface(object sender, SkiaSharp.Views.Forms.SKPaintSurfaceEventArgs e)
         {
-            SKRect touchRect = SKRect.Create(e.Location.X, e.Location.Y, 1, 1);
+            SKSurface surface = e.Surface;
+            SKCanvas canvas = surface.Canvas;
+            canvas.Clear();
 
-            //cambio il tema dei pianeti
-            if (touchRect.IntersectsWith(changeButton.GetRect()))
+            //stampo le stelle
+            for (int i = 0; i < stars.Count; i++)
+                canvas.DrawCircle(toScreen(stars[i]), /*stars[i].printSize*/1, stars[i].paint);
+
+            //stampo le costellazioni
+            //SI BUGGA SE METTEREMO LO ZOOM, CHIEDI AL PIETRO
+            constellations.drawAll(canvas);
+            
+            
+            //test (sud, nord, equatore)
+            canvas.DrawCircle(toScreen(new Planet("POLOSUD", 0, -90, 10, new SKColor(255, 255, 255))), planetSize, uselessPaint);
+            canvas.DrawCircle(toScreen(new Planet("POLONORD", 0, 90, 10, new SKColor(127, 127, 127))), planetSize, uselessPaint);
+            for (float i = 0; i <= 360; i = i + 0.2f)
+                canvas.DrawCircle(toScreen(new Planet("BINGO", i, 0, 3, new SKColor(0, 127, 127))), 10, uselessPaint);
+            
+            
+            for (int i = 0; i < planets.Count; i++)
             {
-                if (theme.Equals("image"))
-                    theme = "imageHD";
-                else
-                    theme = "image";
-                changeButton.switchTheme();
+                if (planets[i].name == "earth")  //non stampo la terra ofc
+                    continue;
+
+                //----------------------------------SUCCE METTI UN COMMENTO CHE NON CAPISCO COS' QUESTA COSA-----------------------
+                SKPoint tempPoint = toScreen(planets[i]);
+                tempPoint.X -= (200 + planets[i].printSize * 15) / 2;
+                tempPoint.Y -= (200 + planets[i].printSize * 15) / 2;
+
+                if (theme.Equals("image"))              //disegno i pianeti come immagini stilizzate
+                    canvas.DrawBitmap(planets[i].texture, SKRect.Create(tempPoint, new SKSize(200 + planets[i].printSize * 15, 200 + planets[i].printSize * 15)), null);
+                else if (theme.Equals("imageHD"))            //disegno i pianeti come immagini reali
+                    canvas.DrawBitmap(planets[i].textureHD, SKRect.Create(tempPoint, new SKSize(200 + planets[i].printSize * 15, 200 + planets[i].printSize * 15)), null);
             }
 
-            //abilito/disabilito giroscopio
-            if (touchRect.IntersectsWith(switchJoyStick.GetRect()))
-            {
-                if(sensorExists)
-                {
-                    useSensor = !useSensor;
-                    if (!useSensor)
-                    {
-                        tempRA = (float)RA;
-                        tempDEC = (float)DEC;
-                    }
-                }
-            }
+            changeButton.draw(canvas);
+            if (sensorExists)
+                switchJoyStick.draw(canvas);
         }
 
+
+        //loop che viene chiamato dal main
+        public void loop()
+        {
+            if( useSensor ) 
+                updateFromSensor();
+            canvasView.InvalidateSurface();
+        }
+
+        #endregion
+
+        //-------------------------------------------------------------------------------------------------------------------\\
+        #region MOVIMENTO
         //JOISTICK FATTO BENE
         private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)  //dito che preme e si muove in giro
         {
@@ -143,66 +176,57 @@ namespace Horizon
 
         }
 
-        //STAMPA
-        private void canvasView_PaintSurface(object sender, SkiaSharp.Views.Forms.SKPaintSurfaceEventArgs e)
+
+        //BOTTONI
+        private void canvasView_Touch(object sender, SKTouchEventArgs e)
         {
-            SKSurface surface = e.Surface;
-            SKCanvas canvas = surface.Canvas;
+            SKRect touchRect = SKRect.Create(e.Location.X, e.Location.Y, 1, 1);
 
-            canvas.Clear();
-
-            for (int i = 0; i < stars.Count; i++)  //SCORRO LE STELLE
+            //cambio il tema dei pianeti
+            if (touchRect.IntersectsWith(changeButton.GetRect()))
             {
-                canvas.DrawCircle(toScreen(stars[i]), /*stars[i].printSize*/1, stars[i].paint);
+                if (theme.Equals("image"))
+                    theme = "imageHD";
+                else
+                    theme = "image";
+                changeButton.switchTheme();
             }
 
-            canvas.DrawCircle(toScreen(new Planet("POLOSUD", 0, -90, 10, new SKColor(255, 255, 255))), planetSize, uselessPaint);
-            canvas.DrawCircle(toScreen(new Planet("POLONORD", 0, 90, 10, new SKColor(127, 127, 127))), planetSize, uselessPaint);
-            for (float i = 0; i <= 360; i = i + 0.2f)
-                canvas.DrawCircle(toScreen(new Planet("BINGO", i, 0, 3, new SKColor(0, 127, 127))), 10, uselessPaint);
-
-            for (int i = 0; i < planets.Count; i++)
+            //abilito/disabilito giroscopio
+            if (touchRect.IntersectsWith(switchJoyStick.GetRect()))
             {
-                if (planets[i].name == "earth")
-                    continue;
-
-                if (theme.Equals("circle"))
+                if (sensorExists)
                 {
-                    planets[i].paint.TextSize = 50;
-                    canvas.DrawCircle(toScreen(planets[i]), planetSize, planets[i].paint);
-                    canvas.DrawText((planets[i].name), toScreen(planets[i]), planets[i].paint);
-                }
-                if (theme.Equals("image"))              //disegno i pianeti come immagini stilizzate
-                {
-                    SKPoint tempPoint = toScreen(planets[i]);
-                    tempPoint.X -= (200 + planets[i].printSize * 15) / 2;
-                    tempPoint.Y -= (200 + planets[i].printSize * 15) / 2;
-                    canvas.DrawBitmap(planets[i].texture, SKRect.Create(tempPoint, new SKSize(200 + planets[i].printSize * 15, 200 + planets[i].printSize * 15)), null);
-                }
-                if (theme.Equals("imageHD"))            //disegno i pianeti come immagini reali
-                {
-                    SKPoint tempPoint = toScreen(planets[i]);
-                    tempPoint.X -= (200 + planets[i].printSize * 15) / 2;
-                    tempPoint.Y -= (200 + planets[i].printSize * 15) / 2;
-                    canvas.DrawBitmap(planets[i].textureHD, SKRect.Create(tempPoint, new SKSize(200 + planets[i].printSize * 15, 200 + planets[i].printSize * 15)), null);
+                    useSensor = !useSensor;
+                    if (!useSensor)
+                    {
+                        tempRA = (float)RA;
+                        tempDEC = (float)DEC;
+                    }
                 }
             }
-
-            changeButton.draw(canvas);
-            if( sensorExists )
-                switchJoyStick.draw(canvas);
         }
 
+        //GIROSCOPIO
+        public void updateFromSensor()  //base = se guardasse precisamente in alto  
+        {
+            RA = Misc.toDeg((float)main.giroscope.yaw);
+            DEC = Misc.toDeg((float)main.giroscope.roll);
+        }
 
+        #endregion
+
+        //-------------------------------------------------------------------------------------------------------------------\\
+        #region FUNZIONI COORDINATE PIANETI
         //A SCHERMO
-        private SKPoint toScreen(Planet body)
+        public SKPoint toScreen(Planet body)
         {
             SKPoint cord = new SKPoint(width / 2, height / 2);
 
-            var camDec = toRad(-DEC);
-            var camRa = toRad(RA);
-            var bodyDec = toRad(-body.DEC);
-            var bodyRa = toRad(body.RA);
+            var camDec = Misc.toRad(-DEC);
+            var camRa = Misc.toRad(RA);
+            var bodyDec = Misc.toRad(-body.DEC);
+            var bodyRa = Misc.toRad(body.RA);
             var a = Math.Acos((Math.Sin(camDec)) * (Math.Sin(bodyDec)) + (Math.Cos(camDec)) * (Math.Cos(bodyDec)) * (Math.Cos(bodyRa - camRa)));
             var b = a / Math.Sin(a);
 
@@ -228,38 +252,10 @@ namespace Horizon
             return cord;
         }
 
-        public float toRad(double x)
-        {
-            return (float)(x / 180 * Math.PI);
-        }
+        #endregion
 
-        public float toDeg(float x)
-        {
-            return (float)(x * 180 / Math.PI);
-        }
-
-        //GIROSCOPIO
-        public void updateFromSensor()  //base = se guardasse precisamente in alto  
-        {
-            RA = toDeg((float)main.giroscope.yaw);
-            DEC = toDeg((float)main.giroscope.roll);
-            //rotor.update(main.giroscope.yaw, main.giroscope.roll);
-            //this.RA = toDeg((float)rotor.RA);
-            //this.DEC = toDeg((float)rotor.DEC);
-            //System.Diagnostics.Debug.WriteLine("RA: " + RA + "\nDEC: " + DEC);
-        }
-        int lessLag = 0;
-        //COSE DA LOOPARE
-        public void loop()
-        {
-            if ( useSensor == true && ++lessLag == 6)
-            {
-                updateFromSensor();
-                lessLag = 0;
-            }
-
-            canvasView.InvalidateSurface();
-        }
+        //-------------------------------------------------------------------------------------------------------------------\\
+        #region TEXTURE
 
         private void setTexture()
         {
@@ -306,6 +302,6 @@ namespace Horizon
             texturepathHD.Add("Horizon.Assets.ImageHD.uranus.png");
             texturepathHD.Add("Horizon.Assets.ImageHD.neptune.png");
         }
-
+        #endregion
     }
 }

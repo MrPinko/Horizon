@@ -439,7 +439,7 @@ namespace Horizon
 			for (int i = 1; i < pl.Count; i++)
 			{
 				double a = Math.Atan2(pl[i].originalCoord.Y, pl[i].originalCoord.X);        //angolo originario tra sole-pianeta
-				a += pl[i].orbitRateo * Ez.toRad(timeSkip);         //ad ogni tick la terra si muove di 45 gradi, modificare il 45 per aumentare/diminuire la rotazione
+				a += pl[i].orbitRateo * Misc.toRad(timeSkip);         //ad ogni tick la terra si muove di 45 gradi, modificare il 45 per aumentare/diminuire la rotazione
 				a = a % (2 * Math.PI);
 				if (a < 0)
 					a += 2 * Math.PI;

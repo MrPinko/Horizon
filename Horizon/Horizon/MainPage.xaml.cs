@@ -80,7 +80,7 @@ namespace Horizon
 				isLocationLoaded = true;
 			}
 			else
-				DisplayAlert("", "è necessaria la geolocalizazione per continuare", "OK");
+				await DisplayAlert("", "è necessaria la geolocalizazione per continuare", "OK");
 
 		}
 
