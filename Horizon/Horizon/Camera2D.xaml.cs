@@ -180,7 +180,7 @@ namespace Horizon
 
 				float cx = (float)getPlanetPoint(pl[0]).X;        //centro cerchio x
 				float cy = (float)getPlanetPoint(pl[0]).Y;           //centro cerchio y
-				float r = (float)Math.Sqrt( Math.Pow(getPlanetPoint(pl[j]).Y - (getPlanetPoint(pl[0]).Y ), 2) + Math.Pow(getPlanetPoint(pl[j]).X - (getPlanetPoint(pl[0]).X ), 2)  );
+				float r = pl[j].sunDist * scale;
 				double p = r / scale * 2 * Math.PI;
 
 				double x;
@@ -286,6 +286,14 @@ namespace Horizon
 				{
 					if (touchRect.IntersectsWith(pl[i].hitBox(getPlanetPoint(pl[i]).X, getPlanetPoint(pl[i]).Y, pl[i].Size, scale)))
 					{
+						timeWasMoving = timeIsMoving;
+						timeIsMoving = false;
+						backBtn.IsVisible = false;
+						stopBtn.IsVisible = false;
+						resetBtn.IsVisible = false;
+						forwardBtn.IsVisible = false;
+						timeSkipLbl.IsVisible = false;
+						skipIncrementLbl.IsVisible = false;
 						oldScale = scale;
 						clickedPlanet = true;
 						iPlanet = i;
@@ -345,6 +353,14 @@ namespace Horizon
 				openPopUp = false;
 				LabelPlanetname.IsVisible = false;
 				ScroolView.IsVisible = false;
+
+				timeIsMoving = timeWasMoving;
+				backBtn.IsVisible = true;
+				stopBtn.IsVisible = true;
+				resetBtn.IsVisible = true;
+				forwardBtn.IsVisible = true;
+				timeSkipLbl.IsVisible = true;
+				skipIncrementLbl.IsVisible = true;
 
 				restoreCamera = true;
 				if (iPlanet == 2)      //luna
@@ -418,6 +434,20 @@ namespace Horizon
 
 		//-------------------------------------------------------------------------------------------------------------------\\
 		#region TIME SKIP
+		public void timeChanged()
+		{
+			for (int i = 1; i < pl.Count; i++)
+			{
+				double a = Math.Atan2(pl[i].originalCoord.Y, pl[i].originalCoord.X);        //angolo originario tra sole-pianeta
+				a += pl[i].orbitRateo * Ez.toRad(timeSkip);         //ad ogni tick la terra si muove di 45 gradi, modificare il 45 per aumentare/diminuire la rotazione
+				a = a % (2 * Math.PI);
+				if (a < 0)
+					a += 2 * Math.PI;
+
+				pl[i].coord.X = (int)(Math.Cos(a) * pl[i].sunDist);                     //aggiorno cord
+				pl[i].coord.Y = (int)(Math.Sin(a) * pl[i].sunDist);
+			}
+		}
 		private void backPressed(object sender, EventArgs e)
 		{
 			timeIsMoving = true;
@@ -480,10 +510,14 @@ namespace Horizon
 
 			//SETTO LA TERRA
 			pl[1].coord = setPlanet((int)pl[0].coord.X, (int)pl[0].coord.Y, (pl[0].RA + 180) % 360, pl[0].dist2D);
+			pl[1].originalCoord = setPlanet((int)pl[0].coord.X, (int)pl[0].coord.Y, (pl[0].RA + 180) % 360, pl[0].dist2D);
 
 			//SETTO I PIANETI RIMANENTI
 			for (int i = 2; i < pl.Count; i++)
+			{
 				pl[i].coord = setPlanet((int)pl[1].coord.X, (int)pl[1].coord.Y, pl[i].RA, pl[i].dist2D);
+				pl[i].originalCoord = setPlanet((int)pl[1].coord.X, (int)pl[1].coord.Y, pl[i].RA, pl[i].dist2D);
+			}
 		}
 
 		private Point setPlanet(int x, int y, float RA, float dis2D)   //SETTO UN PIANETA
@@ -513,6 +547,8 @@ namespace Horizon
 		public void loop()
 		{
 			canvasView.InvalidateSurface();
+			skipIncrementLbl.Text = "" + skipIncrement;
+			timeSkipLbl.Text = "" + timeSkip;
 		}
 
         #endregion
