@@ -51,7 +51,7 @@ namespace Horizon
 			foreach (Planet p in this.pl)
 				if (p.name == "moon")
 				{
-					p.dist2D = 7000000;
+					p.dist2D = 70000000;
 					p.Size = 20;
 				}
 
@@ -452,13 +452,13 @@ namespace Horizon
 		{
 			timeIsMoving = true;
 
-			if (skipIncrement > 0 && skipIncrement < 48)
+			if (skipIncrement > 0 && skipIncrement < 32)
 				skipIncrement *= 2;
 			else if (skipIncrement == 0)
-				skipIncrement = 6;
-			else if (skipIncrement == -6)
+				skipIncrement = 4;
+			else if (skipIncrement == -4)
 				skipIncrement = 0;
-			else if (skipIncrement < -6)
+			else if (skipIncrement < -4)
 				skipIncrement /= 2;
 
 			skipIncrementLbl.Text = "" + skipIncrement;
@@ -468,13 +468,13 @@ namespace Horizon
 		{
 			timeIsMoving = true;
 
-			if (skipIncrement > 6)
+			if (skipIncrement > 4)
 				skipIncrement /= 2;
-			else if (skipIncrement == 6)
+			else if (skipIncrement == 4)
 				skipIncrement = 0;
 			else if (skipIncrement == 0)
-				skipIncrement = -6;
-			else if (skipIncrement < 0 && skipIncrement > -48)
+				skipIncrement = -4;
+			else if (skipIncrement < 0 && skipIncrement > -32)
 				skipIncrement *= 2;
 
 			skipIncrementLbl.Text = "" + skipIncrement;
