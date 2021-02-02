@@ -8,12 +8,12 @@ namespace Horizon
     {
         SKRect rect;
 
-        public SKRect GetRect()      //ritorna il rettangolo in cui è disegnata l'immagine (comoda per le hitbox)
+        public SKRect GetRect()      //ritorna il rettangolo in cui è disegnata l'immagine (comoda per le hitbox) 
         {
             return rect;
         }
 
-        public class ChangeTextureButton : CustomButton               //pulsante per cmbiare il tema dei pianeti  (ora disponibili immagini stilizzate e hd other soon..)
+        public class ChangeTextureButton : CustomButton               //pulsante per cambiare il tema dei pianeti  (ora disponibili immagini stilizzate e hd other soon..)
         {
             private SKBitmap texture1, texture2;
             Boolean theme1 = true;
