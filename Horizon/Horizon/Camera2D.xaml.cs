@@ -249,8 +249,8 @@ namespace Horizon
 			{
 				scale += velocity / 30;
 
-				center.X = -pl[iPlanet].coord.X + width / 2 - pl[iPlanet].Size / 2;
-				center.Y = (-pl[iPlanet].coord.Y + height / 2 - pl[iPlanet].Size / 2) - (height / 4) / scale;
+				center.X = -pl[iPlanet].coord.X + width / 2;
+				center.Y = (-pl[iPlanet].coord.Y + height / 2 ) - (height / 4) / scale;
 				pl[iPlanet].Size = (float)(30 * dpi);              // 80 = valore che voglio ottenere con uno schermo con un dpi di 2.6 quindi 30+2.6 e sarà ugguale ad uno schermo con 3 dpi 
 
 			}
