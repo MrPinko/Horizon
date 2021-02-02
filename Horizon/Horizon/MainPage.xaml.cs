@@ -129,11 +129,18 @@ namespace Horizon
 
 			Device.StartTimer(TimeSpan.FromMilliseconds(17), () =>
 			{
-				//System.Diagnostics.Debug.WriteLine("ciao2d");
 				if (stopTimer2D)
-                {
+				{
+					camera2d.skipIncrement = 0;
+					camera2d.timeSkip = 0;
 					stopTimer2D = false;
 					return false;
+				}
+				//movimento pianeti 
+				if (camera2d.timeIsMoving && camera2d.skipIncrement != 0)
+				{
+					camera2d.timeSkip += camera2d.skipIncrement;
+					camera2d.timeChanged();
 				}
 				camera2d.loop();
 				return true;

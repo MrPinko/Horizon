@@ -20,8 +20,58 @@
 
 		</skia:SKCanvasView>
 
+        <Label
+            x:Name="timeSkipLbl"
+            Text="pog"
+            TextColor="Black"
+            HorizontalTextAlignment="Center"
+            AbsoluteLayout.LayoutBounds="0.4,0.85,50,25"
+            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
+            BackgroundColor="White"></Label>
+        <Label
+            x:Name="skipIncrementLbl"
+            Text="pog"
+            TextColor="Black"
+            HorizontalTextAlignment="Center"
+            AbsoluteLayout.LayoutBounds="0.6,0.85,50,25"
+            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
+            BackgroundColor="White"></Label>
 
-		<Label x:Name="LabelPlanetname" 
+        <Button
+            x:Name="backBtn"
+            Pressed="backPressed"
+            TextColor="Black"
+            Text="&lt;&lt;&lt;"
+            AbsoluteLayout.LayoutBounds="0.2,0.95,50,50"
+            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
+            BackgroundColor="White"></Button>
+        <Button
+            x:Name="stopBtn"
+            Pressed="stopPressed"
+            TextColor="Black"
+            Text="="
+            AbsoluteLayout.LayoutBounds="0.4,0.95,50,50"
+            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
+            BackgroundColor="White"></Button>
+        <Button
+            x:Name="resetBtn"
+            Pressed="resetPressed"
+            TextColor="Black"
+            Text="X"
+            AbsoluteLayout.LayoutBounds="0.6,0.95,50,50"
+            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
+            BackgroundColor="White"></Button>
+        <Button
+            x:Name="forwardBtn"
+            Pressed="forwardPressed"
+            TextColor="Black"
+            Text=">>>"
+            AbsoluteLayout.LayoutBounds="0.8,0.95,50,50"
+            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
+            BackgroundColor="White"></Button>
+
+
+        <Label x:Name="LabelPlanetname" 
 			IsVisible="false"
 			HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
 			FontSize="50" FontFamily="Georgia"

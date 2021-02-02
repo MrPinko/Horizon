@@ -49,6 +49,7 @@ namespace Horizon
             p.setColor(SKColors.Gray);
             p.Size = 70;
             p.printSize = 1;
+            p.orbitRateo = 1;
 
             p.planetData.Add(3476.2 / 2);
             p.planetData.Add(37930000);
@@ -67,6 +68,7 @@ namespace Horizon
             p.setColor(SKColors.Yellow);
             p.printSize = 10;
             p.Size = 70;
+            p.orbitRateo = 0;
 
             p.planetData.Add(1.391e9 / 2);
             p.planetData.Add(6.0877e18);
@@ -85,6 +87,7 @@ namespace Horizon
             p.setColor(SKColors.Aquamarine);
             p.printSize = 3;
             p.Size = 70;
+            p.orbitRateo = 1;
 
             p.planetData.Add(12756.274 / 2);
             p.planetData.Add(5.094953216e14);
@@ -103,6 +106,7 @@ namespace Horizon
             p.setColor(SKColors.Gray);
             p.printSize = 2;
             p.Size = 70;
+            p.orbitRateo = 4.5;
 
             p.planetData.Add(4879.4 / 2);
             p.planetData.Add(7.5e13);
@@ -121,6 +125,7 @@ namespace Horizon
             p.setColor(SKColors.Orange);
             p.printSize = 3;
             p.Size = 70;
+            p.orbitRateo = 1.6252781486426346239430351579884;
 
             p.planetData.Add(12103.6 / 2);
             p.planetData.Add(4.6e14);
@@ -139,6 +144,7 @@ namespace Horizon
             p.setColor(SKColors.Crimson);
             p.printSize = 2;
             p.Size = 70;
+            p.orbitRateo = 0.53158660844250363901018922852984;
 
             p.planetData.Add(6804.9 / 2);
             p.planetData.Add(1.448e14);
@@ -157,6 +163,7 @@ namespace Horizon
             p.setColor(SKColors.Brown);
             p.printSize = 8;
             p.Size = 70;
+            p.orbitRateo = 0.08432232740706534287693373354883;
 
             p.planetData.Add(142984 / 2);
             p.planetData.Add(6.1418738571e10);
@@ -166,7 +173,7 @@ namespace Horizon
             p.planetData.Add(23.12);
             p.planetData.Add(4333.2867);
             p.planetData.Add(0.413538021 * 24);
-            p.planetData.Add(-1);
+            p.planetData.Add(79);
             p.planetData.Add(-163);
             p.planetData.Add(-88);
         }
@@ -175,6 +182,7 @@ namespace Horizon
             p.setColor(SKColors.Ivory);
             p.printSize = 10;
             p.Size = 80;
+            p.orbitRateo = 0.0339815762538382804503582395087;
 
             p.planetData.Add(120536 / 2);
             p.planetData.Add(4.26e16);
@@ -184,7 +192,7 @@ namespace Horizon
             p.planetData.Add(8.96);
             p.planetData.Add(-1);
             p.planetData.Add(-1);
-            p.planetData.Add(-1);
+            p.planetData.Add(82);
             p.planetData.Add(-191);
             p.planetData.Add(-98);
         }
@@ -193,6 +201,7 @@ namespace Horizon
             p.setColor(new SKColor(122, 181, 207));
             p.printSize = 8;
             p.Size = 80;
+            p.orbitRateo = 0.01193893229592337114649056850502;
 
             p.planetData.Add(51118 / 2);
             p.planetData.Add(8.1156e9);
@@ -202,7 +211,7 @@ namespace Horizon
             p.planetData.Add(8.69);
             p.planetData.Add(84.011 * 356.4);
             p.planetData.Add(0.71833 * 24);
-            p.planetData.Add(-1);
+            p.planetData.Add(27);
             p.planetData.Add(-214);
             p.planetData.Add(-196);
         }
@@ -211,6 +220,7 @@ namespace Horizon
             p.setColor(SKColors.DarkOrchid);
             p.printSize = 5;
             p.Size = 70;
+            p.orbitRateo = 0.00610702341137123745819397993311;
 
             p.planetData.Add(49528 / 2);
             p.planetData.Add(7.619e15);
@@ -220,7 +230,7 @@ namespace Horizon
             p.planetData.Add(11.15);
             p.planetData.Add(164.88); //giorni
             p.planetData.Add(16.11); //ore
-            p.planetData.Add(-1);
+            p.planetData.Add(14);
             p.planetData.Add(-223);
             p.planetData.Add(-216);
         }

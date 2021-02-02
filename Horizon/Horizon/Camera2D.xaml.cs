@@ -35,6 +35,11 @@ namespace Horizon
 
 		private float panSens = 2f;  //la sensibilità del muoversi con un dito
 
+		public int timeSkip = 0;            //di quanto sono traslato rispetto alla posizione iniziale
+		public int skipIncrement = 0;       //di quanto incrementare/decrementare al secondo
+		public bool timeIsMoving = false;   //play-pause
+		private bool timeWasMoving = false;
+
 		//-------------------------------------------------------------------------------------------------------------------\\
 		#region COSE PRINCIPALI
 		public Camera2D(MainPage main, List<Planet> pl, double height, double width, string theme)   //COSTRUTTORE 
@@ -66,6 +71,13 @@ namespace Horizon
 			joyStick = new CustomButton.JoyStick((float)width, (float)height, (float)width / 3, (float)height / 6);
 			switchJoyStick = new CustomButton.SwitchJoyStick((float)width, (float)height, 100, 100);
 			setPositions();
+
+			for (int i = 0; i < pl.Count; i++)
+			{
+				pl[i].sunDist = pl[i].sunDist = (float)Math.Sqrt(                   //distanza pianeta-sole
+						Math.Pow(pl[i].coord.Y, 2) +
+						Math.Pow(pl[i].coord.X, 2));
+			}
 		}
 
 		//BACK
@@ -402,6 +414,59 @@ namespace Horizon
 			if (left)
 				center.X -= 2f / scale;
 		}
+		#endregion
+
+		//-------------------------------------------------------------------------------------------------------------------\\
+		#region TIME SKIP
+		private void backPressed(object sender, EventArgs e)
+		{
+			timeIsMoving = true;
+
+			if (skipIncrement > 0 && skipIncrement < 48)
+				skipIncrement *= 2;
+			else if (skipIncrement == 0)
+				skipIncrement = 6;
+			else if (skipIncrement == -6)
+				skipIncrement = 0;
+			else if (skipIncrement < -6)
+				skipIncrement /= 2;
+
+			skipIncrementLbl.Text = "" + skipIncrement;
+		}
+
+		private void forwardPressed(object sender, EventArgs e)
+		{
+			timeIsMoving = true;
+
+			if (skipIncrement > 6)
+				skipIncrement /= 2;
+			else if (skipIncrement == 6)
+				skipIncrement = 0;
+			else if (skipIncrement == 0)
+				skipIncrement = -6;
+			else if (skipIncrement < 0 && skipIncrement > -48)
+				skipIncrement *= 2;
+
+			skipIncrementLbl.Text = "" + skipIncrement;
+		}
+
+		private void stopPressed(object sender, EventArgs e)
+		{
+			timeIsMoving = false;
+			skipIncrement = 0;
+			skipIncrementLbl.Text = "" + skipIncrement;
+		}
+
+		private void resetPressed(object sender, EventArgs e)
+		{
+			timeIsMoving = false;
+			skipIncrement = 0;
+			timeSkip = 0;
+			timeChanged();
+			skipIncrementLbl.Text = "" + skipIncrement;
+			timeSkipLbl.Text = "" + timeSkip;
+		}
+
 		#endregion
 
 		//-------------------------------------------------------------------------------------------------------------------\\
