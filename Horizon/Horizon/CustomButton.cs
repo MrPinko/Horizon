@@ -58,14 +58,10 @@ namespace Horizon
         public class JoyStick : CustomButton            //pulsante joystick
         {
             private SKBitmap texture;
-            private float x, y;
             private SKRect top, left, down, right;
 
             public JoyStick(float width, float height, float x, float y)
             {
-
-                this.x = x;
-                this.y = y;
                 setTexture();
 
                 rect = new SKRect(width - x, height - y - texture.Height / 2, width, height - texture.Height / 2);
@@ -135,7 +131,6 @@ namespace Horizon
         {
             private SKBitmap texture, texture2;
             Boolean on = false;     //mostrare joystick
-            private (float, float, int, int) p;
 
             public SwitchJoyStick(float width, float height, float X, float Y)
             {

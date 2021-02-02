@@ -26,6 +26,7 @@ namespace Horizon
 		private CustomButton.ChangeTextureButton changeButton;
 		private CustomButton.JoyStick joyStick;
 		private CustomButton.SwitchJoyStick switchJoyStick;
+		private SKRect topPopUp, downPopUp;
 
 		private float scale = 1, oldScale;
 		private Point panPoint = new Point(0, 0);  //panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
@@ -34,7 +35,9 @@ namespace Horizon
 
 		private float panSens = 2f;  //la sensibilità del muoversi con un dito
 
-		public Camera2D(MainPage main, List<Planet> pl, double height, double width, string theme)   //COSTRUTTORE SERIO
+		//-------------------------------------------------------------------------------------------------------------------\\
+		#region COSE PRINCIPALI
+		public Camera2D(MainPage main, List<Planet> pl, double height, double width, string theme)   //COSTRUTTORE 
 		{
 			InitializeComponent();
 
@@ -43,7 +46,7 @@ namespace Horizon
 			foreach (Planet p in this.pl)
 				if (p.name == "moon")
 				{
-					p.dist2D = 70000000;
+					p.dist2D = 7000000;
 					p.Size = 20;
 				}
 
@@ -72,13 +75,8 @@ namespace Horizon
 			return base.OnBackButtonPressed();
 		}
 
-		//------------------------------------------------------------------------------------------------------------------\\
-		//FUNZIONI DISEGNO
-		public List<Point> test = new List<Point>();
 
-		//disegno
-		private SKRect topPopUp, downPopUp;
-
+		//loop
 		private void canvasView_PaintSurface(object sender, SKPaintSurfaceEventArgs e)             //AREA DI DISEGNO
 		{
 			SKCanvas canvas = e.Surface.Canvas;
@@ -105,12 +103,9 @@ namespace Horizon
 			joyStickMovementListener();
 
 
-
+			//animazioni di cliccare ed uscire dal popup
 			if (clickedPlanet)                      //pre apertura popup
 				planetTranslationFunction();
-
-
-
 			if (restoreCamera)             //riportare lo zoom alla posizione prima dello zoom
 				restoreCameraFunction();
 
@@ -118,29 +113,22 @@ namespace Horizon
 			//creazione del popup con i suoi dati
 			if (openPopUp)
 				createPopUp(canvas);
-
-			
 		}
+        #endregion
 
-		//creazione del popup con i suoi dati
-		private void createPopUp(SKCanvas canvas)
+        //-------------------------------------------------------------------------------------------------------------------\\
+        #region FUNZIONI DISEGNO COSE
+        //creazione del popup con i suoi dati
+        private void createPopUp(SKCanvas canvas)
 		{
 			LabelPlanetname.IsVisible = true;
 			LabelPlanetname.Text = pl[iPlanet].name[0].ToString().ToUpper() + pl[iPlanet].name.Substring(1);
 			drawPLanetData(canvas);
 		}
-
+		
 		//creazione dei pianeti
 		private void createPlanet(SKCanvas canvas)
 		{
-			if (theme.Equals("circle"))            //non implementata see soon
-			{
-				for (int i = 0; i < pl.Count; i++)
-				{
-					canvas.DrawCircle((float)getPlanetPoint(pl[i]).X - (pl[i].Size * scale) / 2, (float)getPlanetPoint(pl[i]).Y - (pl[i].Size * scale) / 2, pl[i].Size * scale, pl[i].paint);
-					//canvas.DrawRect(pl[i].hitBox(getPlanetPoint(pl[i]).X-(pl[i].Size*scale), getPlanetPoint(pl[i]).Y-(pl[i].Size*scale),(float)pl[i].Size*scale,scale),pl[i].paint);
-				}
-			}
 			if (theme.Equals("image"))           //disegno i pianeti come immagini stilizzate
 			{
 				for (int i = 0; i < pl.Count; i++)
@@ -162,11 +150,9 @@ namespace Horizon
 					if (openPopUp)
 					{
 						if (i == iPlanet)
-							canvas.DrawBitmap(pl[i].textureHD, SKRect.Create((float)getPlanetPoint(pl[i]).X, (float)getPlanetPoint(pl[i]).Y, pl[i].Size * scale, pl[i].Size * scale), null);
-					}
-					else
-					{
-						canvas.DrawBitmap(pl[i].textureHD, SKRect.Create((float)getPlanetPoint(pl[i]).X, (float)getPlanetPoint(pl[i]).Y, pl[i].Size * scale, pl[i].Size * scale), null);
+							canvas.DrawBitmap(pl[i].textureHD, SKRect.Create((float)getPlanetPoint(pl[i]).X - (pl[i].Size * scale) / 2, (float)getPlanetPoint(pl[i]).Y - (pl[i].Size * scale) / 2, pl[i].Size * scale, pl[i].Size * scale), null);
+					}else{
+						canvas.DrawBitmap(pl[i].textureHD, SKRect.Create((float)getPlanetPoint(pl[i]).X - (pl[i].Size * scale) / 2, (float)getPlanetPoint(pl[i]).Y - (pl[i].Size * scale) / 2, pl[i].Size * scale, pl[i].Size * scale), null);
 					}
 				}
 			}
@@ -182,21 +168,18 @@ namespace Horizon
 
 				float cx = (float)getPlanetPoint(pl[0]).X;        //centro cerchio x
 				float cy = (float)getPlanetPoint(pl[0]).Y;           //centro cerchio y
-				float r = (float)Math.Sqrt(                                                                               //raggio
-						Math.Pow(getPlanetPoint(pl[j]).Y - (getPlanetPoint(pl[0]).Y ), 2) +
-						Math.Pow(getPlanetPoint(pl[j]).X - (getPlanetPoint(pl[0]).X ), 2)
-						);
-				double p = r * 2 * Math.PI;
+				float r = (float)Math.Sqrt( Math.Pow(getPlanetPoint(pl[j]).Y - (getPlanetPoint(pl[0]).Y ), 2) + Math.Pow(getPlanetPoint(pl[j]).X - (getPlanetPoint(pl[0]).X ), 2)  );
+				double p = r / scale * 2 * Math.PI;
 
 				double x;
 				if (j < 5)
-					x = (72 * p) / 1620;    //costante grafica				//FARE UN RAPPORTO TRA LA DISTANZA DEL SOLE E '3240'
+					x = p / 22.5;    //costante grafica				//FARE UN RAPPORTO TRA LA DISTANZA DEL SOLE E '3240'
 				else if (j == 5)
-					x = (72 * p) / 2430;
+					x = p / 33.75;
 				else
-					x = (72 * p) / 3240;
-				double test = ((360 / x) * scale);
-				for (double i = 0; i < 360; i += test)
+					x = p / 45;
+				double a = 360 / Math.Floor(x);
+				for (double i = 0; i < 360; i += a)
 				{
 					canvas.DrawCircle(new SKPoint((float)(cx + r * Math.Cos((i * Math.PI / 180))), (float)(cy + r * Math.Sin((i * Math.PI / 180)))), 2 * scale,       //formula per ricavare un punto sul cerchio dato l'angolo (cx+r*cos||sin(a))
 						new SKPaint
@@ -208,7 +191,7 @@ namespace Horizon
 			}
 		}
 
-		public void drawPLanetData(SKCanvas canvas)
+        public void drawPLanetData(SKCanvas canvas)
 		{
 			ScroolView.IsVisible = true;
 			ScroolView.VerticalScrollBarVisibility = ScrollBarVisibility.Always;
@@ -238,21 +221,11 @@ namespace Horizon
 
 		}
 
-		public void joyStickMovementListener()
-		{
-			if (top)
-				center.Y -= (2f / scale);
+		#endregion
 
-			if (right)
-				center.X += 2f / scale;
-
-			if (down)
-				center.Y += 2f / scale;
-
-			if (left)
-				center.X -= 2f / scale;
-		}
-
+		//-------------------------------------------------------------------------------------------------------------------\\
+		#region ANIMAZIONI POPUP
+		private Boolean restoreCamera = false;
 		public void planetTranslationFunction()
 		{
 			if (scale >= popUpScale)
@@ -275,23 +248,20 @@ namespace Horizon
 		{
 			if (scale <= oldScale)
 				restoreCamera = false;
-			else
-					if (scale > oldScale)
+			else if (scale > oldScale)
 				if (scale * velocity / 30 > 0)
 					scale -= velocity / 30;
 		}
+        #endregion
 
-		private Boolean restoreCamera = false;
+        //-------------------------------------------------------------------------------------------------------------------\\
+		#region FUNZIONI TOCCO
 
-		//-------------------------------------------------------------------------------------------------------------------\\
-		//FUNZIONI TOCCO
-
-		private Boolean clickedPlanet = false, openPopUp = false, joyStickVisible = false;
+        private Boolean clickedPlanet = false, openPopUp = false, joyStickVisible = false;
 		private int iPlanet;
-		private int dir = 0;        //da implementare
 		private Boolean top = false, right = false, down = false, left = false;
 		private int zoomGesture = 0;             //questa variabile può avere 3 stati [ 0 se non sto zommando ], [ 1 se ho finito di zoomare*], [ 2 se non sto zoommando]
-												 //*se ho finito di zoomare devo anche completare lo stato di movimento con variabili nulle cosi da resettare tutto 
+												 //se ho finito di zoomare devo anche completare lo stato di movimento con variabili nulle cosi da resettare tutto 
 
 		private void canvasView_Touch(object sender, SKTouchEventArgs e)
 		{
@@ -332,31 +302,26 @@ namespace Horizon
 				}
 
 				//clicco il joystick
-				//dir : 1=up, 2=right, 3=down, 4=left
 				if (e.ActionType == SKTouchAction.Pressed && joyStickVisible)
 				{
-					if (touchRect.IntersectsWith(joyStick.getTop()))        //tasto sopra
+					if (touchRect.IntersectsWith(joyStick.getTop()))		  //tasto sopra
 					{
 						top = true;
-						dir = 1;
 						e.Handled = true;
 					}
-					if (touchRect.IntersectsWith(joyStick.getDown()))           //sotto
+					if (touchRect.IntersectsWith(joyStick.getDown()))		    //sotto
 					{
 						down = true;
-						dir = 3;
 						e.Handled = true;
 					}
 					if (touchRect.IntersectsWith(joyStick.getRight()))         //destra
 					{
 						right = true;
-						dir = 2;
 						e.Handled = true;
 					}
 					if (touchRect.IntersectsWith(joyStick.getleft()))        //sinsitra
 					{
 						left = true;
-						dir = 4;
 						e.Handled = true;
 					}
 				}
@@ -376,14 +341,13 @@ namespace Horizon
 					pl[iPlanet].Size = 70;         //ripristino le dimensioni del pianeta quando esco dalla visualizzazione popup
 			}
 
-			//rilascio la pressione su un tasto del joystick
-			if (e.ActionType == SKTouchAction.Released)
+            //rilascio la pressione su un tasto del joystick
+            if (e.ActionType == SKTouchAction.Released)
 			{
 				top = false;
 				right = false;
 				down = false;
 				left = false;
-				dir = 0;
 				e.Handled = false;
 			}
 		}
@@ -405,8 +369,6 @@ namespace Horizon
 					panPoint.X = 0;
 					panPoint.Y = 0;
 				}
-
-
 			}
 		}
 
@@ -429,8 +391,21 @@ namespace Horizon
 			}
 		}
 
+		public void joyStickMovementListener()
+		{
+			if (top)
+				center.Y -= (2f / scale);
+			if (right)
+				center.X += 2f / scale;
+			if (down)
+				center.Y += 2f / scale;
+			if (left)
+				center.X -= 2f / scale;
+		}
+		#endregion
+
 		//-------------------------------------------------------------------------------------------------------------------\\
-		//FUNZIONI COORDINATE PIANETI
+		#region FUNZIONI COORDINATE PIANETI
 
 		private void setPositions()           //SETTO LE COORDINATE DI TUTTI I PIANETI
 		{
@@ -455,7 +430,7 @@ namespace Horizon
 		}
 
 		private Point getPlanetPoint(Planet pl)
-		{
+		{  
 			Point po = new Point();
 
 			po.X = pl.coord.X * scale +                               //la posizione iniziale del pianeta (che non viene mai cambiata!) zoommata  +
@@ -475,10 +450,12 @@ namespace Horizon
 			canvasView.InvalidateSurface();
 		}
 
-		//-------------------------------------------------------------------------------------------------------------------\\
-		//TEXTURE
+        #endregion
 
-		private List<String> texturepath = new List<string>();
+        //-------------------------------------------------------------------------------------------------------------------\\
+		#region TEXTURE
+
+        private List<String> texturepath = new List<string>();
 		private List<String> texturepathHD = new List<string>();
 
 		private void setTexture()
@@ -526,5 +503,7 @@ namespace Horizon
 			texturepathHD.Add("Horizon.Assets.ImageHD.uranus.png");
 			texturepathHD.Add("Horizon.Assets.ImageHD.neptune.png");
 		}
-	}
+        #endregion
+
+    }
 }
