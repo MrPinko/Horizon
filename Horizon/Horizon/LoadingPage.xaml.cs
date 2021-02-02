@@ -58,15 +58,20 @@ namespace Horizon
 
             loadingPercentage = ((float)planetNames.Length+2)/planetNames.Length * 0.7f;
             loadingLabel.Text = "Geolocation" + "...";
-            //carico la geolocalizzazione
-            Task<Location> taskGl = Geolocation.GetLocationAsync();
-            await taskGl.ContinueWith(x =>
-            {
-                location = x.Result;
-            }, TaskScheduler.FromCurrentSynchronizationContext());
-            loadingPercentage = 1;
-            //passo alla pagina con il menu
-            await Navigation.PushModalAsync(new MainPage(planets2D, planets3D , location));
+			//carico la geolocalizzazione
+			try{
+                Task<Location> taskGl = Geolocation.GetLocationAsync();
+                await taskGl.ContinueWith(x =>
+                {
+                    location = x.Result;
+                }, TaskScheduler.FromCurrentSynchronizationContext());
+                loadingPercentage = 1;
+                //passo alla pagina con il menu
+                await Navigation.PushModalAsync(new MainPage(planets2D, planets3D, location));
+			}
+			catch {
+                Navigation.PushModalAsync(new MainPage(planets2D, planets3D, null));
+            }
         }
 
     }

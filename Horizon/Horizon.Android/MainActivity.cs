@@ -22,5 +22,6 @@ namespace Horizon.Droid
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+
     }
 }
