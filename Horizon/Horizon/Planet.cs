@@ -101,7 +101,7 @@ namespace Horizon
 
         public SKRect hitBox(double x, double y, float dim, float scale)
         {
-            SKRect rect = SKRect.Create((float)x - (Size*scale) / 2, (float)y - (Size*scale) /2 , dim * scale, dim * scale);
+            SKRect rect = SKRect.Create((float)x - (Size*scale) / 2, (float)y - (Size*scale) /2 , dim * scale, dim * scale); 
 
             return rect;
         }

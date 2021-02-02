@@ -31,7 +31,7 @@ namespace Horizon
 		private float scale = 1, oldScale;
 		private Point panPoint = new Point(0, 0);  //panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
 
-		private String theme;      //immagini pianeti 3 disponibili
+		private String theme;      //immagini pianeti 3 disponibili 
 
 		private float panSens = 2f;  //la sensibilità del muoversi con un dito
 
