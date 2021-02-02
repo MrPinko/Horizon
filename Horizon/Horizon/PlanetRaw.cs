@@ -1,5 +1,4 @@
-﻿
-namespace Horizon
+﻿namespace Horizon
 {
 	public class PlanetRaw
 	{
