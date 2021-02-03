@@ -11,14 +11,16 @@
             <Button  
                 Pressed="Button_Pressed_2D"
                 x:Name="btn2D"
-                ImageSource = "btn2D.png"
                 BorderWidth = "0"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="CenterAndExpand"
             />
             <Button 
                 Pressed="Button_Pressed_3D"
                 x:Name="btn3D"
-                ImageSource = "btn3D.png"
                 BorderWidth = "0"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="CenterAndExpand"
             />
         </StackLayout>
     </ContentPage.Content>

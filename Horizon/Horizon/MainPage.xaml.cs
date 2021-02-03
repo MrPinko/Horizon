@@ -5,6 +5,7 @@ using Plugin.Permissions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using System.Reflection;
 
 namespace Horizon
 {
@@ -31,12 +32,13 @@ namespace Horizon
 			NavigationPage.SetHasBackButton(this, false);   //dopo che arrivi alla home non puoi più tornare indietro
 															//perchè la pagina precedente è il caricamento, che è la pagina iniziale
 			InitializeComponent();
-
+			btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D.png", typeof(MainPage).GetTypeInfo().Assembly);
 			btn2D.HeightRequest = width / dpi / 1.6;
 			btn2D.WidthRequest = width / dpi / 1.6;
 			btn2D.BackgroundColor = Color.Transparent;
 			btn2D.BorderColor = Color.Transparent;
 
+			btn3D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn3D.png", typeof(MainPage).GetTypeInfo().Assembly);
 			btn3D.HeightRequest = width / dpi / 1.6;
 			btn3D.WidthRequest = width / dpi / 1.6;
 			btn3D.BackgroundColor = Color.Transparent;
@@ -58,13 +60,12 @@ namespace Horizon
             {
 				isLocationLoaded = true;
 				camera3d = new Camera3D(this, pls3D, (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
-
 			}
 
 			camera2d = new Camera2D(this, pls2D, height, width, "image");
 		}
 
-		private async System.Threading.Tasks.Task askPermissionAsync()
+		private async Task askPermissionAsync()
 		{
 			var status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
 			if(status == PermissionStatus.Granted)
@@ -107,7 +108,6 @@ namespace Horizon
 
 			Device.StartTimer(TimeSpan.FromMilliseconds(17), () =>
 			{
-				//System.Diagnostics.Debug.WriteLine("ciao3d");
 				if (stopTimer3D)
 				{
 					giroscope.ToggleOrientationSensor();
