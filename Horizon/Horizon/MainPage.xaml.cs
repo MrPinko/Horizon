@@ -32,17 +32,11 @@ namespace Horizon
 			NavigationPage.SetHasBackButton(this, false);   //dopo che arrivi alla home non puoi più tornare indietro
 															//perchè la pagina precedente è il caricamento, che è la pagina iniziale
 			InitializeComponent();
-			btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D.png", typeof(MainPage).GetTypeInfo().Assembly);
-			btn2D.HeightRequest = width / dpi / 1.6;
-			btn2D.WidthRequest = width / dpi / 1.6;
-			btn2D.BackgroundColor = Color.Transparent;
-			btn2D.BorderColor = Color.Transparent;
 
+			optionsBtn.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.options.png", typeof(MainPage).GetTypeInfo().Assembly);
+			optionsBtn.
+			btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D.png", typeof(MainPage).GetTypeInfo().Assembly);
 			btn3D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn3D.png", typeof(MainPage).GetTypeInfo().Assembly);
-			btn3D.HeightRequest = width / dpi / 1.6;
-			btn3D.WidthRequest = width / dpi / 1.6;
-			btn3D.BackgroundColor = Color.Transparent;
-			btn3D.BorderColor = Color.Transparent;
 
 			this.pls3D = pls3D;
 			this.location = location;

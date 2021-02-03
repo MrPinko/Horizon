@@ -2,40 +2,30 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Horizon.MainPage">
-    <StackLayout>
-        <AbsoluteLayout
-            x:Name="optionsBtnLt">
-            <Button 
+    <AbsoluteLayout>
+        <Button 
                 Pressed="OptionsPressed"
                 x:Name="optionsBtn"
-                ImageSource="options.png"
                 BorderColor="Transparent"
                 BackgroundColor="Transparent"
-                AbsoluteLayout.LayoutBounds="0.9,0.65,0.1,0.05"
-                AbsoluteLayout.LayoutFlags="All"
-             ></Button>
-        </AbsoluteLayout>
-        <AbsoluteLayout>
-            <Button  
+                AbsoluteLayout.LayoutBounds="0.9,0.05,0.1,0.05"
+                AbsoluteLayout.LayoutFlags="All">
+        </Button>
+        <Button  
                 Pressed="Button_Pressed_2D"
                 x:Name="btn2D"
-                ImageSource="btn2D.png"
                 BorderColor="Transparent"
                 BackgroundColor="Transparent"
-                AbsoluteLayout.LayoutBounds="0.5,0.45,0.6,0.3"
-                AbsoluteLayout.LayoutFlags="All"
-            ></Button>
-        </AbsoluteLayout>
-            <AbsoluteLayout>
-                <Button 
+                AbsoluteLayout.LayoutBounds="0.5,0.3,0.6,0.3"
+                AbsoluteLayout.LayoutFlags="All">
+        </Button>
+        <Button
                 Pressed="Button_Pressed_3D"
                 x:Name="btn3D"
-                ImageSource="btn3D.png"
                 BorderColor="Transparent"
                 BackgroundColor="Transparent"
-                AbsoluteLayout.LayoutBounds="0.5,0.2,0.6,0.3"
-                AbsoluteLayout.LayoutFlags="All"
-            ></Button>
-            </AbsoluteLayout>   
-    </StackLayout>
+                AbsoluteLayout.LayoutBounds="0.5,0.7,0.6,0.3"
+                AbsoluteLayout.LayoutFlags="All">
+        </Button>
+    </AbsoluteLayout>
 </ContentPage>
