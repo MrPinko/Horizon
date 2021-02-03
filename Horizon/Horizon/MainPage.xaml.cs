@@ -23,8 +23,8 @@ namespace Horizon
 		int cont = 0;
 		QuaternionSucks rotor;
 
-		double height = DeviceDisplay.MainDisplayInfo.Height;
-		double width = DeviceDisplay.MainDisplayInfo.Width;
+		static double height = DeviceDisplay.MainDisplayInfo.Height;
+		static double width = DeviceDisplay.MainDisplayInfo.Width;
 
 		public MainPage(List<Planet> pls2D, List<Planet> pls3D, Location location)
 		{

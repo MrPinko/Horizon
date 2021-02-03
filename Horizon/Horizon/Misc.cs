@@ -2,7 +2,7 @@
 
 namespace Horizon
 {
-    static class Ez
+    static class Misc
     {
         public static float toRad(double x)
         {

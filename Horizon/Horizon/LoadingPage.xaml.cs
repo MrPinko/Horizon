@@ -70,7 +70,7 @@ namespace Horizon
                 await Navigation.PushModalAsync(new MainPage(planets2D, planets3D, location));
 			}
 			catch {
-                Navigation.PushModalAsync(new MainPage(planets2D, planets3D, null));
+                await Navigation.PushModalAsync(new MainPage(planets2D, planets3D, null));
             }
         }
 
