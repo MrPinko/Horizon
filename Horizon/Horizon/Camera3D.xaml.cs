@@ -60,7 +60,6 @@ namespace Horizon
             stars = StarDB.getAll();
             this.RA = tempRA = RA;
             this.DEC = tempDEC = DEC;
-            //this.DEC = tempDEC = baseDEC = DEC - (180 - main.giroscope.Y);      //forse /2 
             this.width = width;
             this.height = height;
             ampWidth = baseAmp / 2;
@@ -99,6 +98,7 @@ namespace Horizon
             {
                 if(sensorExists)
                 {
+                    switchJoyStick.changeStateOn();
                     useSensor = !useSensor;
                     if (!useSensor)
                     {

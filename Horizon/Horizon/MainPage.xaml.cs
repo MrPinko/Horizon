@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Plugin.Permissions;
+using Android.Content;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+
 
 namespace Horizon
 {
@@ -32,16 +33,6 @@ namespace Horizon
 															//perchè la pagina precedente è il caricamento, che è la pagina iniziale
 			InitializeComponent();
 
-			btn2D.HeightRequest = width / dpi / 1.6;
-			btn2D.WidthRequest = width / dpi / 1.6;
-			btn2D.BackgroundColor = Color.Transparent;
-			btn2D.BorderColor = Color.Transparent;
-
-			btn3D.HeightRequest = width / dpi / 1.6;
-			btn3D.WidthRequest = width / dpi / 1.6;
-			btn3D.BackgroundColor = Color.Transparent;
-			btn3D.BorderColor = Color.Transparent;
-
 			this.pls3D = pls3D;
 			this.location = location;
 			/*
@@ -63,6 +54,20 @@ namespace Horizon
 
 			camera2d = new Camera2D(this, pls2D, height, width, "image");
 		}
+		
+		private void OptionsPressed(object sender, EventArgs e)
+        {
+			OpenAppSettings();
+        }
+
+		public void OpenAppSettings()	//apro le impostazioni dell'app (non funziona)
+		{
+			var intent = new Intent(Android.Provider.Settings.ActionApplicationDetailsSettings);
+			intent.AddFlags(ActivityFlags.NewTask);
+			var uri = Android.Net.Uri.FromParts("package", "Horizon", null);
+			intent.SetData(uri);
+            Android.App.Application.Context.StartActivity(intent);
+		}
 
 		private async System.Threading.Tasks.Task askPermissionAsync()
 		{
@@ -80,7 +85,7 @@ namespace Horizon
 				isLocationLoaded = true;
 			}
 			else
-				DisplayAlert("", "è necessaria la geolocalizazione per continuare", "OK");
+				DisplayAlert("", "E' necessaria la geolocalizazione per continuare", "OK");
 
 		}
 
