@@ -37,6 +37,7 @@
     <None Remove="Assets\Image\venus.png" />
     <None Remove="Assets\MenuButton\btn2D.png" />
     <None Remove="Assets\MenuButton\btn3D.png" />
+    <None Remove="Assets\MenuButton\options.png" />
     <None Remove="Assets\Theme1.png" />
     <None Remove="Assets\Theme2.png" />
   </ItemGroup>
@@ -70,6 +71,7 @@
     <EmbeddedResource Include="Assets\CustomButton\Theme2.png" />
     <EmbeddedResource Include="Assets\MenuButton\btn2D.png" />
     <EmbeddedResource Include="Assets\MenuButton\btn3D.png" />
+    <EmbeddedResource Include="Assets\MenuButton\options.png" />
   </ItemGroup>
 
   <ItemGroup>

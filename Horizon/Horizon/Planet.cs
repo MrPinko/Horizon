@@ -46,6 +46,11 @@ namespace Horizon
             loadString();
             uselessDataBase.setUselessData(this);
         }
+        public Planet(float RA, float DEC)
+        {
+            this.RA = RA;
+            this.DEC = DEC;
+        }
 
         public Planet(string name, float RA, float DEC, double dim, SKColor color)
         {

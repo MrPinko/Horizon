@@ -34,7 +34,6 @@ namespace Horizon
 			InitializeComponent();
 
 			optionsBtn.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.options.png", typeof(MainPage).GetTypeInfo().Assembly);
-			optionsBtn.
 			btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D.png", typeof(MainPage).GetTypeInfo().Assembly);
 			btn3D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn3D.png", typeof(MainPage).GetTypeInfo().Assembly);
 
