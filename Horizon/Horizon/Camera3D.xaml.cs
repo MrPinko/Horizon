@@ -65,7 +65,6 @@ namespace Horizon
             stars = StarDB.getAll();
             this.RA = tempRA = RA;
             this.DEC = tempDEC = DEC;
-            //this.DEC = tempDEC = baseDEC = DEC - (180 - main.giroscope.Y);      //forse /2 
             this.width = width;
             this.height = height;
             ampWidth = baseAmp / 2;
@@ -115,8 +114,8 @@ namespace Horizon
                 if (planets[i].name == "earth")  //non stampo la terra ofc
                     continue;
 
-                //----------------------------------SUCCE METTI UN COMMENTO CHE NON CAPISCO COS' QUESTA COSA-----------------------
                 SKPoint tempPoint = toScreen(planets[i]);
+                //sposto le coordinate di stampa del pianeta in base alla dimensione con cui viene stampato (drawbitmap non disegna partendo dal centro)
                 tempPoint.X -= (200 + planets[i].printSize * 15) / 2;
                 tempPoint.Y -= (200 + planets[i].printSize * 15) / 2;
 
@@ -158,10 +157,10 @@ namespace Horizon
                 RA = tempRA - (float)panPoint.X / (width / 2) * ampWidth * 5.2f;        //regolare qui la sensibilità
                 DEC = tempDEC + (float)panPoint.Y / (height / 2) * ampHeight * 2.6f;
 
-                while (DEC > 90)
-                    DEC -= 180;
-                while (DEC < -90)
-                    DEC += 180;
+                if (DEC > 90)
+                    DEC = 90;
+                if (DEC < -90)
+                    DEC = -90;
 
                 while (RA > 360)
                     RA -= 360;
@@ -236,7 +235,7 @@ namespace Horizon
             var deltaY = (float)(b * ((Math.Cos(camDec)) * (Math.Sin(bodyDec)) - (Math.Sin(camDec)) * (Math.Cos(bodyDec)) * (Math.Cos(bodyRa - camRa)))) * width;
             
             if (useSensor)
-            {
+            {   //decommentare per abilitare l'asse Z del telefono (funziona fino a +-90 poi è buggato)
                 /*var diag = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
                 var c = Math.Atan2(deltaY, deltaX) + toRad((float)main.giroscope.pitch);
                 cord.X += (float)(Math.Cos(c) * diag);
