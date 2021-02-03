@@ -25,7 +25,6 @@ namespace Horizon
 
 		double height = DeviceDisplay.MainDisplayInfo.Height;
 		double width = DeviceDisplay.MainDisplayInfo.Width;
-		double dpi = DeviceDisplay.MainDisplayInfo.Density;
 
 		public MainPage(List<Planet> pls2D, List<Planet> pls3D, Location location)
 		{
