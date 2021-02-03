@@ -94,7 +94,7 @@ namespace Horizon
                 new Constellation( "Telescopium", new int[]{6905, 6897} ),
                 new Constellation( "Tucana", new int[]{8502, 8848, 8848, 77, 8848, 126} ),
                 new Constellation( "Triangulum", new int[]{664, 622, 622, 544, 544, 664} ),
-                new Constellation( "Tra", new int[]{6217, 5671, 5671, 5897, 5897, 6217} ),
+                new Constellation( "Triangulum Australe", new int[]{6217, 5671, 5671, 5897, 5897, 6217} ),
                 new Constellation( "Aquarius", new int[]{8232, 8414, 8414, 8518, 8518, 8558, 8558, 8597, 8597, 8698, 8698, 8841, 8841, 8892, 8414, 8499, 8499, 8418, 8499, 8573, 8573, 8679, 8679, 8709, 8709, 8812, 7950, 8232} ),
                 new Constellation( "Virgo", new int[]{4517, 4681, 4681, 4825, 4825, 5056, 5056, 5315, 5315, 5338, 5338, 5487, 5056, 5107, 5107, 5264, 5264, 5511, 5107, 4910, 4910, 4932, 4910, 4825} ),
                 new Constellation( "Vela", new int[]{3207, 3447, 3447, 3485, 3485, 3734, 3734, 3940, 3940, 4216, 4216, 4167, 4167, 4023, 4023, 3786, 3786, 3634, 3634, 3207} )

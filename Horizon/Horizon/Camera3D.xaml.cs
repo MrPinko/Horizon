@@ -48,7 +48,9 @@ namespace Horizon
         //paint per le linee delle costellazioni
         public SKPaint constellationPaint = new SKPaint{
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(255, 255, 255)};
+            Color = new SKColor(255, 255, 255),
+            TextAlign = SKTextAlign.Center,
+            TextSize = 30 };
 
 
         //-------------------------------------------------------------------------------------------------------------------\\
