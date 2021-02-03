@@ -24,6 +24,7 @@ namespace Horizon
         private double minY = 0;
         private SKPoint a, b;
         private bool drawText = false;
+
         public void drawAll(SKCanvas canvas)
         {
             foreach (Constellation constellation in this.cons)
