@@ -50,6 +50,7 @@ namespace Horizon
             Style = SKPaintStyle.Fill,
             Color = new SKColor(255, 255, 255),
             TextAlign = SKTextAlign.Center,
+            IsAntialias = true,
             TextSize = 30 };
 
 
