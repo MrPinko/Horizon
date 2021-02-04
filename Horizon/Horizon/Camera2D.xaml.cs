@@ -47,7 +47,7 @@ namespace Horizon
 			InitializeComponent();
 
 			 
-			BottomBar.TranslateTo(0, 150, 0);                 //la barra non c'è
+			BottomBar.TranslateTo(0, 125, 0);                 //la barra non c'è
 			this.main = main;
 			this.pl = new List<Planet>(pl);
 			foreach (Planet p in this.pl)
@@ -434,12 +434,12 @@ namespace Horizon
 		{
 			if (isOnScreen)
 			{
-				BottomBar.TranslateTo(0, 150, 800);         //la barra non c'è
+				BottomBar.TranslateTo(0, 125, 400);         //la barra non c'è
 				isOnScreen = false;
 			}
 			else
 			{
-				BottomBar.TranslateTo(0, 0, 800);      //la barra c'è
+				BottomBar.TranslateTo(0, 0, 400);      //la barra c'è
 				isOnScreen = true;
 			}
 		}
