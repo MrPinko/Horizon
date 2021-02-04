@@ -50,11 +50,6 @@ namespace Horizon
 		{
 			InitializeComponent();
 
-
-			translateBottonBarDown();              //la barra non c'è
-			loadBottomBarTexture();
-
-
 			BottomBar.TranslateTo(0, 125, 0);                 //la barra non c'è
 			this.main = main;
 			this.pl = new List<Planet>(pl);
@@ -74,8 +69,11 @@ namespace Horizon
 			maxDistancePx = ((int)height * 2);
 			maxDistanceKm = 4537000000;
 
+			//inizializzazioni
 			setTexture();
 			setTextureHD();
+			translateBottonBarDown();              //la barra non c'è
+			loadBottomBarTexture();
 			StarColor.initialize();
 
 			joyStick = new CustomButton.JoyStick((float)width, (float)height, (float)width / 3, (float)height / 6);
