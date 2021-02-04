@@ -72,31 +72,34 @@ namespace Horizon
             this.starIds = starIds;
             medRA = 0;
             medDEC = 0;
-
+            double x = 0, y = 0, z = 0, Hyp;
             ArrayList singleStarIds = new ArrayList();  //array con le stelle ma senza le copie
 
-            for (int i = 0; i < starIds.Length; i++)
+            for (int i = 0; i < starIds.Length; i++)    //creo l'array senza le copie
                 if (!singleStarIds.Contains(starIds[i]))
                     singleStarIds.Add(starIds[i]);
 
-            for (int i = 0; i < singleStarIds.Count; i++)
+            for (int i = 0; i < singleStarIds.Count; i++)   //fare - 1 perchè si            //calcolo la media
             {
-                Planet temp = stars[(int)singleStarIds[i] - 1];
-                medRA += temp.RA;
-                medDEC += temp.DEC;
+                x += Math.Cos(Misc.toRad(stars[(int)singleStarIds[i] - 1].DEC)) * Math.Cos(Misc.toRad(stars[(int)singleStarIds[i] - 1].RA));
+                y += Math.Cos(Misc.toRad(stars[(int)singleStarIds[i] - 1].DEC)) * Math.Sin(Misc.toRad(stars[(int)singleStarIds[i] - 1].RA));
+                z += Math.Sin(Misc.toRad(stars[(int)singleStarIds[i] - 1].DEC));
             }
+            x /= singleStarIds.Count;
+            y /= singleStarIds.Count;
+            z /= singleStarIds.Count;
 
-            medRA /= singleStarIds.Count;
-            medDEC /= singleStarIds.Count;
+            medRA = Misc.toDeg((float)Math.Atan2(y, x));
+            Hyp = Math.Sqrt(x * x + y * y);
+            medDEC = Misc.toDeg((float)Math.Atan2(z, Hyp));
 
-            //controllo in modo brutto se il nome della costellazione è molto lontano dalla costellazione
-            if (Math.Abs(medRA - stars[(int)singleStarIds[1]].RA) > 60 || Math.Abs(medDEC - stars[(int)singleStarIds[1]].DEC) > 60)
-            {
-                medRA = stars[(int)starIds[(int)(starIds.Length / 2)]].RA;
-                medDEC = stars[(int)starIds[(int)(starIds.Length / 2)]].DEC;
-            }
+            if (medDEC > 0 && medDEC < 2)   //se è sulla riga dell'equatore la sposto un po
+                medDEC = 3;
+            else if(medDEC < 0 && medDEC > -2)
+                medDEC = -3;
 
             costName = new Planet(medRA, medDEC);
+
         }
     }
 

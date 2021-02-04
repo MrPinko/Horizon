@@ -26,7 +26,7 @@ namespace Horizon
             p = horizontal(p, longitude);               //spostamento orizzontale
 
             //converto
-
+            //DEC = Math.Atan2(p.Z, r);     //in teoria è uguale
             DEC = Math.Asin(p.Z / r);
             RA = Math.Atan2(p.Y, p.X);
             if (RA < 0)

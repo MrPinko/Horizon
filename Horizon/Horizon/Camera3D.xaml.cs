@@ -30,7 +30,6 @@ namespace Horizon
         private int height;
         private float ampWidth;
         private float ampHeight;
-        private int planetSize = 70;
 
         private Point panPoint = new Point(0, 0);
         private float tempDEC;
@@ -104,10 +103,10 @@ namespace Horizon
             
             
             //test (sud, nord, equatore)
-            canvas.DrawCircle(toScreen(new Planet("POLOSUD", 0, -90, 10, new SKColor(255, 255, 255))), planetSize, uselessPaint);
-            canvas.DrawCircle(toScreen(new Planet("POLONORD", 0, 90, 10, new SKColor(127, 127, 127))), planetSize, uselessPaint);
+            canvas.DrawCircle(toScreen(new Planet("POLOSUD", 0, -90, 10, new SKColor(255, 255, 255))), 60, uselessPaint);
+            canvas.DrawCircle(toScreen(new Planet("POLONORD", 0, 90, 10, new SKColor(127, 127, 127))), 60, uselessPaint);
             for (float i = 0; i <= 360; i = i + 0.2f)
-                canvas.DrawCircle(toScreen(new Planet("BINGO", i, 0, 3, new SKColor(0, 127, 127))), 10, uselessPaint);
+                canvas.DrawCircle(toScreen(new Planet("BINGO", i, 0, 3, new SKColor(0, 127, 127))), 5, uselessPaint);
             
             
             for (int i = 0; i < planets.Count; i++)
