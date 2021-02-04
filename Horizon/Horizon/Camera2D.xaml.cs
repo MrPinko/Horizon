@@ -26,7 +26,6 @@ namespace Horizon
 		private double width;                //LARGHEZZA SCHERMO
 		private CustomButton.JoyStick joyStick;
 		private CustomButton.SwitchJoyStick switchJoyStick;
-		private SKRect topPopUp, downPopUp;
 
 		private float scale = 1, oldScale;
 		private Point panPoint = new Point(0, 0);  //panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
@@ -44,6 +43,7 @@ namespace Horizon
 		public SKPaint starPaint = new SKPaint{
 			Style = SKPaintStyle.Fill,
 			Color = new SKColor(191, 196, 100)};
+		public SKRect phoneRect; 
 		//-------------------------------------------------------------------------------------------------------------------\\
 		#region COSE PRINCIPALI
 		public Camera2D(MainPage main, List<Planet> pl, double height, double width, string theme)   //COSTRUTTORE 
@@ -76,6 +76,7 @@ namespace Horizon
 			loadBottomBarTexture();
 			StarColor.initialize();
 
+			phoneRect = SKRect.Create(0, 0, (float)width,(float) height);
 			joyStick = new CustomButton.JoyStick((float)width, (float)height, (float)width / 3, (float)height / 6);
 			switchJoyStick = new CustomButton.SwitchJoyStick((float)width, (float)height, 100, 100);
 			setPositions();
@@ -161,7 +162,9 @@ namespace Horizon
         //creazione del popup con i suoi dati
         private void createPopUp(SKCanvas canvas)
 		{
+			BottomBar.IsVisible = false;
 			LabelPlanetname.IsVisible = true;
+			ScroolView.IsVisible = true;
 			LabelPlanetname.Text = pl[iPlanet].name[0].ToString().ToUpper() + pl[iPlanet].name.Substring(1);
 			drawPLanetData(canvas);
 
@@ -235,7 +238,6 @@ namespace Horizon
 
         public void drawPLanetData(SKCanvas canvas)
 		{
-			ScroolView.IsVisible = true;
 			ScroolView.VerticalScrollBarVisibility = ScrollBarVisibility.Always;
 			LeftData0.Text = pl[iPlanet].planetDataString[0].ToUpper();
 			LeftData1.Text = pl[iPlanet].planetDataString[1].ToUpper();
@@ -288,6 +290,7 @@ namespace Horizon
 
 		public void restoreCameraFunction()
 		{
+			BottomBar.IsVisible = true;
 			if (scale <= oldScale)
 				restoreCamera = false;
 			else if (scale > oldScale)
@@ -314,6 +317,7 @@ namespace Horizon
 		{
 			SKRect touchRect = SKRect.Create(e.Location.X, e.Location.Y, 1, 1);
 
+			//listener pianeti
 			if (e.ActionType == SKTouchAction.Pressed && openPopUp == false && !touchRect.IntersectsWith(joyStick.GetRect()) &&
 				!touchRect.IntersectsWith(switchJoyStick.GetRect()) )
 			{
@@ -323,10 +327,6 @@ namespace Horizon
 					{
 						timeWasMoving = timeIsMoving;
 						timeIsMoving = false;
-						backBtn.IsVisible = false;
-						stopBtn.IsVisible = false;
-						resetBtn.IsVisible = false;
-						forwardBtn.IsVisible = false;
 						oldScale = scale;
 						clickedPlanet = true;
 						iPlanet = i;
@@ -373,17 +373,12 @@ namespace Horizon
 			}
 
 			//aperto il popup se clicco fuori da essi esco dalla modalità
-			if (openPopUp && !touchRect.IntersectsWith(topPopUp) && !touchRect.IntersectsWith(downPopUp))
+			if (openPopUp && touchRect.IntersectsWith(phoneRect))             //non prende il tocco se clicco un elemento xaml
 			{
 				openPopUp = false;
 				LabelPlanetname.IsVisible = false;
 				ScroolView.IsVisible = false;
-
 				timeIsMoving = timeWasMoving;
-				backBtn.IsVisible = true;
-				stopBtn.IsVisible = true;
-				resetBtn.IsVisible = true;
-				forwardBtn.IsVisible = true;
 
 				restoreCamera = true;
 				if (iPlanet == 2)      //luna
@@ -491,8 +486,6 @@ namespace Horizon
 		}
 
 		private bool theme1 = true;
-		ImageSource showTheme1 = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme1.png", typeof(Camera2D).GetTypeInfo().Assembly);
-		ImageSource showTheme2 = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme2.png", typeof(Camera2D).GetTypeInfo().Assembly);
 		private void ChangeThemeToggle(object sender, EventArgs e)
 		{
 			if (theme1)
@@ -700,8 +693,10 @@ namespace Horizon
 			stopBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.pause.png", typeof(Camera2D).GetTypeInfo().Assembly);
 			resetBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.hourglass.png", typeof(Camera2D).GetTypeInfo().Assembly);
 			forwardBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.notbackarrow.png", typeof(Camera2D).GetTypeInfo().Assembly);
-			ChangeThemeButton1.Source = showTheme1;
-			ChangeThemeButton2.Source = showTheme2;
+			ChangeThemeButton1.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme1.png", typeof(Camera2D).GetTypeInfo().Assembly); 
+			ChangeThemeButton2.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme2.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			ChangeThemeButton1.ScaleTo(0.7);
+			ChangeThemeButton2.ScaleTo(0.7);
 			ChangeThemeButton2.FadeTo(0, 0);
 
 
