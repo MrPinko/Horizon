@@ -11,7 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\BottomBarImage\fastforward.png" />
+    <None Remove="Assets\BottomBar\backarrow.png" />
+    <None Remove="Assets\BottomBar\hourglass.png" />
+    <None Remove="Assets\BottomBar\notbackarrow.png" />
+    <None Remove="Assets\BottomBar\pause.png" />
+    <None Remove="Assets\BottomBar\uparrow.png" />
     <None Remove="Assets\change_theme.png" />
     <None Remove="Assets\CustomButton\controllerSwitch.png" />
     <None Remove="Assets\CustomButton\controllerSwitch2.png" />
@@ -44,7 +48,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Assets\BottomBarImage\fastforward.png" />
+    <EmbeddedResource Include="Assets\BottomBar\backarrow.png" />
+    <EmbeddedResource Include="Assets\BottomBar\hourglass.png" />
+    <EmbeddedResource Include="Assets\BottomBar\notbackarrow.png" />
+    <EmbeddedResource Include="Assets\BottomBar\pause.png" />
+    <EmbeddedResource Include="Assets\BottomBar\uparrow.png" />
     <EmbeddedResource Include="Assets\change_theme.png" />
     <EmbeddedResource Include="Assets\CustomButton\controllerSwitch.png" />
     <EmbeddedResource Include="Assets\CustomButton\controllerSwitch2.png" />
@@ -69,8 +77,8 @@
     <EmbeddedResource Include="Assets\Image\sun.png" />
     <EmbeddedResource Include="Assets\Image\uranus.png" />
     <EmbeddedResource Include="Assets\Image\venus.png" />
-    <EmbeddedResource Include="Assets\CustomButton\Theme1.png" />
-    <EmbeddedResource Include="Assets\CustomButton\Theme2.png" />
+    <EmbeddedResource Include="Assets\BottomBar\Theme1.png" />
+    <EmbeddedResource Include="Assets\BottomBar\Theme2.png" />
     <EmbeddedResource Include="Assets\MenuButton\btn2D.png" />
     <EmbeddedResource Include="Assets\MenuButton\btn3D.png" />
     <EmbeddedResource Include="Assets\MenuButton\options.png" />

@@ -20,23 +20,24 @@
 
 		</skia:SKCanvasView>
 
-		
+
 
 		<!-- BOTTOM BAR-->
 		<Frame x:Name="BottomBar"  Padding="1" BackgroundColor="#15ffffff"                
-			    AbsoluteLayout.LayoutBounds="0.5,1,1,0.25"
+			    AbsoluteLayout.LayoutBounds="0.5,1,1,0.26"
 				AbsoluteLayout.LayoutFlags="All"
                 RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=0.3}"
                 RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width}">
 
 			<Grid>
 				<Grid.RowDefinitions>
-					
+					<RowDefinition Height="3"/>
 					<RowDefinition Height="40"/>
-					<RowDefinition Height="10"/>
+					<RowDefinition Height="3"/>
 					<RowDefinition Height="*"/>
-					
+
 				</Grid.RowDefinitions>
+
 				<Grid.ColumnDefinitions>
 
 					<ColumnDefinition Width="100"/>
@@ -46,13 +47,13 @@
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="100"/>
 
-
 				</Grid.ColumnDefinitions>
 
+				<Label Background="#2F2F2F" Grid.Row="2" Grid.ColumnSpan="6"></Label>
 
 				<Image 
-					Source="fastforward.png"
-					Grid.Row="2" Grid.Column="1">
+					x:Name="bottombartoggle"
+					Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4">
 					<Image.GestureRecognizers>
 						<TapGestureRecognizer
 							Tapped="Button_Clicked"
@@ -60,11 +61,32 @@
 					</Image.GestureRecognizers>
 				</Image>
 
+				<Image 
+					x:Name="ChangeThemeButton1"
+					Grid.Row="3" Grid.Column="0">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer
+							Tapped="ChangeThemeToggle"
+							NumberOfTapsRequired="1" />
+					</Image.GestureRecognizers>
+				</Image>
+				
+				<Image 
+					x:Name="ChangeThemeButton2"
+					Grid.Row="3" Grid.Column="0">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer
+							Tapped="ChangeThemeToggle"
+							NumberOfTapsRequired="1" />
+					</Image.GestureRecognizers>
+				</Image>
+
+
+
 				<!--  back time travel   -->
 				<Image 
-					Source="backarrow.png"
 					x:Name="backBtn"
-					Grid.Row="2" Grid.Column="1">
+					Grid.Row="3" Grid.Column="1">
 					<Image.GestureRecognizers>
 						<TapGestureRecognizer
 							Tapped="backPressed"
@@ -76,9 +98,8 @@
 				<!--  stop time travel   -->
 
 				<Image 
-					Source="pause.png"
 					x:Name="stopBtn"
-					Grid.Row="2" Grid.Column="2">
+					Grid.Row="3" Grid.Column="2">
 					<Image.GestureRecognizers>
 						<TapGestureRecognizer
 							Tapped="stopPressed"
@@ -86,13 +107,12 @@
 					</Image.GestureRecognizers>
 
 				</Image>
-				
+
 				<!--  reset time travel   -->
 
 				<Image 
-					Source="hourglass.png"
 					x:Name="resetBtn"
-					Grid.Row="2" Grid.Column="3">
+					Grid.Row="3" Grid.Column="3">
 					<Image.GestureRecognizers>
 						<TapGestureRecognizer
 							Tapped="resetPressed"
@@ -104,25 +124,34 @@
 
 				<!--  forward time travel   -->
 				<Image 
-					Source="notbackarrow.png"
 					x:Name="forwardBtn"
-					Grid.Row="2" Grid.Column="4">
+					Grid.Row="3" Grid.Column="4">
 					<Image.GestureRecognizers>
 						<TapGestureRecognizer
 							Tapped="forwardPressed"
 							NumberOfTapsRequired="1" />
 					</Image.GestureRecognizers>
-					
+
 				</Image>
-				
+
+				<Image 
+					x:Name="JoyStickBottomBar"
+					Grid.Row="3" Grid.Column="5">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer
+							Tapped="backPressed"
+							NumberOfTapsRequired="1" />
+					</Image.GestureRecognizers>
+				</Image>
+
 			</Grid>
 
 		</Frame>
 
-     
-       
+
+
 		<!--  PLANET NAME -->
-        <Label x:Name="LabelPlanetname" 
+		<Label x:Name="LabelPlanetname" 
 			IsVisible="false"
 			HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
 			FontSize="50" FontFamily="Georgia"
@@ -195,7 +224,7 @@
 
 				<Label x:Name="LeftData10" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold"  Grid.Row="10" Grid.Column="0" TextColor="#c3c3c3"/>
 				<Label x:Name="RightData10" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" FontSize="Medium" Grid.Row="10" Grid.Column="2" TextColor="#c3c3c3"/>
-			
+
 			</Grid>
 
 		</ScrollView>

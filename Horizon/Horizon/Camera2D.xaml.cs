@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Essentials;
@@ -23,7 +24,6 @@ namespace Horizon
 		private long maxDistanceKm;          //DISTANZA MASSIMA NETTUNO
 		private double height;               //ALTEZZA SCHERMO
 		private double width;                //LARGHEZZA SCHERMO
-		private CustomButton.ChangeTextureButton changeButton;
 		private CustomButton.JoyStick joyStick;
 		private CustomButton.SwitchJoyStick switchJoyStick;
 		private SKRect topPopUp, downPopUp;
@@ -46,8 +46,11 @@ namespace Horizon
 		{
 			InitializeComponent();
 
-			 
-			BottomBar.TranslateTo(0, 125, 0);                 //la barra non c'è
+
+			translateBottonBarDown();              //la barra non c'è
+			loadBottomBarTexture();
+
+
 			this.main = main;
 			this.pl = new List<Planet>(pl);
 			foreach (Planet p in this.pl)
@@ -69,7 +72,6 @@ namespace Horizon
 			setTexture();
 			setTextureHD();
 
-			changeButton = new CustomButton.ChangeTextureButton((float)width, (float)height, 150, 150);
 			joyStick = new CustomButton.JoyStick((float)width, (float)height, (float)width / 3, (float)height / 6);
 			switchJoyStick = new CustomButton.SwitchJoyStick((float)width, (float)height, 100, 100);
 			setPositions();
@@ -106,7 +108,6 @@ namespace Horizon
 			//visibilità joystick
 			if (!openPopUp)
 			{
-				changeButton.draw(canvas);
 				if (joyStickVisible)
 					joyStick.draw(canvas);
 				switchJoyStick.draw(canvas);
@@ -138,6 +139,8 @@ namespace Horizon
 			LabelPlanetname.IsVisible = true;
 			LabelPlanetname.Text = pl[iPlanet].name[0].ToString().ToUpper() + pl[iPlanet].name.Substring(1);
 			drawPLanetData(canvas);
+
+
 		}
 		
 		//creazione dei pianeti
@@ -282,7 +285,7 @@ namespace Horizon
 			SKRect touchRect = SKRect.Create(e.Location.X, e.Location.Y, 1, 1);
 
 			if (e.ActionType == SKTouchAction.Pressed && openPopUp == false && !touchRect.IntersectsWith(joyStick.GetRect()) &&
-				!touchRect.IntersectsWith(switchJoyStick.GetRect()) && !touchRect.IntersectsWith(changeButton.GetRect()))
+				!touchRect.IntersectsWith(switchJoyStick.GetRect()) )
 			{
 				for (int i = 0; i < pl.Count; i++)
 				{
@@ -299,22 +302,14 @@ namespace Horizon
 						iPlanet = i;
 					}
 				}
+
+				
 			}
 
 			//funzioni bottoni personalizzati
 			if (!openPopUp)
 			{
-				//cambio del tema dei pianeti
-				if (touchRect.IntersectsWith(changeButton.GetRect()))
-				{
-					if (theme.Equals("image"))
-						theme = "imageHD";
-					else
-						theme = "image";
-					changeButton.switchTheme();
-				}
-
-				//clicco il pulsante per mostrare il joystick
+								//clicco il pulsante per mostrare il joystick
 				if (touchRect.IntersectsWith(switchJoyStick.GetRect()))
 				{
 					joyStickVisible = !joyStickVisible;
@@ -434,16 +429,64 @@ namespace Horizon
 		{
 			if (isOnScreen)
 			{
-				BottomBar.TranslateTo(0, 125, 400);         //la barra non c'è
+				translateBottonBarDown();    //la barra non c'è più
+
+				bottombartoggle.RotateXTo(0, 300);
 				isOnScreen = false;
 			}
 			else
 			{
-				BottomBar.TranslateTo(0, 0, 400);      //la barra c'è
+				BottomBar.TranslateTo(0, 0, 300);      //la barra c'è
+				bottombartoggle.RotateXTo(-180, 300);
 				isOnScreen = true;
 			}
 		}
 
+		private void translateBottonBarDown()
+		{
+			switch (height)
+			{
+				case 1920:
+					BottomBar.TranslateTo(0, 115, 300);         //la barra non c'è
+					break;
+
+				case 2880:
+					BottomBar.TranslateTo(0, 140, 300);
+					break;
+
+				default:
+					BottomBar.TranslateTo(0, 140, 300);
+					break;
+			}
+		}
+
+		private bool theme1 = true;
+		ImageSource showTheme1 = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme1.png", typeof(Camera2D).GetTypeInfo().Assembly);
+		ImageSource showTheme2 = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme2.png", typeof(Camera2D).GetTypeInfo().Assembly);
+		private void ChangeThemeToggle(object sender, EventArgs e)
+		{
+			if (theme1)
+			{
+				//ChangeThemeButton.Source = showTheme1;
+				ChangeThemeButton1.FadeTo(0, 200);
+				ChangeThemeButton2.FadeTo(1, 200);
+
+				theme1 = false;
+			}
+			else
+			{
+				//ChangeThemeButton.Source = showTheme2;
+				ChangeThemeButton2.FadeTo(0, 200);
+				ChangeThemeButton1.FadeTo(1, 200);
+
+				theme1 = true;
+			}
+
+			if (theme.Equals("image"))
+				theme = "imageHD";
+			else
+				theme = "image";
+		}
 
 		#endregion
 
@@ -560,12 +603,17 @@ namespace Horizon
 			canvasView.InvalidateSurface();
 		}
 
-        #endregion
+		private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+		{
 
-        //-------------------------------------------------------------------------------------------------------------------\\
+		}
+
+		#endregion
+
+		//-------------------------------------------------------------------------------------------------------------------\\
 		#region TEXTURE
 
-        private List<String> texturepath = new List<string>();
+		private List<String> texturepath = new List<string>();
 		private List<String> texturepathHD = new List<string>();
 
 		private void setTexture()
@@ -613,7 +661,22 @@ namespace Horizon
 			texturepathHD.Add("Horizon.Assets.ImageHD.uranus.png");
 			texturepathHD.Add("Horizon.Assets.ImageHD.neptune.png");
 		}
-        #endregion
 
-    }
+		private void loadBottomBarTexture()
+		{
+			bottombartoggle.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.uparrow.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			backBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.backarrow.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			stopBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.pause.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			resetBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.hourglass.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			forwardBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.notbackarrow.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			ChangeThemeButton1.Source = showTheme1;
+			ChangeThemeButton2.Source = showTheme2;
+			ChangeThemeButton2.FadeTo(0, 0);
+
+
+		}
+
+		#endregion
+
+	}
 }
