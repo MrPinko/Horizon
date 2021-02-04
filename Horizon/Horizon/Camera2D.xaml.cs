@@ -40,13 +40,16 @@ namespace Horizon
 		public bool timeIsMoving = false;   //play-pause
 		private bool timeWasMoving = false;
 
+		private List<parallaxObj> stars = new List<parallaxObj>();
+		public SKPaint starPaint = new SKPaint{
+			Style = SKPaintStyle.Fill,
+			Color = new SKColor(191, 196, 100)};
 		//-------------------------------------------------------------------------------------------------------------------\\
 		#region COSE PRINCIPALI
 		public Camera2D(MainPage main, List<Planet> pl, double height, double width, string theme)   //COSTRUTTORE 
 		{
 			InitializeComponent();
 
-			 
 			BottomBar.TranslateTo(0, 125, 0);                 //la barra non c'è
 			this.main = main;
 			this.pl = new List<Planet>(pl);
@@ -68,6 +71,7 @@ namespace Horizon
 
 			setTexture();
 			setTextureHD();
+			StarColor.initialize();
 
 			changeButton = new CustomButton.ChangeTextureButton((float)width, (float)height, 150, 150);
 			joyStick = new CustomButton.JoyStick((float)width, (float)height, (float)width / 3, (float)height / 6);
@@ -79,6 +83,18 @@ namespace Horizon
 				pl[i].sunDist = pl[i].sunDist = (float)Math.Sqrt(                   //distanza pianeta-sole
 						Math.Pow(pl[i].coord.Y, 2) +
 						Math.Pow(pl[i].coord.X, 2));
+			}
+			
+			Random r = new Random();
+
+			double a;
+			for ( int i=0; i<15000; i++)
+			{
+				if (r.NextDouble() > 0)
+					a = r.NextDouble() * 0.6;
+				else
+					a = r.NextDouble() * 4 + 2;
+				stars.Add(new parallaxObj(r.Next(-15000, 15000), r.Next(-15000, 15000), a, r.Next(50)));
 			}
 		}
 
@@ -96,12 +112,21 @@ namespace Horizon
 			SKCanvas canvas = e.Surface.Canvas;
 			canvas.Clear();
 
-
-			//creazione orbite
 			if (!openPopUp)
-				dottedOrbit(canvas);
+				foreach (parallaxObj st in stars)	//disegno stelle sotto
+					if (st.paral < 1)
+						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
 
+			if (!openPopUp) dottedOrbit(canvas);	//orbite
 			createPlanet(canvas);
+
+			if (!openPopUp)
+				foreach (parallaxObj st in stars)	//disegno stelle sopra
+					if (st.paral > 1)
+						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
+
+
+
 
 			//visibilità joystick
 			if (!openPopUp)
@@ -538,21 +563,22 @@ namespace Horizon
 			return new Point(x + deltaX, y + deltaY);
 		}
 
-		private Point getPlanetPoint(Planet pl)
+		private SKPoint getPlanetPoint(Planet pl)
 		{  
-			Point po = new Point();
-
-			po.X = pl.coord.X * scale +                               //la posizione iniziale del pianeta (che non viene mai cambiata!) zoommata  +
-					width / 2 + (center.X - width / 2) * scale +      //il centro della telecamera zoommato (with / 2 non deve venir scalato però quindi lo tiro fuori)  +
-					panPoint.X * scale;                               //panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
-
-			po.Y = pl.coord.Y * scale +                         //stessa cosa ma per la Y
-					height / 2 + (center.Y - height / 2) * scale +
-					panPoint.Y * scale;
-
-			return po;
+			return getPoint(pl.coord.X, pl.coord.Y, 1);
 		}
 
+		private SKPoint getPoint(double x, double y, double paral)
+        {
+			return new SKPoint(
+                (float)(x * scale+										//la posizione iniziale del pianeta (che non viene mai cambiata!) zoommata  +
+				width / 2 + (center.X - width / 2) * scale * paral  +	//il centro della telecamera zoommato (with / 2 non deve venir scalato però quindi lo tiro fuori)  +
+				panPoint.X * scale * paral),							//panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
+
+				(float)(y * scale +										//stessa cosa ma per la Y
+				height / 2 + (center.Y - height / 2) * scale * paral +
+				panPoint.Y * scale * paral));
+		}
 
 
 		public void loop()
