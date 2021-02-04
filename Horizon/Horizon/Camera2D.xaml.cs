@@ -14,7 +14,7 @@ namespace Horizon
 		MainPage main;
 
 		private const float popUpScale = 4;             //zoom ottimale popup
-		private const float velocity = 10;                 //velocità delle animazioni zoon in/out
+		private const float velocity = 10;                 //velocità delle animazioni zoom in/out
 		private double dpi = DeviceDisplay.MainDisplayInfo.Density;
 
 		private Point center;
@@ -289,7 +289,12 @@ namespace Horizon
 				restoreCamera = false;
 			else if (scale > oldScale)
 				if (scale * velocity / 30 > 0)
+				{
 					scale -= velocity / 30;
+					if (scale < oldScale)
+						scale = oldScale;
+				}
+
 		}
         #endregion
 
