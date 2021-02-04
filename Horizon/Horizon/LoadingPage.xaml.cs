@@ -55,7 +55,7 @@ namespace Horizon
                 });
             }
 
-
+            
             loadingPercentage = ((float)planetNames.Length+2)/planetNames.Length * 0.7f;
             loadingLabel.Text = "Geolocation" + "...";
 			//carico la geolocalizzazione
