@@ -20,57 +20,87 @@
 
 		</skia:SKCanvasView>
 
-        <Label
-            x:Name="timeSkipLbl"
-            Text="pog"
-            TextColor="Black"
-            HorizontalTextAlignment="Center"
-            AbsoluteLayout.LayoutBounds="0.4,0.85,50,25"
-            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
-            BackgroundColor="White"></Label>
-        <Label
-            x:Name="skipIncrementLbl"
-            Text="pog"
-            TextColor="Black"
-            HorizontalTextAlignment="Center"
-            AbsoluteLayout.LayoutBounds="0.6,0.85,50,25"
-            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
-            BackgroundColor="White"></Label>
+		
 
-        <Button
+		<!-- BOTTOM BAR-->
+		<Frame x:Name="BottomBar"  Padding="1" BackgroundColor="Transparent"                
+			    AbsoluteLayout.LayoutBounds="0.5,1,1,0.3"
+				AbsoluteLayout.LayoutFlags="All"
+                RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=0.3}"
+                RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width}">
+
+			<Grid>
+				<Grid.RowDefinitions>
+					
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="10"/>
+					<RowDefinition Height="*"/>
+					
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+
+					<ColumnDefinition Width="100"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="100"/>
+
+
+				</Grid.ColumnDefinitions>
+
+				<Button Text="^" 
+						FontAttributes="Bold"
+						FontSize="20"
+						Clicked="Button_Clicked"
+						Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4">
+				</Button>
+
+				
+				<!--  back time travel   -->
+				<ImageButton
             x:Name="backBtn"
             Pressed="backPressed"
-            TextColor="Black"
-            Text="&lt;&lt;&lt;"
-            AbsoluteLayout.LayoutBounds="0.2,0.95,50,50"
-            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
-            BackgroundColor="White"></Button>
-        <Button
+            Source="notfastforward.png"
+			Grid.Row="2" Grid.Column="1">
+					
+				</ImageButton>
+
+				<!--  stop time travel   -->
+				<Button
             x:Name="stopBtn"
             Pressed="stopPressed"
             TextColor="Black"
             Text="="
-            AbsoluteLayout.LayoutBounds="0.4,0.95,50,50"
-            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
-            BackgroundColor="White"></Button>
-        <Button
+            BackgroundColor="White"
+					Grid.Row="2" Grid.Column="2"></Button>
+
+				<!--  reset time travel   -->
+				<Button
             x:Name="resetBtn"
             Pressed="resetPressed"
             TextColor="Black"
             Text="X"
-            AbsoluteLayout.LayoutBounds="0.6,0.95,50,50"
-            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
-            BackgroundColor="White"></Button>
-        <Button
+            BackgroundColor="White"
+					Grid.Row="2" Grid.Column="3"></Button>
+
+				
+				<!--  forward time travel   -->
+				<ImageButton
             x:Name="forwardBtn"
             Pressed="forwardPressed"
-            TextColor="Black"
-            Text=">>>"
-            AbsoluteLayout.LayoutBounds="0.8,0.95,50,50"
-            AbsoluteLayout.LayoutFlags="XProportional,YProportional"
-            BackgroundColor="White"></Button>
+			Source="fastforward.png"
+			Grid.Row="2" Grid.Column="4">
+					
+				</ImageButton>
 
+			</Grid>
 
+		</Frame>
+
+     
+       
+		<!--  PLANET NAME -->
         <Label x:Name="LabelPlanetname" 
 			IsVisible="false"
 			HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
