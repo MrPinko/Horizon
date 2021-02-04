@@ -175,8 +175,11 @@ namespace Horizon
 		
 		private void Button_Pressed_2D(object sender, EventArgs e)
 		{
-
-			Navigation.PushModalAsync(camera2d);
+			try
+			{
+				Navigation.PushModalAsync(camera2d);
+			}
+			catch{ }
 
 			Device.StartTimer(TimeSpan.FromMilliseconds(17), () =>
 			{

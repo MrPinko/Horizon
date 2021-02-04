@@ -28,6 +28,7 @@ namespace Horizon
             {
                 if (theme1)
                     canvas.DrawBitmap(texture1, rect, null);
+                
                 else
                     canvas.DrawBitmap(texture2, rect, null);
 

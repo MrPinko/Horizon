@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Essentials;
@@ -14,7 +15,7 @@ namespace Horizon
 		MainPage main;
 
 		private const float popUpScale = 4;             //zoom ottimale popup
-		private const float velocity = 10;                 //velocità delle animazioni zoon in/out
+		private const float velocity = 10;                 //velocità delle animazioni zoom in/out
 		private double dpi = DeviceDisplay.MainDisplayInfo.Density;
 
 		private Point center;
@@ -23,10 +24,8 @@ namespace Horizon
 		private long maxDistanceKm;          //DISTANZA MASSIMA NETTUNO
 		private double height;               //ALTEZZA SCHERMO
 		private double width;                //LARGHEZZA SCHERMO
-		private CustomButton.ChangeTextureButton changeButton;
 		private CustomButton.JoyStick joyStick;
 		private CustomButton.SwitchJoyStick switchJoyStick;
-		private SKRect topPopUp, downPopUp;
 
 		private float scale = 1, oldScale;
 		private Point panPoint = new Point(0, 0);  //panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
@@ -40,13 +39,17 @@ namespace Horizon
 		public bool timeIsMoving = false;   //play-pause
 		private bool timeWasMoving = false;
 
+		private List<parallaxObj> stars = new List<parallaxObj>();
+		public SKPaint starPaint = new SKPaint{
+			Style = SKPaintStyle.Fill,
+			Color = new SKColor(191, 196, 100)};
+		public SKRect phoneRect; 
 		//-------------------------------------------------------------------------------------------------------------------\\
 		#region COSE PRINCIPALI
 		public Camera2D(MainPage main, List<Planet> pl, double height, double width, string theme)   //COSTRUTTORE 
 		{
 			InitializeComponent();
 
-			 
 			BottomBar.TranslateTo(0, 125, 0);                 //la barra non c'è
 			this.main = main;
 			this.pl = new List<Planet>(pl);
@@ -66,10 +69,14 @@ namespace Horizon
 			maxDistancePx = ((int)height * 2);
 			maxDistanceKm = 4537000000;
 
+			//inizializzazioni
 			setTexture();
 			setTextureHD();
+			translateBottonBarDown();              //la barra non c'è
+			loadBottomBarTexture();
+			StarColor.initialize();
 
-			changeButton = new CustomButton.ChangeTextureButton((float)width, (float)height, 150, 150);
+			phoneRect = SKRect.Create(0, 0, (float)width,(float) height);
 			joyStick = new CustomButton.JoyStick((float)width, (float)height, (float)width / 3, (float)height / 6);
 			switchJoyStick = new CustomButton.SwitchJoyStick((float)width, (float)height, 100, 100);
 			setPositions();
@@ -79,6 +86,18 @@ namespace Horizon
 				pl[i].sunDist = pl[i].sunDist = (float)Math.Sqrt(                   //distanza pianeta-sole
 						Math.Pow(pl[i].coord.Y, 2) +
 						Math.Pow(pl[i].coord.X, 2));
+			}
+			
+			Random r = new Random();
+
+			double a;
+			for ( int i=0; i<15000; i++)
+			{
+				if (r.NextDouble() > 0)
+					a = r.NextDouble() * 0.6;
+				else
+					a = r.NextDouble() * 4 + 2;
+				stars.Add(new parallaxObj(r.Next(-15000, 15000), r.Next(-15000, 15000), a, r.Next(50)));
 			}
 		}
 
@@ -96,17 +115,25 @@ namespace Horizon
 			SKCanvas canvas = e.Surface.Canvas;
 			canvas.Clear();
 
-
-			//creazione orbite
 			if (!openPopUp)
-				dottedOrbit(canvas);
+				foreach (parallaxObj st in stars)	//disegno stelle sotto
+					if (st.paral < 1)
+						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
 
+			if (!openPopUp) dottedOrbit(canvas);	//orbite
 			createPlanet(canvas);
+
+			if (!openPopUp)
+				foreach (parallaxObj st in stars)	//disegno stelle sopra
+					if (st.paral > 1)
+						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
+
+
+
 
 			//visibilità joystick
 			if (!openPopUp)
 			{
-				changeButton.draw(canvas);
 				if (joyStickVisible)
 					joyStick.draw(canvas);
 				switchJoyStick.draw(canvas);
@@ -135,9 +162,13 @@ namespace Horizon
         //creazione del popup con i suoi dati
         private void createPopUp(SKCanvas canvas)
 		{
+			BottomBar.IsVisible = false;
 			LabelPlanetname.IsVisible = true;
+			ScroolView.IsVisible = true;
 			LabelPlanetname.Text = pl[iPlanet].name[0].ToString().ToUpper() + pl[iPlanet].name.Substring(1);
 			drawPLanetData(canvas);
+
+
 		}
 		
 		//creazione dei pianeti
@@ -207,7 +238,6 @@ namespace Horizon
 
         public void drawPLanetData(SKCanvas canvas)
 		{
-			ScroolView.IsVisible = true;
 			ScroolView.VerticalScrollBarVisibility = ScrollBarVisibility.Always;
 			LeftData0.Text = pl[iPlanet].planetDataString[0].ToUpper();
 			LeftData1.Text = pl[iPlanet].planetDataString[1].ToUpper();
@@ -260,11 +290,17 @@ namespace Horizon
 
 		public void restoreCameraFunction()
 		{
+			BottomBar.IsVisible = true;
 			if (scale <= oldScale)
 				restoreCamera = false;
 			else if (scale > oldScale)
 				if (scale * velocity / 30 > 0)
+				{
 					scale -= velocity / 30;
+					if (scale < oldScale)
+						scale = oldScale;
+				}
+
 		}
         #endregion
 
@@ -281,8 +317,9 @@ namespace Horizon
 		{
 			SKRect touchRect = SKRect.Create(e.Location.X, e.Location.Y, 1, 1);
 
+			//listener pianeti
 			if (e.ActionType == SKTouchAction.Pressed && openPopUp == false && !touchRect.IntersectsWith(joyStick.GetRect()) &&
-				!touchRect.IntersectsWith(switchJoyStick.GetRect()) && !touchRect.IntersectsWith(changeButton.GetRect()))
+				!touchRect.IntersectsWith(switchJoyStick.GetRect()) )
 			{
 				for (int i = 0; i < pl.Count; i++)
 				{
@@ -290,31 +327,19 @@ namespace Horizon
 					{
 						timeWasMoving = timeIsMoving;
 						timeIsMoving = false;
-						backBtn.IsVisible = false;
-						stopBtn.IsVisible = false;
-						resetBtn.IsVisible = false;
-						forwardBtn.IsVisible = false;
 						oldScale = scale;
 						clickedPlanet = true;
 						iPlanet = i;
 					}
 				}
+
+				
 			}
 
 			//funzioni bottoni personalizzati
 			if (!openPopUp)
 			{
-				//cambio del tema dei pianeti
-				if (touchRect.IntersectsWith(changeButton.GetRect()))
-				{
-					if (theme.Equals("image"))
-						theme = "imageHD";
-					else
-						theme = "image";
-					changeButton.switchTheme();
-				}
-
-				//clicco il pulsante per mostrare il joystick
+								//clicco il pulsante per mostrare il joystick
 				if (touchRect.IntersectsWith(switchJoyStick.GetRect()))
 				{
 					joyStickVisible = !joyStickVisible;
@@ -348,17 +373,12 @@ namespace Horizon
 			}
 
 			//aperto il popup se clicco fuori da essi esco dalla modalità
-			if (openPopUp && !touchRect.IntersectsWith(topPopUp) && !touchRect.IntersectsWith(downPopUp))
+			if (openPopUp && touchRect.IntersectsWith(phoneRect))             //non prende il tocco se clicco un elemento xaml
 			{
 				openPopUp = false;
 				LabelPlanetname.IsVisible = false;
 				ScroolView.IsVisible = false;
-
 				timeIsMoving = timeWasMoving;
-				backBtn.IsVisible = true;
-				stopBtn.IsVisible = true;
-				resetBtn.IsVisible = true;
-				forwardBtn.IsVisible = true;
 
 				restoreCamera = true;
 				if (iPlanet == 2)      //luna
@@ -434,16 +454,62 @@ namespace Horizon
 		{
 			if (isOnScreen)
 			{
-				BottomBar.TranslateTo(0, 125, 400);         //la barra non c'è
+				translateBottonBarDown();    //la barra non c'è più
+
+				bottombartoggle.RotateXTo(0, 300);
 				isOnScreen = false;
 			}
 			else
 			{
-				BottomBar.TranslateTo(0, 0, 400);      //la barra c'è
+				BottomBar.TranslateTo(0, 0, 300);      //la barra c'è
+				bottombartoggle.RotateXTo(-180, 300);
 				isOnScreen = true;
 			}
 		}
 
+		private void translateBottonBarDown()
+		{
+			switch (height)
+			{
+				case 1920:
+					BottomBar.TranslateTo(0, 115, 300);         //la barra non c'è
+					break;
+
+				case 2880:
+					BottomBar.TranslateTo(0, 140, 300);
+					break;
+
+				default:
+					BottomBar.TranslateTo(0, 140, 300);
+					break;
+			}
+		}
+
+		private bool theme1 = true;
+		private void ChangeThemeToggle(object sender, EventArgs e)
+		{
+			if (theme1)
+			{
+				//ChangeThemeButton.Source = showTheme1;
+				ChangeThemeButton1.FadeTo(0, 200);
+				ChangeThemeButton2.FadeTo(1, 200);
+
+				theme1 = false;
+			}
+			else
+			{
+				//ChangeThemeButton.Source = showTheme2;
+				ChangeThemeButton2.FadeTo(0, 200);
+				ChangeThemeButton1.FadeTo(1, 200);
+
+				theme1 = true;
+			}
+
+			if (theme.Equals("image"))
+				theme = "imageHD";
+			else
+				theme = "image";
+		}
 
 		#endregion
 
@@ -538,21 +604,22 @@ namespace Horizon
 			return new Point(x + deltaX, y + deltaY);
 		}
 
-		private Point getPlanetPoint(Planet pl)
+		private SKPoint getPlanetPoint(Planet pl)
 		{  
-			Point po = new Point();
-
-			po.X = pl.coord.X * scale +                               //la posizione iniziale del pianeta (che non viene mai cambiata!) zoommata  +
-					width / 2 + (center.X - width / 2) * scale +      //il centro della telecamera zoommato (with / 2 non deve venir scalato però quindi lo tiro fuori)  +
-					panPoint.X * scale;                               //panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
-
-			po.Y = pl.coord.Y * scale +                         //stessa cosa ma per la Y
-					height / 2 + (center.Y - height / 2) * scale +
-					panPoint.Y * scale;
-
-			return po;
+			return getPoint(pl.coord.X, pl.coord.Y, 1);
 		}
 
+		private SKPoint getPoint(double x, double y, double paral)
+        {
+			return new SKPoint(
+                (float)(x * scale+										//la posizione iniziale del pianeta (che non viene mai cambiata!) zoommata  +
+				width / 2 + (center.X - width / 2) * scale * paral  +	//il centro della telecamera zoommato (with / 2 non deve venir scalato però quindi lo tiro fuori)  +
+				panPoint.X * scale * paral),							//panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
+
+				(float)(y * scale +										//stessa cosa ma per la Y
+				height / 2 + (center.Y - height / 2) * scale * paral +
+				panPoint.Y * scale * paral));
+		}
 
 
 		public void loop()
@@ -560,12 +627,17 @@ namespace Horizon
 			canvasView.InvalidateSurface();
 		}
 
-        #endregion
+		private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+		{
 
-        //-------------------------------------------------------------------------------------------------------------------\\
+		}
+
+		#endregion
+
+		//-------------------------------------------------------------------------------------------------------------------\\
 		#region TEXTURE
 
-        private List<String> texturepath = new List<string>();
+		private List<String> texturepath = new List<string>();
 		private List<String> texturepathHD = new List<string>();
 
 		private void setTexture()
@@ -613,7 +685,24 @@ namespace Horizon
 			texturepathHD.Add("Horizon.Assets.ImageHD.uranus.png");
 			texturepathHD.Add("Horizon.Assets.ImageHD.neptune.png");
 		}
-        #endregion
 
-    }
+		private void loadBottomBarTexture()
+		{
+			bottombartoggle.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.uparrow.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			backBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.backarrow.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			stopBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.pause.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			resetBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.hourglass.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			forwardBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.notbackarrow.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			ChangeThemeButton1.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme1.png", typeof(Camera2D).GetTypeInfo().Assembly); 
+			ChangeThemeButton2.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme2.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			ChangeThemeButton1.ScaleTo(0.7);
+			ChangeThemeButton2.ScaleTo(0.7);
+			ChangeThemeButton2.FadeTo(0, 0);
+
+
+		}
+
+		#endregion
+
+	}
 }
