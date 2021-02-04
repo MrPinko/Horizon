@@ -46,6 +46,8 @@ namespace Horizon
 		{
 			InitializeComponent();
 
+			 
+			BottomBar.TranslateTo(0, 125, 0);                 //la barra non c'è
 			this.main = main;
 			this.pl = new List<Planet>(pl);
 			foreach (Planet p in this.pl)
@@ -292,8 +294,6 @@ namespace Horizon
 						stopBtn.IsVisible = false;
 						resetBtn.IsVisible = false;
 						forwardBtn.IsVisible = false;
-						timeSkipLbl.IsVisible = false;
-						skipIncrementLbl.IsVisible = false;
 						oldScale = scale;
 						clickedPlanet = true;
 						iPlanet = i;
@@ -359,8 +359,6 @@ namespace Horizon
 				stopBtn.IsVisible = true;
 				resetBtn.IsVisible = true;
 				forwardBtn.IsVisible = true;
-				timeSkipLbl.IsVisible = true;
-				skipIncrementLbl.IsVisible = true;
 
 				restoreCamera = true;
 				if (iPlanet == 2)      //luna
@@ -430,6 +428,23 @@ namespace Horizon
 			if (left)
 				center.X -= 2f / scale;
 		}
+
+		bool isOnScreen = false;
+		private void Button_Clicked(object sender, EventArgs e)
+		{
+			if (isOnScreen)
+			{
+				BottomBar.TranslateTo(0, 125, 400);         //la barra non c'è
+				isOnScreen = false;
+			}
+			else
+			{
+				BottomBar.TranslateTo(0, 0, 400);      //la barra c'è
+				isOnScreen = true;
+			}
+		}
+
+
 		#endregion
 
 		//-------------------------------------------------------------------------------------------------------------------\\
@@ -461,7 +476,6 @@ namespace Horizon
 			else if (skipIncrement < -2)
 				skipIncrement /= 2;
 
-			skipIncrementLbl.Text = "" + skipIncrement;
 		}
 
 		private void forwardPressed(object sender, EventArgs e)
@@ -477,14 +491,12 @@ namespace Horizon
 			else if (skipIncrement < 0 && skipIncrement > -32)
 				skipIncrement *= 2;
 
-			skipIncrementLbl.Text = "" + skipIncrement;
 		}
 
 		private void stopPressed(object sender, EventArgs e)
 		{
 			timeIsMoving = false;
 			skipIncrement = 0;
-			skipIncrementLbl.Text = "" + skipIncrement;
 		}
 
 		private void resetPressed(object sender, EventArgs e)
@@ -493,8 +505,6 @@ namespace Horizon
 			skipIncrement = 0;
 			timeSkip = 0;
 			timeChanged();
-			skipIncrementLbl.Text = "" + skipIncrement;
-			timeSkipLbl.Text = "" + timeSkip;
 		}
 
 		#endregion
@@ -544,11 +554,10 @@ namespace Horizon
 		}
 
 
+
 		public void loop()
 		{
 			canvasView.InvalidateSurface();
-			skipIncrementLbl.Text = "" + skipIncrement;
-			timeSkipLbl.Text = "" + timeSkip;
 		}
 
         #endregion
