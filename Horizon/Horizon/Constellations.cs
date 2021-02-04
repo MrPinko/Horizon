@@ -73,33 +73,32 @@ namespace Horizon
             medRA = 0;
             medDEC = 0;
             double x = 0, y = 0, z = 0, Hyp;
-            ArrayList singleStarIds = new ArrayList();  //array con le stelle ma senza le copie
+            ArrayList singleStarIds = new ArrayList();      //array con le stelle ma senza le copie
 
-            for (int i = 0; i < starIds.Length; i++)    //creo l'array senza le copie
+            for (int i = 0; i < starIds.Length; i++)        //creo l'array senza le copie
                 if (!singleStarIds.Contains(starIds[i]))
                     singleStarIds.Add(starIds[i]);
 
-            for (int i = 0; i < singleStarIds.Count; i++)   //fare - 1 perchè si            //calcolo la media
+            for (int i = 0; i < singleStarIds.Count; i++)   //sommo le coordinate (i - 1 serve perchè la prima stella nell'array ha come id 1)
             {
                 x += Math.Cos(Misc.toRad(stars[(int)singleStarIds[i] - 1].DEC)) * Math.Cos(Misc.toRad(stars[(int)singleStarIds[i] - 1].RA));
                 y += Math.Cos(Misc.toRad(stars[(int)singleStarIds[i] - 1].DEC)) * Math.Sin(Misc.toRad(stars[(int)singleStarIds[i] - 1].RA));
                 z += Math.Sin(Misc.toRad(stars[(int)singleStarIds[i] - 1].DEC));
             }
-            x /= singleStarIds.Count;
+            x /= singleStarIds.Count;                       //calcolo la media
             y /= singleStarIds.Count;
             z /= singleStarIds.Count;
 
-            medRA = Misc.toDeg((float)Math.Atan2(y, x));
-            Hyp = Math.Sqrt(x * x + y * y);
+            Hyp = Math.Sqrt(x * x + y * y);                     //converto in RA e DEC
+            medRA = Misc.toDeg((float)Math.Atan2(y, x));    
             medDEC = Misc.toDeg((float)Math.Atan2(z, Hyp));
 
-            if (medDEC > 0 && medDEC < 2)   //se è sulla riga dell'equatore la sposto un po
+            if (medDEC > 0 && medDEC < 2)                    //se è sulla riga dell'equatore la sposto un po
                 medDEC = 3;
             else if(medDEC < 0 && medDEC > -2)
                 medDEC = -3;
 
             costName = new Planet(medRA, medDEC);
-
         }
     }
 

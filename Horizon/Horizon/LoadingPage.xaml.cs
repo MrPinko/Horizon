@@ -20,6 +20,7 @@ namespace Horizon
 
         private List<Planet> planets2D = new List<Planet>();
         private List<Planet> planets3D = new List<Planet>();
+        private List<Planet> planetsSun = new List<Planet>();
         private readonly string[] planetNames = { "sun", "earth", "moon", "mercury", "venus", "mars", "jupiter", "saturn", "uranus", "neptune" };
 
         public LoadingPage()
@@ -43,6 +44,7 @@ namespace Horizon
                 {
                     planets2D.Add(new Planet(planetNames[i], 0, 0, 0, 0));
                     planets3D.Add(new Planet(planetNames[i], 0, 0, 0, 0));
+                    planetsSun.Add(new Planet(planetNames[i], 0, 0, 0, 0));
                     continue;
                 }
                 loadingLabel.Text = planetNames[i][0].ToString().ToUpper() + planetNames[i].Substring(1) + "...";
@@ -52,9 +54,9 @@ namespace Horizon
                     PlanetRaw pr = Request.getPlanet(planetNames[i]).Result;
                     planets2D.Add(new Planet(planetNames[i], pr));
                     planets3D.Add(new Planet(planetNames[i], pr));
+                    planetsSun.Add(new Planet(planetNames[i], pr));
                 });
             }
-
 
             loadingPercentage = ((float)planetNames.Length+2)/planetNames.Length * 0.7f;
             loadingLabel.Text = "Geolocation" + "...";
@@ -67,10 +69,10 @@ namespace Horizon
                 }, TaskScheduler.FromCurrentSynchronizationContext());
                 loadingPercentage = 1;
                 //passo alla pagina con il menu
-                await Navigation.PushModalAsync(new MainPage(planets2D, planets3D, location));
+                await Navigation.PushModalAsync(new MainPage(planets2D, planets3D, planetsSun, location));
 			}
 			catch {
-                await Navigation.PushModalAsync(new MainPage(planets2D, planets3D, null));
+                await Navigation.PushModalAsync(new MainPage(planets2D, planets3D, planetsSun, null));
             }
         }
 

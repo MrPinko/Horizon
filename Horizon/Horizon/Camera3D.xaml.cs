@@ -13,6 +13,7 @@ namespace Horizon
         private MainPage main;
         private List<Planet> planets;
         private List<Planet> stars;
+        private String observer;
 
         CustomButton.ChangeTextureButton changeButton;
         CustomButton.SwitchJoyStick switchJoyStick;
@@ -57,12 +58,13 @@ namespace Horizon
         #region COSE PRINCIPALI
 
         //COSTRUTTORE
-        public Camera3D(MainPage main, List<Planet> planets, float RA, float DEC, int height, int width, String theme)    //quel dec è dove guardiamo se guardiamo in alto
+        public Camera3D(MainPage main, List<Planet> planets, String observer, float RA, float DEC, int height, int width, String theme)    //quel dec è dove guardiamo se guardiamo in alto
         {
             InitializeComponent();
             this.main = main;
             this.planets = new List<Planet>(planets);
             stars = StarDB.getAll();
+            this.observer = observer;
             this.RA = tempRA = RA;
             this.DEC = tempDEC = DEC;
             this.width = width;
@@ -95,7 +97,7 @@ namespace Horizon
 
             //stampo le stelle
             for (int i = 0; i < stars.Count; i++)
-                canvas.DrawCircle(toScreen(stars[i]), /*stars[i].printSize*/1, stars[i].paint);
+                canvas.DrawCircle(toScreen(stars[i]), 1, stars[i].paint);
 
             //stampo le costellazioni
             //SI BUGGA SE METTEREMO LO ZOOM, CHIEDI AL PIETRO
@@ -103,15 +105,15 @@ namespace Horizon
             
             
             //test (sud, nord, equatore)
-            canvas.DrawCircle(toScreen(new Planet("POLOSUD", 0, -90, 10, new SKColor(255, 255, 255))), 60, uselessPaint);
-            canvas.DrawCircle(toScreen(new Planet("POLONORD", 0, 90, 10, new SKColor(127, 127, 127))), 60, uselessPaint);
+            canvas.DrawCircle(toScreen(new Planet("SOUTHPOLE", 0, -90, 10, new SKColor(255, 255, 255))), 60, uselessPaint);
+            canvas.DrawCircle(toScreen(new Planet("NORTHPOLE", 0, 90, 10, new SKColor(127, 127, 127))), 60, uselessPaint);
             for (float i = 0; i <= 360; i = i + 0.2f)
-                canvas.DrawCircle(toScreen(new Planet("BINGO", i, 0, 3, new SKColor(0, 127, 127))), 5, uselessPaint);
+                canvas.DrawCircle(toScreen(new Planet("EQUATOR", i, 0, 3, new SKColor(0, 127, 127))), 5, uselessPaint);
             
             
             for (int i = 0; i < planets.Count; i++)
             {
-                if (planets[i].name == "earth")  //non stampo la terra ofc
+                if (planets[i].name == observer)  //non stampo la terra o il sole in base dal punto di vista
                     continue;
 
                 SKPoint tempPoint = toScreen(planets[i]);
@@ -198,6 +200,7 @@ namespace Horizon
             {
                 if (sensorExists)
                 {
+                    switchJoyStick.changeStateOn();
                     useSensor = !useSensor;
                     if (!useSensor)
                     {
@@ -303,6 +306,16 @@ namespace Horizon
             texturepathHD.Add("Horizon.Assets.ImageHD.uranus.png");
             texturepathHD.Add("Horizon.Assets.ImageHD.neptune.png");
         }
+        #endregion
+
+        //-------------------------------------------------------------------------------------------------------------------\\
+        #region SELEZIONE OSSERVATORE
+
+        private void changeObserverPressed(object sender, EventArgs e)
+        {
+            
+        }
+
         #endregion
     }
 }
