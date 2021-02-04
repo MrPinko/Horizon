@@ -2,25 +2,30 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Horizon.MainPage">
-
-    <ContentPage.Content>
-        <StackLayout
-            VerticalOptions="CenterAndExpand"
-            HorizontalOptions="CenterAndExpand"
-        >
-            <Button  
+    <AbsoluteLayout>
+        <Button 
+                Pressed="OptionsPressed"
+                x:Name="optionsBtn"
+                BorderColor="Transparent"
+                BackgroundColor="Transparent"
+                AbsoluteLayout.LayoutBounds="0.9,0.05,0.1,0.05"
+                AbsoluteLayout.LayoutFlags="All">
+        </Button>
+        <Button  
                 Pressed="Button_Pressed_2D"
                 x:Name="btn2D"
-                ImageSource = "btn2D.png"
-                BorderWidth = "0"
-            />
-            <Button 
+                BorderColor="Transparent"
+                BackgroundColor="Transparent"
+                AbsoluteLayout.LayoutBounds="0.5,0.3,0.6,0.3"
+                AbsoluteLayout.LayoutFlags="All">
+        </Button>
+        <Button
                 Pressed="Button_Pressed_3D"
                 x:Name="btn3D"
-                ImageSource = "btn3D.png"
-                BorderWidth = "0"
-            />
-        </StackLayout>
-    </ContentPage.Content>
-    
+                BorderColor="Transparent"
+                BackgroundColor="Transparent"
+                AbsoluteLayout.LayoutBounds="0.5,0.7,0.6,0.3"
+                AbsoluteLayout.LayoutFlags="All">
+        </Button>
+    </AbsoluteLayout>
 </ContentPage>

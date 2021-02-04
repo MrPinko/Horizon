@@ -470,10 +470,10 @@ namespace Horizon
 			if (skipIncrement > 0 && skipIncrement < 32)
 				skipIncrement *= 2;
 			else if (skipIncrement == 0)
-				skipIncrement = 4;
-			else if (skipIncrement == -4)
+				skipIncrement = 2;
+			else if (skipIncrement == -2)
 				skipIncrement = 0;
-			else if (skipIncrement < -4)
+			else if (skipIncrement < -2)
 				skipIncrement /= 2;
 
 		}
@@ -482,12 +482,12 @@ namespace Horizon
 		{
 			timeIsMoving = true;
 
-			if (skipIncrement > 4)
+			if (skipIncrement > 2)
 				skipIncrement /= 2;
-			else if (skipIncrement == 4)
+			else if (skipIncrement == 2)
 				skipIncrement = 0;
 			else if (skipIncrement == 0)
-				skipIncrement = -4;
+				skipIncrement = -2;
 			else if (skipIncrement < 0 && skipIncrement > -32)
 				skipIncrement *= 2;
 
