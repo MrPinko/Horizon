@@ -89,15 +89,15 @@ namespace Horizon
 				{
 					var req = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
 					location = await Geolocation.GetLocationAsync(req);
+
+					//passo alla pagina con il menu
+					camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
+					isLocationLoaded = true;
 				}
 				catch (Exception e)
 				{
 					System.Diagnostics.Debug.WriteLine(e.Message);
 				}
-
-				//passo alla pagina con il menu
-				camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
-				isLocationLoaded = true;
 			}
             else { 
 				await DisplayAlert("", "E' necessaria la geolocalizazione per continuare", "OK");
