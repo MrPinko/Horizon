@@ -35,13 +35,13 @@ namespace Horizon
 															//perchè la pagina precedente è il caricamento, che è la pagina iniziale
 			InitializeComponent();
 
-			optionsBtn.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.options.png", typeof(MainPage).GetTypeInfo().Assembly);
-			btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D.png", typeof(MainPage).GetTypeInfo().Assembly);
-			btn3D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn3D.png", typeof(MainPage).GetTypeInfo().Assembly);
+			optionsBtn.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.options150.png", typeof(MainPage).GetTypeInfo().Assembly);
+			btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D600.png", typeof(MainPage).GetTypeInfo().Assembly);
+			btn3D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn3D600.png", typeof(MainPage).GetTypeInfo().Assembly);
 
 			this.pls3D = pls3D;
 			this.pls2D = pls2D;
-			this.plsSun = setObserver(plsSun, "sun");
+			//this.plsSun = setObserver(plsSun, "sun");
 			this.location = location;
 			/*
 			rotor = new QuaternionSucks((float)location.Latitude, (float)sidTime.getSiderealTimeFromLongitude(location.Longitude));
@@ -56,54 +56,13 @@ namespace Horizon
 			if (location != null)
             {
 				isLocationLoaded = true;
-				camera3d = new Camera3D(this, this.plsSun, "sun", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
+				camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
 			}
 
 			camera2d = new Camera2D(this, this.pls2D, height, width, "image");
 
-			cameraSun = new Camera3D(this, this.plsSun, "sun", 0, 0, (int)height, (int)width, "image");
+			//cameraSun = new Camera3D(this, this.plsSun, "sun", 0, 0, (int)height, (int)width, "image");
 		}
-		
-		private List<Planet> setObserver(List<Planet> planets, String observer)
-        {
-			int observerIndex = -1;                             //indice del nuovo osservatore
-			float Hyp, tempx, tempy, tempz;
-
-			for (int i = 0; i < planets.Count; i++)			//trovo l'indice del nuovo osservatore
-                if (planets[i].name.Equals(observer))
-                {
-					observerIndex = i;
-					continue;
-                }
-			if (observerIndex == -1)						//se non è stato trovato l'osservatore non faccio alcuna modifica
-				return planets;
-
-			for (int i = 0; i < planets.Count; i++)			//trasformo RA e DEC in coordinate vettoriali tenendo conto della distanza dall'osservatore iniziale
-            {
-				planets[i].x = (float)(planets[i].distanceKm * Math.Cos(Misc.toRad(planets[i].DEC)) * Math.Cos(Misc.toRad(planets[i].RA)));
-				planets[i].y = (float)(planets[i].distanceKm * Math.Cos(Misc.toRad(planets[i].DEC)) * Math.Sin(Misc.toRad(planets[i].RA)));
-				planets[i].z = (float)(planets[i].distanceKm * Math.Sin(Misc.toRad(planets[i].DEC)));
-			}
-
-			tempx = planets[observerIndex].x;				//le salvo in delle variabili perchè poi vengono modificate
-			tempy = planets[observerIndex].y;
-			tempz = planets[observerIndex].z;
-			for (int i = 0; i < planets.Count; i++)         //sottraggo (traslo) le coordinate del nuovo osservatore
-			{
-				planets[i].x -= tempx;
-				planets[i].y -= tempy;
-				planets[i].z -= tempz;
-			}
-
-			for (int i = 0; i < planets.Count; i++)         //trasformo le coordinate vettoriali in RA e DEC
-			{
-				Hyp = (float)Math.Sqrt(planets[i].x * planets[i].x + planets[i].y * planets[i].y);		//converto in RA e DEC
-				planets[i].RA = Misc.toDeg((float)Math.Atan2(planets[i].y, planets[i].x));    
-				planets[i].DEC = Misc.toDeg((float)Math.Atan2(planets[i].z, Hyp));
-			}
-
-			return planets;
-        }
 
 		private void OptionsPressed(object sender, EventArgs e)
         {
@@ -131,7 +90,7 @@ namespace Horizon
 				}, TaskScheduler.FromCurrentSynchronizationContext());
 
 				//passo alla pagina con il menu
-				camera3d = new Camera3D(this, this.plsSun, "sun",(float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
+				camera3d = new Camera3D(this, this.pls3D, "earth",(float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
 				isLocationLoaded = true;
 			}
 			else
