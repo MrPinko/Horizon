@@ -42,13 +42,13 @@ namespace Horizon
             public void setTexture()
             {
                 Assembly assembly = typeof(MainPage).Assembly;
-                var stream = assembly.GetManifestResourceStream("Horizon.Assets.CustomButton.Theme1.png");
+                var stream = assembly.GetManifestResourceStream("Horizon.Assets.BottomBar.Theme1.png");
                 using (SKManagedStream skStream = new SKManagedStream(stream))
                 {
                     texture1 = SKBitmap.Decode(skStream);
                 }
 
-                var stream2 = assembly.GetManifestResourceStream("Horizon.Assets.CustomButton.Theme2.png");
+                var stream2 = assembly.GetManifestResourceStream("Horizon.Assets.BottomBar.Theme2.png");
                 using (SKManagedStream skStream = new SKManagedStream(stream2))
                 {
                     texture2 = SKBitmap.Decode(skStream);

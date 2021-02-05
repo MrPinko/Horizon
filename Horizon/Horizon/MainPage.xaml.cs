@@ -78,23 +78,30 @@ namespace Horizon
             Android.App.Application.Context.StartActivity(intent);
 		}
 
-		private async System.Threading.Tasks.Task askPermissionAsync()
+		private async Task askPermissionAsync()
 		{
 			var status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
-			if(status == PermissionStatus.Granted)
+			System.Diagnostics.Debug.WriteLine("status == PermissionStatus.Granted" + status + "==" + PermissionStatus.Granted);
+
+			if (status == PermissionStatus.Granted)
 			{
-				Task<Location> taskGl = Geolocation.GetLocationAsync();
-				await taskGl.ContinueWith(x =>
+				try
 				{
-					location = x.Result;
-				}, TaskScheduler.FromCurrentSynchronizationContext());
+					var req = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
+					location = await Geolocation.GetLocationAsync(req);
+				}
+				catch (Exception e)
+				{
+					System.Diagnostics.Debug.WriteLine(e.Message);
+				}
 
 				//passo alla pagina con il menu
-				camera3d = new Camera3D(this, this.pls3D, "earth",(float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
+				camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
 				isLocationLoaded = true;
 			}
-			else
-				DisplayAlert("", "E' necessaria la geolocalizazione per continuare", "OK");
+            else { 
+				await DisplayAlert("", "E' necessaria la geolocalizazione per continuare", "OK");
+			}
 
 		}
 
@@ -103,18 +110,19 @@ namespace Horizon
 			return false;
 		}
 
-		private void Button_Pressed_3D(object sender, EventArgs e)
+		private async void Button_Pressed_3D(object sender, EventArgs e)
 		{
 			if(!isLocationLoaded)
             {
-				askPermissionAsync();
-				return;
+				await askPermissionAsync();
+				if (!isLocationLoaded)
+					return;
 			}
-			Navigation.PushModalAsync(camera3d);
+			await Navigation.PushModalAsync(camera3d);
 
 			if (!giroscope.ToggleOrientationSensor())
 			{
-				DisplayAlert("", "Questo dispositivo non supporta la rilevazione del movimento tramite giroscopio. Nella visuale 3D saranno disponibili solamente i controlli touch.", "OK");
+				await DisplayAlert("", "Questo dispositivo non supporta la rilevazione del movimento tramite giroscopio. Nella visuale 3D saranno disponibili solamente i controlli touch.", "OK");
 				camera3d.sensorExists = false;
 				camera3d.useSensor = false;
 			}
