@@ -57,8 +57,8 @@ namespace Horizon
             p.planetData.Add(7.342e22);
             p.planetData.Add(3.3462e3);
             p.planetData.Add(1.622);
-            p.planetData.Add(27.3208); //ore //la luna è tutto in ore perchè si
-            p.planetData.Add(27.3208); //ore
+            p.planetData.Add(27.3208 / 24); //giorni 
+            p.planetData.Add(27.3208);      //ore
             p.planetData.Add(0);
             p.planetData.Add(-233);
             p.planetData.Add(123);
@@ -76,9 +76,9 @@ namespace Horizon
             p.planetData.Add(1.9891e30);
             p.planetData.Add(1.408e3);
             p.planetData.Add(274);
-            p.planetData.Add(-1);
-            p.planetData.Add(-1);
-            p.planetData.Add(-1);
+            p.planetData.Add(226000000);    //anni per fare il giro della galassia
+            p.planetData.Add(27);           //anche il sole gira su se stesso
+            p.planetData.Add(0);
             p.planetData.Add(5500);
             p.planetData.Add(5500);
         }
@@ -116,7 +116,7 @@ namespace Horizon
             p.planetData.Add(3.7);
             p.planetData.Add(87.969);
             p.planetData.Add(58.65);
-            p.planetData.Add(-1);
+            p.planetData.Add(0);
             p.planetData.Add(-183);
             p.planetData.Add(452);
         }
@@ -135,7 +135,7 @@ namespace Horizon
             p.planetData.Add(8.87);
             p.planetData.Add(224.701);
             p.planetData.Add(243.69 * 24);
-            p.planetData.Add(-1);
+            p.planetData.Add(0);
             p.planetData.Add(380);
             p.planetData.Add(494);
         }
@@ -154,7 +154,7 @@ namespace Horizon
             p.planetData.Add(3.69);
             p.planetData.Add(686.96);
             p.planetData.Add(1.025957 * 24);
-            p.planetData.Add(-1);
+            p.planetData.Add(2);
             p.planetData.Add(-140);
             p.planetData.Add(20);
         }
@@ -190,9 +190,9 @@ namespace Horizon
             p.planetData.Add(5.6834e26);
             p.planetData.Add(0.687e3);
             p.planetData.Add(8.96);
-            p.planetData.Add(-1);
-            p.planetData.Add(-1);
-            p.planetData.Add(82);
+            p.planetData.Add(29 * 356.4);
+            p.planetData.Add(10.5);
+            p.planetData.Add(62);
             p.planetData.Add(-191);
             p.planetData.Add(-98);
         }

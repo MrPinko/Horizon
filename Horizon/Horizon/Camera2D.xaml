@@ -10,8 +10,8 @@
                        PaintSurface="canvasView_PaintSurface"
                        Touch="canvasView_Touch"
                        EnableTouchEvents="True"
-						AbsoluteLayout.LayoutBounds="0,0,1,1"
-						AbsoluteLayout.LayoutFlags="HeightProportional,WidthProportional">
+					   AbsoluteLayout.LayoutBounds="0,0,1,1"
+					   AbsoluteLayout.LayoutFlags="HeightProportional,WidthProportional">
 
 			<skia:SKCanvasView.GestureRecognizers >
 				<PinchGestureRecognizer PinchUpdated="PinchGestureRecognizer_PinchUpdated"></PinchGestureRecognizer>

@@ -4,17 +4,32 @@
              x:Class="Horizon.Camera3D"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              Title="MainDrawPage">
-
-    <skia:SKCanvasView x:Name="canvasView"
-                       PaintSurface="canvasView_PaintSurface"
-                       Touch="canvasView_Touch"
-                       EnableTouchEvents="True">
-
-        <skia:SKCanvasView.GestureRecognizers >
-            <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"></PanGestureRecognizer>
-            
-        </skia:SKCanvasView.GestureRecognizers>
-        
-    </skia:SKCanvasView>
     
+    <AbsoluteLayout>
+        <skia:SKCanvasView x:Name="canvasView"
+                           PaintSurface="canvasView_PaintSurface"
+                           Touch="canvasView_Touch"
+                           EnableTouchEvents="True"
+                           AbsoluteLayout.LayoutBounds="0,0,1,1"
+					       AbsoluteLayout.LayoutFlags="HeightProportional,WidthProportional">
+
+            <skia:SKCanvasView.GestureRecognizers >
+                <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"></PanGestureRecognizer>
+
+            </skia:SKCanvasView.GestureRecognizers>
+
+        </skia:SKCanvasView>
+
+        <Button  
+                Pressed="changeObserverPressed"
+                x:Name="changeObserver"
+                BorderColor="Transparent"
+                BackgroundColor="Black"
+                AbsoluteLayout.LayoutBounds="1,0.5,60,60"
+                AbsoluteLayout.LayoutFlags="XProportional,YProportional">
+        </Button>
+        
+
+    </AbsoluteLayout>
+
 </ContentPage>

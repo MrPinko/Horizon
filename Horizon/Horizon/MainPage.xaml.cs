@@ -16,28 +16,32 @@ namespace Horizon
 		public OrientationSensorTest giroscope = new OrientationSensorTest();
 		private Camera2D camera2d;
 		private Camera3D camera3d;
+		private Camera3D cameraSun;
 		private List<Planet> pls3D;
+		private List<Planet> pls2D;
+		private List<Planet> plsSun;
 		private Location location;
 		public bool stopTimer2D = false;
 		public bool stopTimer3D = false;
 		private bool isLocationLoaded = false;
-		int cont = 0;
-		QuaternionSucks rotor;
+		//QuaternionSucks rotor;
 
 		static double height = DeviceDisplay.MainDisplayInfo.Height;
 		static double width = DeviceDisplay.MainDisplayInfo.Width;
 
-		public MainPage(List<Planet> pls2D, List<Planet> pls3D, Location location)
+		public MainPage(List<Planet> pls2D, List<Planet> pls3D, List<Planet> plsSun, Location location)
 		{
 			NavigationPage.SetHasBackButton(this, false);   //dopo che arrivi alla home non puoi più tornare indietro
 															//perchè la pagina precedente è il caricamento, che è la pagina iniziale
 			InitializeComponent();
 
-			optionsBtn.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.options.png", typeof(MainPage).GetTypeInfo().Assembly);
-			btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D.png", typeof(MainPage).GetTypeInfo().Assembly);
-			btn3D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn3D.png", typeof(MainPage).GetTypeInfo().Assembly);
+			optionsBtn.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.options150.png", typeof(MainPage).GetTypeInfo().Assembly);
+			btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D600.png", typeof(MainPage).GetTypeInfo().Assembly);
+			btn3D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn3D600.png", typeof(MainPage).GetTypeInfo().Assembly);
 
 			this.pls3D = pls3D;
+			this.pls2D = pls2D;
+			//this.plsSun = setObserver(plsSun, "sun");
 			this.location = location;
 			/*
 			rotor = new QuaternionSucks((float)location.Latitude, (float)sidTime.getSiderealTimeFromLongitude(location.Longitude));
@@ -52,12 +56,14 @@ namespace Horizon
 			if (location != null)
             {
 				isLocationLoaded = true;
-				camera3d = new Camera3D(this, pls3D, (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
+				camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
 			}
 
-			camera2d = new Camera2D(this, pls2D, height, width, "image");
+			camera2d = new Camera2D(this, this.pls2D, height, width, "image");
+
+			//cameraSun = new Camera3D(this, this.plsSun, "sun", 0, 0, (int)height, (int)width, "image");
 		}
-		
+
 		private void OptionsPressed(object sender, EventArgs e)
         {
 			OpenAppSettings();
@@ -84,7 +90,7 @@ namespace Horizon
 				}, TaskScheduler.FromCurrentSynchronizationContext());
 
 				//passo alla pagina con il menu
-				camera3d = new Camera3D(this, pls3D, (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
+				camera3d = new Camera3D(this, this.pls3D, "earth",(float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
 				isLocationLoaded = true;
 			}
 			else
@@ -122,9 +128,6 @@ namespace Horizon
 					return false;
 				}
 				camera3d.loop();
-				cont++;
-				if (cont % 120 == 0)
-					System.Diagnostics.Debug.WriteLine(giroscope.num+"\n");
 				return true;
 			});
 		}

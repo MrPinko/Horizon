@@ -13,6 +13,7 @@ namespace Horizon
         private MainPage main;
         private List<Planet> planets;
         private List<Planet> stars;
+        private String observer;
 
         CustomButton.ChangeTextureButton changeButton;
         CustomButton.SwitchJoyStick switchJoyStick;
@@ -57,12 +58,13 @@ namespace Horizon
         #region COSE PRINCIPALI
 
         //COSTRUTTORE
-        public Camera3D(MainPage main, List<Planet> planets, float RA, float DEC, int height, int width, String theme)    //quel dec è dove guardiamo se guardiamo in alto
+        public Camera3D(MainPage main, List<Planet> planets, String observer, float RA, float DEC, int height, int width, String theme)    //quel dec è dove guardiamo se guardiamo in alto
         {
             InitializeComponent();
             this.main = main;
             this.planets = new List<Planet>(planets);
             stars = StarDB.getAll();
+            this.observer = observer;
             this.RA = tempRA = RA;
             this.DEC = tempDEC = DEC;
             this.width = width;
@@ -95,7 +97,7 @@ namespace Horizon
 
             //stampo le stelle
             for (int i = 0; i < stars.Count; i++)
-                canvas.DrawCircle(toScreen(stars[i]), /*stars[i].printSize*/1, stars[i].paint);
+                canvas.DrawCircle(toScreen(stars[i]), 1, stars[i].paint);
 
             //stampo le costellazioni
             //SI BUGGA SE METTEREMO LO ZOOM, CHIEDI AL PIETRO
@@ -103,15 +105,15 @@ namespace Horizon
             
             
             //test (sud, nord, equatore)
-            canvas.DrawCircle(toScreen(new Planet("POLOSUD", 0, -90, 10, new SKColor(255, 255, 255))), 60, uselessPaint);
-            canvas.DrawCircle(toScreen(new Planet("POLONORD", 0, 90, 10, new SKColor(127, 127, 127))), 60, uselessPaint);
+            canvas.DrawCircle(toScreen(new Planet("SOUTHPOLE", 0, -90, 10, new SKColor(255, 255, 255))), 60, uselessPaint);
+            canvas.DrawCircle(toScreen(new Planet("NORTHPOLE", 0, 90, 10, new SKColor(127, 127, 127))), 60, uselessPaint);
             for (float i = 0; i <= 360; i = i + 0.2f)
-                canvas.DrawCircle(toScreen(new Planet("BINGO", i, 0, 3, new SKColor(0, 127, 127))), 5, uselessPaint);
+                canvas.DrawCircle(toScreen(new Planet("EQUATOR", i, 0, 3, new SKColor(0, 127, 127))), 5, uselessPaint);
             
             
             for (int i = 0; i < planets.Count; i++)
             {
-                if (planets[i].name == "earth")  //non stampo la terra ofc
+                if (planets[i].name == observer)  //non stampo la terra o il sole in base dal punto di vista
                     continue;
 
                 SKPoint tempPoint = toScreen(planets[i]);
@@ -198,6 +200,7 @@ namespace Horizon
             {
                 if (sensorExists)
                 {
+                    switchJoyStick.changeStateOn();
                     useSensor = !useSensor;
                     if (!useSensor)
                     {
@@ -303,6 +306,63 @@ namespace Horizon
             texturepathHD.Add("Horizon.Assets.ImageHD.uranus.png");
             texturepathHD.Add("Horizon.Assets.ImageHD.neptune.png");
         }
+        #endregion
+
+        //-------------------------------------------------------------------------------------------------------------------\\
+        #region SELEZIONE OSSERVATORE
+
+        private List<Planet> setObserver(List<Planet> planets, String observer)
+        {
+            int observerIndex = -1;                             //indice del nuovo osservatore
+            float Hyp, tempx, tempy, tempz;
+
+            this.observer = observer;
+
+            for (int i = 0; i < planets.Count; i++)			//trovo l'indice del nuovo osservatore
+                if (planets[i].name.Equals(observer))
+                {
+                    observerIndex = i;
+                    continue;
+                }
+            if (observerIndex == -1)                        //se non è stato trovato l'osservatore non faccio alcuna modifica
+                return planets;
+
+            for (int i = 0; i < planets.Count; i++)			//trasformo RA e DEC in coordinate vettoriali tenendo conto della distanza dall'osservatore iniziale
+            {
+                planets[i].x = (float)(planets[i].distanceKm * Math.Cos(Misc.toRad(planets[i].DEC)) * Math.Cos(Misc.toRad(planets[i].RA)));
+                planets[i].y = (float)(planets[i].distanceKm * Math.Cos(Misc.toRad(planets[i].DEC)) * Math.Sin(Misc.toRad(planets[i].RA)));
+                planets[i].z = (float)(planets[i].distanceKm * Math.Sin(Misc.toRad(planets[i].DEC)));
+            }
+
+            tempx = planets[observerIndex].x;               //le salvo in delle variabili perchè poi vengono modificate
+            tempy = planets[observerIndex].y;
+            tempz = planets[observerIndex].z;
+            for (int i = 0; i < planets.Count; i++)         //sottraggo (traslo) le coordinate del nuovo osservatore
+            {
+                planets[i].x -= tempx;
+                planets[i].y -= tempy;
+                planets[i].z -= tempz;
+            }
+
+            for (int i = 0; i < planets.Count; i++)         //trasformo le coordinate vettoriali in RA e DEC
+            {
+                Hyp = (float)Math.Sqrt(planets[i].x * planets[i].x + planets[i].y * planets[i].y);      //converto in RA e DEC
+                planets[i].RA = Misc.toDeg((float)Math.Atan2(planets[i].y, planets[i].x));
+                planets[i].DEC = Misc.toDeg((float)Math.Atan2(planets[i].z, Hyp));
+                planets[i].distanceKm = (float)Math.Sqrt(Math.Pow(planets[i].x, 2) + Math.Pow(planets[i].y, 2) + Math.Pow(planets[i].z, 2));//aggiorno la distanza dall'osservatore così da poter ripetere l'operazione di cambio di osservatore
+            }
+
+            return planets;
+        }
+
+        private void changeObserverPressed(object sender, EventArgs e)
+        {
+            if (observer == "sun")
+                setObserver(planets, "earth");
+            else if (observer == "earth")
+                setObserver(planets, "sun");
+        }
+
         #endregion
     }
 }

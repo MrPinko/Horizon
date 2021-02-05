@@ -16,6 +16,10 @@ namespace Horizon
         public float dist2D;
         public float sunDist = 1;
 
+        public float x;
+        public float y;
+        public float z;
+
         public float distanceKm;
         public float distanceLight;
 
