@@ -40,20 +40,21 @@
 
 				<Grid.ColumnDefinitions>
 
-					<ColumnDefinition Width="100"/>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="100"/>
+					<ColumnDefinition Width="*"/>
+
 
 				</Grid.ColumnDefinitions>
 
-				<Label Background="#2F2F2F" Grid.Row="2" Grid.ColumnSpan="6"></Label>
+				<Label Background="#2F2F2F" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5"></Label>
+
 
 				<Image 
 					x:Name="bottombartoggle"
-					Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4">
+					Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5">
 					<Image.GestureRecognizers>
 						<TapGestureRecognizer
 							Tapped="Button_Clicked"
@@ -134,15 +135,6 @@
 
 				</Image>
 
-				<Image 
-					x:Name="JoyStickBottomBar"
-					Grid.Row="3" Grid.Column="5">
-					<Image.GestureRecognizers>
-						<TapGestureRecognizer
-							Tapped="backPressed"
-							NumberOfTapsRequired="1" />
-					</Image.GestureRecognizers>
-				</Image>
 
 			</Grid>
 
