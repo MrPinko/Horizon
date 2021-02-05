@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using SkiaSharp;
+using SkiaSharp.Views.Forms;
+using Xamarin.Essentials;
 
 namespace Horizon
 {
@@ -60,6 +62,7 @@ namespace Horizon
         {
             private SKBitmap texture;
             private SKRect top, left, down, right;
+            private double dpi = DeviceDisplay.MainDisplayInfo.Density;
 
             public JoyStick(float width, float height, float x, float y)
             {
@@ -69,9 +72,9 @@ namespace Horizon
                 setHitbox();
             }
 
-            public void draw(SKCanvas canvas)
+            public void draw(SKCanvas canvas, SKCanvasView view)
             {
-                canvas.DrawBitmap(texture, rect, null);
+                canvas.DrawBitmap(texture, new SKRect(0,0,(float) (view.Width * dpi), (float) (view.Height * dpi)), null);
             }
 
             //ogni bottone ha una propria hitbox calcolata scientificamente

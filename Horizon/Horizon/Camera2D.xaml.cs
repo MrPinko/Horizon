@@ -17,6 +17,7 @@ namespace Horizon
 		private const float popUpScale = 4;             //zoom ottimale popup
 		private const float velocity = 10;                 //velocità delle animazioni zoom in/out
 		private double dpi = DeviceDisplay.MainDisplayInfo.Density;
+		private bool startup = true;
 
 		private Point center;
 		private List<Planet> pl;        //ARRAY DEI PIANETI (TERRA COMPRESA) [0]=SOLE [1]=TERRA
@@ -72,7 +73,6 @@ namespace Horizon
 			//inizializzazioni
 			setTexture();
 			setTextureHD();
-			translateBottonBarDown();              //la barra non c'è
 			loadBottomBarTexture();
 			StarColor.initialize();
 
@@ -101,6 +101,11 @@ namespace Horizon
 			}
 		}
 
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+		}
 		//BACK
 		protected override bool OnBackButtonPressed()
 		{
@@ -112,6 +117,12 @@ namespace Horizon
 		//loop
 		private void canvasView_PaintSurface(object sender, SKPaintSurfaceEventArgs e)             //AREA DI DISEGNO
 		{
+			if (startup)
+			{
+				translateBottonBarDown();              //la barra non c'è
+				startup = false;
+			}
+
 			SKCanvas canvas = e.Surface.Canvas;
 			canvas.Clear();
 
@@ -129,21 +140,6 @@ namespace Horizon
 						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
 
 
-
-
-			//visibilità joystick
-			if (!openPopUp)
-			{
-				if (joyStickVisible)
-					joyStick.draw(canvas);
-				switchJoyStick.draw(canvas);
-			}
-
-
-			//movimento con il joystick
-			joyStickMovementListener();
-
-
 			//animazioni di cliccare ed uscire dal popup
 			if (clickedPlanet)                      //pre apertura popup
 				planetTranslationFunction();
@@ -155,12 +151,14 @@ namespace Horizon
 			if (openPopUp)
 				createPopUp(canvas);
 		}
-        #endregion
 
-        //-------------------------------------------------------------------------------------------------------------------\\
-        #region FUNZIONI DISEGNO COSE
-        //creazione del popup con i suoi dati
-        private void createPopUp(SKCanvas canvas)
+		
+		#endregion
+
+		//-------------------------------------------------------------------------------------------------------------------\\
+		#region FUNZIONI DISEGNO COSE
+		//creazione del popup con i suoi dati
+		private void createPopUp(SKCanvas canvas)
 		{
 			BottomBar.IsVisible = false;
 			LabelPlanetname.IsVisible = true;
@@ -469,20 +467,9 @@ namespace Horizon
 
 		private void translateBottonBarDown()
 		{
-			switch (height)
-			{
-				case 1920:
-					BottomBar.TranslateTo(0, 115, 300);         //la barra non c'è
-					break;
 
-				case 2880:
-					BottomBar.TranslateTo(0, 140, 300);
-					break;
+			BottomBar.TranslateTo(0, BottomBar.Height - 56, 300);               //-56 = -46 - 10
 
-				default:
-					BottomBar.TranslateTo(0, 140, 300);
-					break;
-			}
 		}
 
 		private bool theme1 = true;
@@ -638,6 +625,7 @@ namespace Horizon
 		#region TEXTURE
 
 		private List<String> texturepath = new List<string>();
+
 		private List<String> texturepathHD = new List<string>();
 
 		private void setTexture()
@@ -695,6 +683,11 @@ namespace Horizon
 			forwardBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.notbackarrow.png", typeof(Camera2D).GetTypeInfo().Assembly);
 			ChangeThemeButton1.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme1.png", typeof(Camera2D).GetTypeInfo().Assembly); 
 			ChangeThemeButton2.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme2.png", typeof(Camera2D).GetTypeInfo().Assembly);
+			bottombartoggle.ScaleTo(0.7);
+			backBtn.ScaleTo(0.7);
+			stopBtn.ScaleTo(0.7);
+			resetBtn.ScaleTo(0.7);
+			forwardBtn.ScaleTo(0.7);
 			ChangeThemeButton1.ScaleTo(0.7);
 			ChangeThemeButton2.ScaleTo(0.7);
 			ChangeThemeButton2.FadeTo(0, 0);
