@@ -51,6 +51,7 @@
     <None Remove="Assets\MenuButton\options.png" />
     <None Remove="Assets\MenuButton\options150.png" />
     <None Remove="Assets\MenuButton\options200.png" />
+    <None Remove="Assets\rocketLaunch.png" />
     <None Remove="Assets\Theme1.png" />
     <None Remove="Assets\Theme2.png" />
   </ItemGroup>
@@ -98,6 +99,7 @@
     <EmbeddedResource Include="Assets\MenuButton\options.png" />
     <EmbeddedResource Include="Assets\MenuButton\options150.png" />
     <EmbeddedResource Include="Assets\MenuButton\options200.png" />
+    <EmbeddedResource Include="Assets\rocketLaunch.png" />
   </ItemGroup>
 
   <ItemGroup>

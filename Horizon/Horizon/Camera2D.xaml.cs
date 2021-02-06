@@ -51,7 +51,6 @@ namespace Horizon
 		{
 			InitializeComponent();
 
-			BottomBar.TranslateTo(0, 125, 0);                 //la barra non c'è
 			this.main = main;
 			this.pl = new List<Planet>(pl);
 			foreach (Planet p in this.pl)
@@ -101,11 +100,6 @@ namespace Horizon
 			}
 		}
 
-		protected override void OnAppearing()
-		{
-			base.OnAppearing();
-
-		}
 		//BACK
 		protected override bool OnBackButtonPressed()
 		{
@@ -477,7 +471,6 @@ namespace Horizon
 		{
 			if (theme1)
 			{
-				//ChangeThemeButton.Source = showTheme1;
 				ChangeThemeButton1.FadeTo(0, 200);
 				ChangeThemeButton2.FadeTo(1, 200);
 
@@ -485,7 +478,6 @@ namespace Horizon
 			}
 			else
 			{
-				//ChangeThemeButton.Source = showTheme2;
 				ChangeThemeButton2.FadeTo(0, 200);
 				ChangeThemeButton1.FadeTo(1, 200);
 

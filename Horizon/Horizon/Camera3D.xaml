@@ -4,32 +4,140 @@
              x:Class="Horizon.Camera3D"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              Title="MainDrawPage">
-    
-    <AbsoluteLayout>
-        <skia:SKCanvasView x:Name="canvasView"
+
+	<AbsoluteLayout>
+		<skia:SKCanvasView x:Name="canvasView"
                            PaintSurface="canvasView_PaintSurface"
                            Touch="canvasView_Touch"
                            EnableTouchEvents="True"
                            AbsoluteLayout.LayoutBounds="0,0,1,1"
 					       AbsoluteLayout.LayoutFlags="HeightProportional,WidthProportional">
 
-            <skia:SKCanvasView.GestureRecognizers >
-                <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"></PanGestureRecognizer>
+			<skia:SKCanvasView.GestureRecognizers >
+				<PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"></PanGestureRecognizer>
 
-            </skia:SKCanvasView.GestureRecognizers>
+			</skia:SKCanvasView.GestureRecognizers>
 
-        </skia:SKCanvasView>
+		</skia:SKCanvasView>
 
-        <Button  
+		<Frame x:Name="BottomBar"  Padding="1" BackgroundColor="#15ffffff"                
+			    AbsoluteLayout.LayoutBounds="0.5,1,1,0.26"
+				AbsoluteLayout.LayoutFlags="All"
+                RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=0.3}"
+                RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width}">
+
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="3"/>
+					<RowDefinition Height="40"/>
+					<RowDefinition Height="3"/>
+					<RowDefinition Height="*"/>
+
+				</Grid.RowDefinitions>
+
+				<Grid.ColumnDefinitions>
+
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+
+
+				</Grid.ColumnDefinitions>
+
+				<Label Background="#2F2F2F" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5"></Label>
+
+
+				<Image 
+					x:Name="bottombartoggle"
+					Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer
+							Tapped="Button_Clicked"
+							NumberOfTapsRequired="1" />
+					</Image.GestureRecognizers>
+				</Image>
+
+				<Image 
+					x:Name="ChangeThemeButton1"
+					Grid.Row="3" Grid.Column="0">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer
+							Tapped="ChangeThemeToggle"
+							NumberOfTapsRequired="1" />
+					</Image.GestureRecognizers>
+				</Image>
+
+				<Image 
+					x:Name="ChangeThemeButton2"
+					Grid.Row="3" Grid.Column="0">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer
+							Tapped="ChangeThemeToggle"
+							NumberOfTapsRequired="1" />
+					</Image.GestureRecognizers>
+				</Image>
+
+				<Button Grid.Row="3" Grid.Column="4"
+						Pressed="getRocketLabel"></Button>
+
+			</Grid>
+
+		</Frame>
+
+		<Image x:Name="rocketLabelImage"
+			   IsEnabled="False"
+			   InputTransparent="True"
+			Source="rocketLaunch.png"
+			AbsoluteLayout.LayoutBounds="1.8,3,0.8,0.9"
+			AbsoluteLayout.LayoutFlags="All"></Image>
+
+		<ScrollView x:Name="rocketLabel"
+
+			AbsoluteLayout.LayoutBounds="0.82,0.77,0.2,0.15"
+			AbsoluteLayout.LayoutFlags="All">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+				<Label x:Name="sunLabel" Background="red	" Grid.Row="0" Grid.Column="0"></Label>
+				<Label x:Name="mercuryLabel" Background="red	" Grid.Row="1" Grid.Column="0"></Label>
+				<Label x:Name="venusLabel" Background="red	" Grid.Row="2" Grid.Column="0"></Label>
+				<Label x:Name="earthLabel" Background="red	" Grid.Row="3" Grid.Column="0"></Label>
+				<Label x:Name="moonLabel" Background="red	" Grid.Row="4" Grid.Column="0"></Label>
+				<Label x:Name="marsLabel" Background="red	" Grid.Row="5" Grid.Column="0"></Label>
+				<Label x:Name="jupiterLabel" Background="red	" Grid.Row="6" Grid.Column="0"></Label>
+				<Label x:Name="saturnLabel" Background="red	" Grid.Row="7" Grid.Column="0"></Label>
+				<Label x:Name="uranusLabel" Background="red	" Grid.Row="8" Grid.Column="0"></Label>
+				<Label x:Name="neptuneLabel" Background="red	" Grid.Row="9" Grid.Column="0"></Label>
+
+			</Grid>
+		</ScrollView>
+
+
+		<Button  
                 Pressed="changeObserverPressed"
                 x:Name="changeObserver"
                 BorderColor="Transparent"
                 BackgroundColor="Black"
                 AbsoluteLayout.LayoutBounds="1,0.5,60,60"
                 AbsoluteLayout.LayoutFlags="XProportional,YProportional">
-        </Button>
-        
+		</Button>
 
-    </AbsoluteLayout>
+
+	</AbsoluteLayout>
 
 </ContentPage>

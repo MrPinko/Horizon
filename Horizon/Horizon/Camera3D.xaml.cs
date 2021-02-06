@@ -4,12 +4,17 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using SkiaSharp.Views.Forms;
 using SkiaSharp;
+using System.Reflection;
+using Xamarin.Essentials;
 
 namespace Horizon
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Camera3D : ContentPage
     {
+        private bool startup = true;
+        private double dpi = DeviceDisplay.MainDisplayInfo.Density;
+
         private MainPage main;
         private List<Planet> planets;
         private List<Planet> stars;
@@ -72,8 +77,11 @@ namespace Horizon
             ampWidth = baseAmp / 2;
             ampHeight = ampWidth * height / width;
             this.theme = theme;
+
+            //inizializzazioni
             setTexture();
             setTextureHD();
+            loadBottomBarTexture();
             changeButton = new CustomButton.ChangeTextureButton((float)width, (float)height, 150, 150);
             switchJoyStick = new CustomButton.SwitchJoyStick((float)width, (float)height, 100, 100);
 
@@ -91,6 +99,14 @@ namespace Horizon
         //STAMPA
         private void canvasView_PaintSurface(object sender, SkiaSharp.Views.Forms.SKPaintSurfaceEventArgs e)
         {
+            if (startup)
+            {
+                translateBottonBarDown();              //la barra non c'è
+                rocketLabel.TranslateTo(0, -rocketLabelImage.Height * 2 , 0);                     //il dita del razzo non ci sono
+                rocketLabelImage.TranslateTo(0, -rocketLabelImage.Height * 2, 0);                     //il razzo non c'è
+                startup = false;
+            }
+
             SKSurface surface = e.Surface;
             SKCanvas canvas = surface.Canvas;
             canvas.Clear();
@@ -127,7 +143,6 @@ namespace Horizon
                     canvas.DrawBitmap(planets[i].textureHD, SKRect.Create(tempPoint, new SKSize(200 + planets[i].printSize * 15, 200 + planets[i].printSize * 15)), null);
             }
 
-            changeButton.draw(canvas);
             if (sensorExists)
                 switchJoyStick.draw(canvas);
         }
@@ -144,7 +159,7 @@ namespace Horizon
         #endregion
 
         //-------------------------------------------------------------------------------------------------------------------\\
-        #region MOVIMENTO
+        #region FUNZIONI TOCCO
         //JOISTICK FATTO BENE
         private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)  //dito che preme e si muove in giro
         {
@@ -185,16 +200,6 @@ namespace Horizon
         {
             SKRect touchRect = SKRect.Create(e.Location.X, e.Location.Y, 1, 1);
 
-            //cambio il tema dei pianeti
-            if (touchRect.IntersectsWith(changeButton.GetRect()))
-            {
-                if (theme.Equals("image"))
-                    theme = "imageHD";
-                else
-                    theme = "image";
-                changeButton.switchTheme();
-            }
-
             //abilito/disabilito giroscopio
             if (touchRect.IntersectsWith(switchJoyStick.GetRect()))
             {
@@ -211,6 +216,85 @@ namespace Horizon
             }
         }
 
+        bool isOnScreen = false;
+        bool isRocketOnScreen = false;
+        private void Button_Clicked(object sender, EventArgs e)            //bottombar
+        {
+            if (isOnScreen)
+            {
+                translateBottonBarDown();    //la barra non c'è più
+                if (isRocketOnScreen)
+                {
+                    translateRocketUp();
+                    isRocketOnScreen = false;
+                }
+                bottombartoggle.RotateXTo(0, 300);
+                isOnScreen = false;
+            }
+            else
+            {
+                BottomBar.TranslateTo(0, 0, 300);      //la barra c'è
+                bottombartoggle.RotateXTo(-180, 300);
+                isOnScreen = true;
+            }
+        }
+
+        private void getRocketLabel(object sender, EventArgs e)                      //rocket planet name for switch
+        {
+            if (isRocketOnScreen)
+            {
+                translateRocketUp();
+
+                isRocketOnScreen = false;
+            }
+            else
+            {
+                rocketLabel.TranslateTo(0, 0, 1000, Easing.CubicOut);
+                rocketLabelImage.TranslateTo(0, 0, 1000, Easing.CubicOut);
+                isRocketOnScreen = true;
+            }
+        }
+
+
+
+        private void translateBottonBarDown()
+        {
+
+            BottomBar.TranslateTo(0, BottomBar.Height - 56, 300);               
+
+        }
+
+        public void translateRocketUp()
+		{
+            rocketLabel.TranslateTo(0, -(rocketLabelImage.Height * 2), 1000 ,Easing.CubicIn);
+            rocketLabelImage.TranslateTo(0, -(rocketLabelImage.Height * 2), 1000, Easing.CubicIn);
+
+        }
+
+        private bool theme1 = true;
+        private void ChangeThemeToggle(object sender, EventArgs e)
+        {
+            if (theme1)
+            {
+                ChangeThemeButton1.FadeTo(0, 200);
+                ChangeThemeButton2.FadeTo(1, 200);
+
+                theme1 = false;
+            }
+            else
+            {
+                ChangeThemeButton2.FadeTo(0, 200);
+                ChangeThemeButton1.FadeTo(1, 200);
+
+                theme1 = true;
+            }
+
+            if (theme.Equals("image"))
+                theme = "imageHD";
+            else
+                theme = "image";
+        }
+
         //GIROSCOPIO
         public void updateFromSensor()  //base = se guardasse precisamente in alto  
         {
@@ -219,6 +303,8 @@ namespace Horizon
         }
 
         #endregion
+
+
 
         //-------------------------------------------------------------------------------------------------------------------\\
         #region FUNZIONI COORDINATE PIANETI
@@ -306,6 +392,22 @@ namespace Horizon
             texturepathHD.Add("Horizon.Assets.ImageHD.uranus.png");
             texturepathHD.Add("Horizon.Assets.ImageHD.neptune.png");
         }
+
+
+        private void loadBottomBarTexture()
+        {
+            bottombartoggle.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.uparrow.png", typeof(Camera3D).GetTypeInfo().Assembly);
+            ChangeThemeButton1.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme1.png", typeof(Camera3D).GetTypeInfo().Assembly);
+            ChangeThemeButton2.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme2.png", typeof(Camera3D).GetTypeInfo().Assembly);
+
+            bottombartoggle.ScaleTo(0.7);
+            ChangeThemeButton1.ScaleTo(0.7);
+            ChangeThemeButton2.ScaleTo(0.7);
+            ChangeThemeButton2.FadeTo(0, 0);
+
+
+        }
+
         #endregion
 
         //-------------------------------------------------------------------------------------------------------------------\\
@@ -363,6 +465,7 @@ namespace Horizon
                 setObserver(planets, "sun");
         }
 
-        #endregion
-    }
+		#endregion
+
+	}
 }
