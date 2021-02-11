@@ -52,6 +52,8 @@
     <None Remove="Assets\MenuButton\options150.png" />
     <None Remove="Assets\MenuButton\options200.png" />
     <None Remove="Assets\rocketLaunch.png" />
+    <None Remove="Assets\Rocket\replay.png" />
+    <None Remove="Assets\Rocket\spaceShip.png" />
     <None Remove="Assets\Theme1.png" />
     <None Remove="Assets\Theme2.png" />
   </ItemGroup>
@@ -99,7 +101,9 @@
     <EmbeddedResource Include="Assets\MenuButton\options.png" />
     <EmbeddedResource Include="Assets\MenuButton\options150.png" />
     <EmbeddedResource Include="Assets\MenuButton\options200.png" />
-    <EmbeddedResource Include="Assets\rocketLaunch.png" />
+    <EmbeddedResource Include="Assets\Rocket\replay.png" />
+    <EmbeddedResource Include="Assets\Rocket\rocketLaunch.png" />
+    <EmbeddedResource Include="Assets\Rocket\spaceShip.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -120,11 +124,17 @@
     <Compile Update="Camera2D.xaml.cs">
       <DependentUpon>Camera2D.xaml</DependentUpon>
     </Compile>
+    <Compile Update="easterEgg\easterEgg.xaml.cs">
+      <DependentUpon>EasterEgg.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="Camera2D.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="easterEgg\EasterEgg.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="LoadingPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

@@ -6,6 +6,7 @@ using SkiaSharp.Views.Forms;
 using SkiaSharp;
 using System.Reflection;
 using Xamarin.Essentials;
+using System.Timers;
 
 namespace Horizon
 {
@@ -239,23 +240,32 @@ namespace Horizon
             }
         }
 
-        private void getRocketLabel(object sender, EventArgs e)                      //rocket planet name for switch
+        private int rocketCount = 0;
+        private Timer timer;
+        private int temp;
+        private void getRocketLabel(object sender, EventArgs e)                      //bottone per richiamare/far partire il razzo 
         {
+
+            if (rocketCount == 10)
+            {
+                rocketCount = 0;
+                Navigation.PushModalAsync(new EasterEgg());
+			}
+
+            rocketCount++;
             if (isRocketOnScreen)
-            {
-                translateRocketUp();
-
-                isRocketOnScreen = false;
-            }
-            else
-            {
-                rocketLabel.TranslateTo(0, 0, 1000, Easing.CubicOut);
-                rocketLabelImage.TranslateTo(0, 0, 1000, Easing.CubicOut);
-                isRocketOnScreen = true;
-            }
+             {
+                 translateRocketUp();
+             
+                 isRocketOnScreen = false;
+             }
+             else
+             {
+                 rocketLabel.TranslateTo(0, 0, 1000, Easing.CubicOut);
+                 rocketLabelImage.TranslateTo(0, 0, 1000, Easing.CubicOut);
+                 isRocketOnScreen = true;
+             }
         }
-
-
 
         private void translateBottonBarDown()
         {
@@ -399,12 +409,11 @@ namespace Horizon
             bottombartoggle.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.uparrow.png", typeof(Camera3D).GetTypeInfo().Assembly);
             ChangeThemeButton1.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme1.png", typeof(Camera3D).GetTypeInfo().Assembly);
             ChangeThemeButton2.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme2.png", typeof(Camera3D).GetTypeInfo().Assembly);
-
+            rocketLabelImage.Source = ImageSource.FromResource("Horizon.Assets.Rocket.rocketLaunch.png", typeof(Camera3D).GetTypeInfo().Assembly);
             bottombartoggle.ScaleTo(0.7);
             ChangeThemeButton1.ScaleTo(0.7);
             ChangeThemeButton2.ScaleTo(0.7);
             ChangeThemeButton2.FadeTo(0, 0);
-
 
         }
 
@@ -464,6 +473,8 @@ namespace Horizon
             else if (observer == "earth")
                 setObserver(planets, "sun");
         }
+
+
 
 		#endregion
 
