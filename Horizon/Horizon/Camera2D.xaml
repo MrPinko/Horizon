@@ -6,23 +6,29 @@
              Title="MainDrawPage">
 
 	<AbsoluteLayout>
-		<skia:SKCanvasView x:Name="canvasView"
+        <skia:SKCanvasView x:Name="canvasView"
                        PaintSurface="canvasView_PaintSurface"
                        Touch="canvasView_Touch"
                        EnableTouchEvents="True"
 					   AbsoluteLayout.LayoutBounds="0,0,1,1"
 					   AbsoluteLayout.LayoutFlags="HeightProportional,WidthProportional">
 
-			<skia:SKCanvasView.GestureRecognizers >
-				<PinchGestureRecognizer PinchUpdated="PinchGestureRecognizer_PinchUpdated"></PinchGestureRecognizer>
-				<PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"></PanGestureRecognizer>
-			</skia:SKCanvasView.GestureRecognizers>
+            <skia:SKCanvasView.GestureRecognizers >
+                <PinchGestureRecognizer PinchUpdated="PinchGestureRecognizer_PinchUpdated"></PinchGestureRecognizer>
+                <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"></PanGestureRecognizer>
+            </skia:SKCanvasView.GestureRecognizers>
 
-		</skia:SKCanvasView>
+        </skia:SKCanvasView>
+
+        <!-- SUN POINTER-->
+        <Image 
+			x:Name="sunPointer"
+            AbsoluteLayout.LayoutBounds="0.5,0.5,50,50"
+			AbsoluteLayout.LayoutFlags="PositionProportional">
+        </Image>
 
 
-
-		<!-- BOTTOM BAR-->
+        <!-- BOTTOM BAR-->
 		<Frame x:Name="BottomBar"  Padding="1" BackgroundColor="#15ffffff"                
 			    AbsoluteLayout.LayoutBounds="0.5,1,1,0.26"
 				AbsoluteLayout.LayoutFlags="All"

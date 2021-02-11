@@ -36,6 +36,7 @@
     <None Remove="Assets\CustomButton\controllerSwitch.png" />
     <None Remove="Assets\CustomButton\controllerSwitch2.png" />
     <None Remove="Assets\CustomButton\joystick.png" />
+    <None Remove="Assets\CustomButton\SunPointer.png" />
     <None Remove="Assets\ImageHD\earth.png" />
     <None Remove="Assets\ImageHD\jupiter.png" />
     <None Remove="Assets\ImageHD\mars.png" />
@@ -95,6 +96,7 @@
     <EmbeddedResource Include="Assets\CustomButton\controllerSwitch.png" />
     <EmbeddedResource Include="Assets\CustomButton\controllerSwitch2.png" />
     <EmbeddedResource Include="Assets\CustomButton\joystick.png" />
+    <EmbeddedResource Include="Assets\CustomButton\SunPointer.png" />
     <EmbeddedResource Include="Assets\ImageHD\earth.png" />
     <EmbeddedResource Include="Assets\ImageHD\jupiter.png" />
     <EmbeddedResource Include="Assets\ImageHD\mars.png" />

@@ -7,9 +7,9 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using System.Reflection;
 
-
 namespace Horizon
 {
+	
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class MainPage : ContentPage
 	{
@@ -22,6 +22,7 @@ namespace Horizon
 		public bool stopTimer2D = false;
 		public bool stopTimer3D = false;
 		private bool isLocationLoaded = false;
+		private bool GPSEnabled;
 		//QuaternionSucks rotor;
 
 		static double height = DeviceDisplay.MainDisplayInfo.Height;
@@ -33,8 +34,8 @@ namespace Horizon
 															//perchè la pagina precedente è il caricamento, che è la pagina iniziale
 			InitializeComponent();
 
-			if (width < 1100)
-			{
+			if(width <= 1080)
+            {
 				optionsBtn.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.options150.png", typeof(MainPage).GetTypeInfo().Assembly);
 				btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D600.png", typeof(MainPage).GetTypeInfo().Assembly);
 				btn3D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn3D600.png", typeof(MainPage).GetTypeInfo().Assembly);
@@ -66,7 +67,6 @@ namespace Horizon
 			}
 
 			camera2d = new Camera2D(this, this.pls2D, height, width, "image");
-
 		}
 
 		private void OptionsPressed(object sender, EventArgs e)
@@ -81,6 +81,19 @@ namespace Horizon
 			var uri = Android.Net.Uri.FromParts("package", "Horizon", null);
 			intent.SetData(uri);
             Android.App.Application.Context.StartActivity(intent);
+		}
+
+		public bool isGpsAvailable()	//verifico se il gps è attivato
+		{
+			bool value = false;
+			Android.Locations.LocationManager manager = (Android.Locations.LocationManager)Android.App.Application.Context.GetSystemService(Android.Content.Context.LocationService);
+			if (!manager.IsProviderEnabled(Android.Locations.LocationManager.GpsProvider))
+				//gps disabled
+				value = false;
+			else
+				//gps enabled
+				value = true;
+			return value;
 		}
 
 		private async Task askPermissionAsync()
@@ -102,10 +115,11 @@ namespace Horizon
 				catch (Exception e)
 				{
 					System.Diagnostics.Debug.WriteLine(e.Message);
+					GPSEnabled = false;
 				}
 			}
-            else { 
-				await DisplayAlert("", "E' necessaria la geolocalizazione per continuare", "OK");
+            else {		
+				await DisplayAlert("", "Permessi di geolocalizzazione disattivati. Autorizza questa applicazione ad accedere alla tua posizione nelle impostazioni per usare la tua posizione reale.", "OK");		//permessi negati
 			}
 
 		}
@@ -117,11 +131,16 @@ namespace Horizon
 
 		private async void Button_Pressed_3D(object sender, EventArgs e)
 		{
-			if(!isLocationLoaded)
-            {
+			GPSEnabled = true;
+			if (!isLocationLoaded)
+			{
 				await askPermissionAsync();
 				if (!isLocationLoaded)
-					return;
+				{																				//se non ho i permessi o gps spento pusho lo stesso camera 3d ma con coordinate 0,90
+					camera3d = new Camera3D(this, this.pls3D, "earth", 0, 90, (int)height, (int)width, "image");
+					if(!GPSEnabled)
+						DisplayAlert("", "GPS disattivato. Attiva il GPS per usare la tua posizione reale.", "OK");     //GPS disattivato
+				}
 			}
 			await Navigation.PushModalAsync(camera3d);
 

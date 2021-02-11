@@ -44,7 +44,8 @@ namespace Horizon
 		public SKPaint starPaint = new SKPaint{
 			Style = SKPaintStyle.Fill,
 			Color = new SKColor(191, 196, 100)};
-		public SKRect phoneRect; 
+		public SKRect phoneRect;
+
 		//-------------------------------------------------------------------------------------------------------------------\\
 		#region COSE PRINCIPALI
 		public Camera2D(MainPage main, List<Planet> pl, double height, double width, string theme)   //COSTRUTTORE 
@@ -98,6 +99,9 @@ namespace Horizon
 					a = r.NextDouble() * 4 + 2;
 				stars.Add(new parallaxObj(r.Next(-15000, 15000), r.Next(-15000, 15000), a, r.Next(50)));
 			}
+
+			sunPointer.Source = ImageSource.FromResource("Horizon.Assets.CustomButton.SunPointer.png", typeof(Camera2D).GetTypeInfo().Assembly);
+
 		}
 
 		//BACK
@@ -113,7 +117,7 @@ namespace Horizon
 		{
 			if (startup)
 			{
-				translateBottonBarDown();              //la barra non c'è
+				translateBottonBarDown();              //abbasso al barra
 				startup = false;
 			}
 
@@ -121,31 +125,46 @@ namespace Horizon
 			canvas.Clear();
 
 			if (!openPopUp)
-				foreach (parallaxObj st in stars)	//disegno stelle sotto
+				foreach (parallaxObj st in stars)		//stelle sotto
 					if (st.paral < 1)
 						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
 
-			if (!openPopUp) dottedOrbit(canvas);	//orbite
-			createPlanet(canvas);
+			if (!openPopUp) 
+				dottedOrbit(canvas);					//orbite
+
+			createPlanet(canvas);						//pianeti
 
 			if (!openPopUp)
-				foreach (parallaxObj st in stars)	//disegno stelle sopra
+				foreach (parallaxObj st in stars)		//stelle sopra
 					if (st.paral > 1)
 						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
 
-
 			//animazioni di cliccare ed uscire dal popup
-			if (clickedPlanet)                      //pre apertura popup
+			if (clickedPlanet)							//pre apertura popup
 				planetTranslationFunction();
-			if (restoreCamera)             //riportare lo zoom alla posizione prima dello zoom
+			if (restoreCamera)							//riportare lo zoom alla posizione prima dello zoom
 				restoreCameraFunction();
-
 
 			//creazione del popup con i suoi dati
 			if (openPopUp)
 				createPopUp(canvas);
-		}
 
+			//stampa puntatore sole
+			System.Diagnostics.Debug.WriteLine("\n"+getPlanetPoint(pl[0]).X + "	" + getPlanetPoint(pl[0]).Y+ "\n");
+
+			if (!openPopUp)
+				if (getPlanetPoint(pl[0]).Y < 0 || getPlanetPoint(pl[0]).Y > height || getPlanetPoint(pl[0]).X < 0 || getPlanetPoint(pl[0]).X > width)
+				{
+					sunPointer.RotateTo(Misc.toDeg((float)Math.Atan2(getPlanetPoint(pl[0]).Y - height / 2, getPlanetPoint(pl[0]).X - width / 2)) + 90, 17);
+					sunPointer.TranslateTo(200, 0, 17);
+					sunPointer.IsVisible = true;
+				}
+				else
+					sunPointer.IsVisible = false;
+			else
+				sunPointer.IsVisible = false;
+			//RotateTo vuole l'angolo in gradi a caso, il +90 serve perchè si e il -dim/2 perchè getPlanetPoint misura a partire dall'angolo in alto a sinistra
+		}
 		
 		#endregion
 
@@ -317,6 +336,7 @@ namespace Horizon
 				{
 					if (touchRect.IntersectsWith(pl[i].hitBox(getPlanetPoint(pl[i]).X, getPlanetPoint(pl[i]).Y, pl[i].Size, scale)))
 					{
+						sunPointer.IsVisible = false;
 						timeWasMoving = timeIsMoving;
 						timeIsMoving = false;
 						oldScale = scale;
@@ -324,8 +344,6 @@ namespace Horizon
 						iPlanet = i;
 					}
 				}
-
-				
 			}
 
 			//funzioni bottoni personalizzati
@@ -447,7 +465,6 @@ namespace Horizon
 			if (isOnScreen)
 			{
 				translateBottonBarDown();    //la barra non c'è più
-
 				bottombartoggle.RotateXTo(0, 300);
 				isOnScreen = false;
 			}

@@ -23,7 +23,7 @@ namespace Horizon
                                     (float)(r * Math.Sin(tDEC)));
 
             p = vertical(p, Math.PI / 2 - latitude);    //spostamento verticale
-            p = horizontal(p, longitude);               //spostamento orizzontale
+            p = horizontal(p, -longitude);               //spostamento orizzontale
 
             //converto
             //DEC = Math.Atan2(p.Z, r);     //in teoria è uguale

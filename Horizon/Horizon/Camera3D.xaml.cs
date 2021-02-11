@@ -424,7 +424,7 @@ namespace Horizon
 
         private List<Planet> setObserver(List<Planet> planets, String observer)
         {
-            int observerIndex = -1;                             //indice del nuovo osservatore
+            int observerIndex = -1;                         //indice del nuovo osservatore
             float Hyp, tempx, tempy, tempz;
 
             this.observer = observer;
