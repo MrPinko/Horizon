@@ -16,10 +16,8 @@ namespace Horizon
 		public OrientationSensorTest giroscope = new OrientationSensorTest();
 		private Camera2D camera2d;
 		private Camera3D camera3d;
-		private Camera3D cameraSun;
 		private List<Planet> pls3D;
 		private List<Planet> pls2D;
-		private List<Planet> plsSun;
 		private Location location;
 		public bool stopTimer2D = false;
 		public bool stopTimer3D = false;
@@ -35,13 +33,21 @@ namespace Horizon
 															//perchè la pagina precedente è il caricamento, che è la pagina iniziale
 			InitializeComponent();
 
-			optionsBtn.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.options150.png", typeof(MainPage).GetTypeInfo().Assembly);
-			btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D600.png", typeof(MainPage).GetTypeInfo().Assembly);
-			btn3D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn3D600.png", typeof(MainPage).GetTypeInfo().Assembly);
+			if (width < 1100)
+			{
+				optionsBtn.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.options150.png", typeof(MainPage).GetTypeInfo().Assembly);
+				btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D600.png", typeof(MainPage).GetTypeInfo().Assembly);
+				btn3D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn3D600.png", typeof(MainPage).GetTypeInfo().Assembly);
+			}
+			else
+			{
+				optionsBtn.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.options200.png", typeof(MainPage).GetTypeInfo().Assembly);
+				btn2D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn2D800.png", typeof(MainPage).GetTypeInfo().Assembly);
+				btn3D.ImageSource = ImageSource.FromResource("Horizon.Assets.MenuButton.btn3D800.png", typeof(MainPage).GetTypeInfo().Assembly);
+			}
 
 			this.pls3D = pls3D;
 			this.pls2D = pls2D;
-			//this.plsSun = setObserver(plsSun, "sun");
 			this.location = location;
 			/*
 			rotor = new QuaternionSucks((float)location.Latitude, (float)sidTime.getSiderealTimeFromLongitude(location.Longitude));
@@ -61,7 +67,6 @@ namespace Horizon
 
 			camera2d = new Camera2D(this, this.pls2D, height, width, "image");
 
-			//cameraSun = new Camera3D(this, this.plsSun, "sun", 0, 0, (int)height, (int)width, "image");
 		}
 
 		private void OptionsPressed(object sender, EventArgs e)

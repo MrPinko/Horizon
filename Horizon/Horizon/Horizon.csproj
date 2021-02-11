@@ -11,11 +11,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\BottomBar\backarrow - Copia.png" />
     <None Remove="Assets\BottomBar\backarrow.png" />
+    <None Remove="Assets\BottomBar\earth.png" />
+    <None Remove="Assets\BottomBar\hourglass - Copia.png" />
     <None Remove="Assets\BottomBar\hourglass.png" />
+    <None Remove="Assets\BottomBar\jupiter.png" />
+    <None Remove="Assets\BottomBar\mars.png" />
+    <None Remove="Assets\BottomBar\mercury.png" />
+    <None Remove="Assets\BottomBar\moon.png" />
+    <None Remove="Assets\BottomBar\neptune.png" />
+    <None Remove="Assets\BottomBar\notbackarrow - Copia.png" />
     <None Remove="Assets\BottomBar\notbackarrow.png" />
+    <None Remove="Assets\BottomBar\pause - Copia (2).png" />
+    <None Remove="Assets\BottomBar\pause - Copia.png" />
     <None Remove="Assets\BottomBar\pause.png" />
+    <None Remove="Assets\BottomBar\saturn.png" />
+    <None Remove="Assets\BottomBar\sun.png" />
+    <None Remove="Assets\BottomBar\Theme1 - Copia.png" />
     <None Remove="Assets\BottomBar\uparrow.png" />
+    <None Remove="Assets\BottomBar\uranus.png" />
+    <None Remove="Assets\BottomBar\venus.png" />
     <None Remove="Assets\change_theme.png" />
     <None Remove="Assets\CustomButton\controllerSwitch.png" />
     <None Remove="Assets\CustomButton\controllerSwitch2.png" />
@@ -53,6 +69,7 @@
     <None Remove="Assets\MenuButton\options200.png" />
     <None Remove="Assets\rocketLaunch.png" />
     <None Remove="Assets\Rocket\replay.png" />
+    <None Remove="Assets\Rocket\rocketLaunch2.png" />
     <None Remove="Assets\Rocket\spaceShip.png" />
     <None Remove="Assets\Theme1.png" />
     <None Remove="Assets\Theme2.png" />
@@ -60,10 +77,20 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\BottomBar\backarrow.png" />
+    <EmbeddedResource Include="Assets\BottomBar\earth.png" />
     <EmbeddedResource Include="Assets\BottomBar\hourglass.png" />
+    <EmbeddedResource Include="Assets\BottomBar\jupiter.png" />
+    <EmbeddedResource Include="Assets\BottomBar\mars.png" />
+    <EmbeddedResource Include="Assets\BottomBar\mercury.png" />
+    <EmbeddedResource Include="Assets\BottomBar\moon.png" />
+    <EmbeddedResource Include="Assets\BottomBar\neptune.png" />
     <EmbeddedResource Include="Assets\BottomBar\notbackarrow.png" />
     <EmbeddedResource Include="Assets\BottomBar\pause.png" />
+    <EmbeddedResource Include="Assets\BottomBar\saturn.png" />
+    <EmbeddedResource Include="Assets\BottomBar\sun.png" />
     <EmbeddedResource Include="Assets\BottomBar\uparrow.png" />
+    <EmbeddedResource Include="Assets\BottomBar\uranus.png" />
+    <EmbeddedResource Include="Assets\BottomBar\venus.png" />
     <EmbeddedResource Include="Assets\change_theme.png" />
     <EmbeddedResource Include="Assets\CustomButton\controllerSwitch.png" />
     <EmbeddedResource Include="Assets\CustomButton\controllerSwitch2.png" />
@@ -103,6 +130,7 @@
     <EmbeddedResource Include="Assets\MenuButton\options200.png" />
     <EmbeddedResource Include="Assets\Rocket\replay.png" />
     <EmbeddedResource Include="Assets\Rocket\rocketLaunch.png" />
+    <EmbeddedResource Include="Assets\Rocket\rocketLaunch2.png" />
     <EmbeddedResource Include="Assets\Rocket\spaceShip.png" />
   </ItemGroup>
 

@@ -39,19 +39,16 @@
 
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    
+                </Grid.ColumnDefinitions>
 
-
-				</Grid.ColumnDefinitions>
-
-				<Label Background="#2F2F2F" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5"></Label>
+				<Label Background="#2F2F2F" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"></Label>
 
 
 				<Image 
 					x:Name="bottombartoggle"
-					Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5">
+					Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
 					<Image.GestureRecognizers>
 						<TapGestureRecognizer
 							Tapped="Button_Clicked"
@@ -79,66 +76,100 @@
 					</Image.GestureRecognizers>
 				</Image>
 
+                <Button
+					x:Name="rocketButton"
+					Grid.Row="3" Grid.Column="1"
+                    Clicked="getRocketLabel"
+                    BackgroundColor="Transparent"
+                    BorderColor="Transparent">
+                </Button>
 
-				<Button Grid.Row="3" Grid.Column="4"
-						Pressed="getRocketLabel">
-				</Button>
-
-			</Grid>
+            </Grid>
 
 		</Frame>
 
 		<Image x:Name="rocketLabelImage"
 			   IsEnabled="False"
 			   InputTransparent="True"
-			AbsoluteLayout.LayoutBounds="1.8,3,0.8,0.9"
-			AbsoluteLayout.LayoutFlags="All"></Image>
+			   AbsoluteLayout.LayoutBounds="1.8,3,0.8,0.9"
+			   AbsoluteLayout.LayoutFlags="All"></Image>
 
-		<ScrollView x:Name="rocketLabel"
+        <ScrollView x:Name="rocketLabel"
 
 			AbsoluteLayout.LayoutBounds="0.82,0.77,0.2,0.15"
 			AbsoluteLayout.LayoutFlags="All">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="*"></RowDefinition>
-					<RowDefinition Height="*"></RowDefinition>
-					<RowDefinition Height="*"></RowDefinition>
-					<RowDefinition Height="*"></RowDefinition>
-					<RowDefinition Height="*"></RowDefinition>
-					<RowDefinition Height="*"></RowDefinition>
-					<RowDefinition Height="*"></RowDefinition>
-					<RowDefinition Height="*"></RowDefinition>
-					<RowDefinition Height="*"></RowDefinition>
-					<RowDefinition Height="*"></RowDefinition>
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*"></ColumnDefinition>
-				</Grid.ColumnDefinitions>
-				<Label x:Name="sunLabel" Background="red	" Grid.Row="0" Grid.Column="0"></Label>
-				<Label x:Name="mercuryLabel" Background="red	" Grid.Row="1" Grid.Column="0"></Label>
-				<Label x:Name="venusLabel" Background="red	" Grid.Row="2" Grid.Column="0"></Label>
-				<Label x:Name="earthLabel" Background="red	" Grid.Row="3" Grid.Column="0"></Label>
-				<Label x:Name="moonLabel" Background="red	" Grid.Row="4" Grid.Column="0"></Label>
-				<Label x:Name="marsLabel" Background="red	" Grid.Row="5" Grid.Column="0"></Label>
-				<Label x:Name="jupiterLabel" Background="red	" Grid.Row="6" Grid.Column="0"></Label>
-				<Label x:Name="saturnLabel" Background="red	" Grid.Row="7" Grid.Column="0"></Label>
-				<Label x:Name="uranusLabel" Background="red	" Grid.Row="8" Grid.Column="0"></Label>
-				<Label x:Name="neptuneLabel" Background="red	" Grid.Row="9" Grid.Column="0"></Label>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                
+                <Label x:Name="sunLabel" Text="SUN" TextColor="White" HorizontalTextAlignment="Center" Grid.Row="0" Grid.Column="0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped = "changeObserverPressed"></TapGestureRecognizer>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label x:Name="mercuryLabel" Text="MERCURY" TextColor="White" HorizontalTextAlignment="Center" Grid.Row="1" Grid.Column="0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped = "changeObserverPressed"></TapGestureRecognizer>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label x:Name="venusLabel" Text="VENUS" TextColor="White" HorizontalTextAlignment="Center" Grid.Row="2" Grid.Column="0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped = "changeObserverPressed"></TapGestureRecognizer>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label x:Name="earthLabel" Text="EARTH" TextColor="White" HorizontalTextAlignment="Center" Grid.Row="3" Grid.Column="0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped = "changeObserverPressed"></TapGestureRecognizer>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label x:Name="moonLabel" Text="MOON" TextColor="White" HorizontalTextAlignment="Center" Grid.Row="4" Grid.Column="0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped = "changeObserverPressed"></TapGestureRecognizer>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label x:Name="marsLabel" Text="MARS" TextColor="White" HorizontalTextAlignment="Center" Grid.Row="5" Grid.Column="0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped = "changeObserverPressed"></TapGestureRecognizer>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label x:Name="jupiterLabel" Text="JUPITER" TextColor="White" HorizontalTextAlignment="Center" Grid.Row="6" Grid.Column="0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped = "changeObserverPressed"></TapGestureRecognizer>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label x:Name="saturnLabel" Text="SATURN" TextColor="White" HorizontalTextAlignment="Center" Grid.Row="7" Grid.Column="0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped = "changeObserverPressed"></TapGestureRecognizer>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label x:Name="uranusLabel" Text="URANUS" TextColor="White" HorizontalTextAlignment="Center" Grid.Row="8" Grid.Column="0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped = "changeObserverPressed"></TapGestureRecognizer>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label x:Name="neptuneLabel" Text="NEPTUNE" TextColor="White" HorizontalTextAlignment="Center" Grid.Row="9" Grid.Column="0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped = "changeObserverPressed"></TapGestureRecognizer>
+                    </Label.GestureRecognizers>
+                </Label>
 
-			</Grid>
-		</ScrollView>
+            </Grid>
+        </ScrollView>
 
 
-		<Button  
-                Pressed="changeObserverPressed"
-                x:Name="changeObserver"
-                BorderColor="Transparent"
-                BackgroundColor="Black"
-                AbsoluteLayout.LayoutBounds="1,0.5,60,60"
-                AbsoluteLayout.LayoutFlags="XProportional,YProportional">
-		</Button>
-
-
-	</AbsoluteLayout>
+    </AbsoluteLayout>
 
 </ContentPage>

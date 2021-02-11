@@ -88,6 +88,8 @@ namespace Horizon
 
             this.constellations = new Constellations(this, stars);
             this.constellations.printText = true;
+
+            rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.earth.png", typeof(MainPage).GetTypeInfo().Assembly);
         }
 
         //BACK
@@ -314,8 +316,6 @@ namespace Horizon
 
         #endregion
 
-
-
         //-------------------------------------------------------------------------------------------------------------------\\
         #region FUNZIONI COORDINATE PIANETI
         //A SCHERMO
@@ -468,15 +468,59 @@ namespace Horizon
 
         private void changeObserverPressed(object sender, EventArgs e)
         {
-            if (observer == "sun")
-                setObserver(planets, "earth");
-            else if (observer == "earth")
+            if (sender.Equals(sunLabel))
+            {
                 setObserver(planets, "sun");
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.sun.png", typeof(MainPage).GetTypeInfo().Assembly);
+            }
+            else if (sender.Equals(mercuryLabel))
+            {
+                setObserver(planets, "mercury");
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.mercury.png", typeof(MainPage).GetTypeInfo().Assembly);
+            }
+            else if (sender.Equals(venusLabel))
+            {
+                setObserver(planets, "venus");
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.venus.png", typeof(MainPage).GetTypeInfo().Assembly);
+            }
+            else if (sender.Equals(earthLabel))
+            {
+                setObserver(planets, "earth");
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.earth.png", typeof(MainPage).GetTypeInfo().Assembly);
+            }
+            else if (sender.Equals(moonLabel))
+            {
+                setObserver(planets, "moon");
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.moon.png", typeof(MainPage).GetTypeInfo().Assembly);
+            }
+            else if (sender.Equals(marsLabel))
+            {
+                setObserver(planets, "mars");
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.mars.png", typeof(MainPage).GetTypeInfo().Assembly);
+            }
+            else if (sender.Equals(jupiterLabel))
+            {
+                setObserver(planets, "jupiter");
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.jupiter.png", typeof(MainPage).GetTypeInfo().Assembly);
+            }
+            else if (sender.Equals(saturnLabel))
+            {
+                setObserver(planets, "saturn");
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.saturn.png", typeof(MainPage).GetTypeInfo().Assembly);
+            }
+            else if (sender.Equals(neptuneLabel))
+            {
+                setObserver(planets, "neptune");
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.neptune.png", typeof(MainPage).GetTypeInfo().Assembly);
+            }
+            else if (sender.Equals(uranusLabel))
+            {
+                setObserver(planets, "uranus");
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.uranus.png", typeof(MainPage).GetTypeInfo().Assembly);
+            }
         }
 
+        #endregion
 
-
-		#endregion
-
-	}
+    }
 }

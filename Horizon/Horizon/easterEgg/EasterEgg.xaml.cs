@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using SkiaSharp.Views.Forms;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -119,12 +120,16 @@ namespace Horizon
 
 		private void canvasView_Touch(object sender, SkiaSharp.Views.Forms.SKTouchEventArgs e)
 		{
-			if (e.ActionType == SkiaSharp.Views.Forms.SKTouchAction.Pressed)
+			if (e.ActionType == SKTouchAction.Pressed || e.ActionType == SKTouchAction.Moved)
 			{
 				if (e.Location.X >= width / 2)
+				{
 					right = true;
-				else
+					left = false;
+				} else {
+					right = false;
 					left = true;
+				}
 			}
 
 			else if (e.ActionType == SkiaSharp.Views.Forms.SKTouchAction.Released)
