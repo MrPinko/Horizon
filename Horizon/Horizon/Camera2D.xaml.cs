@@ -16,7 +16,6 @@ namespace Horizon
 
 		private const float popUpScale = 4;             //zoom ottimale popup
 		private const float velocity = 10;                 //velocità delle animazioni zoom in/out
-		private double dpi = DeviceDisplay.MainDisplayInfo.Density;
 		private bool startup = true;
 
 		private Point center;
@@ -25,6 +24,7 @@ namespace Horizon
 		private long maxDistanceKm;          //DISTANZA MASSIMA NETTUNO
 		private double height;               //ALTEZZA SCHERMO
 		private double width;                //LARGHEZZA SCHERMO
+		private double dpi;				     //DENSITA' SCHERMO
 		private CustomButton.JoyStick joyStick;
 		private CustomButton.SwitchJoyStick switchJoyStick;
 
@@ -48,7 +48,7 @@ namespace Horizon
 
 		//-------------------------------------------------------------------------------------------------------------------\\
 		#region COSE PRINCIPALI
-		public Camera2D(MainPage main, List<Planet> pl, double height, double width, string theme)   //COSTRUTTORE 
+		public Camera2D(MainPage main, List<Planet> pl, double height, double width, double dpi, string theme)   //COSTRUTTORE 
 		{
 			InitializeComponent();
 
@@ -63,6 +63,7 @@ namespace Horizon
 
 			this.height = height;
 			this.width = width;
+			this.dpi = dpi;
 			center = new Point(width / 2, height / 2);
 			this.theme = theme;
 
@@ -139,6 +140,9 @@ namespace Horizon
 					if (st.paral > 1)
 						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
 
+			//stampa puntatore sole
+			updateSunPointer();
+
 			//animazioni di cliccare ed uscire dal popup
 			if (clickedPlanet)							//pre apertura popup
 				planetTranslationFunction();
@@ -148,28 +152,14 @@ namespace Horizon
 			//creazione del popup con i suoi dati
 			if (openPopUp)
 				createPopUp(canvas);
-
-			//stampa puntatore sole
-			System.Diagnostics.Debug.WriteLine("\n"+getPlanetPoint(pl[0]).X + "	" + getPlanetPoint(pl[0]).Y+ "\n");
-
-			if (!openPopUp)
-				if (getPlanetPoint(pl[0]).Y < 0 || getPlanetPoint(pl[0]).Y > height || getPlanetPoint(pl[0]).X < 0 || getPlanetPoint(pl[0]).X > width)
-				{
-					sunPointer.RotateTo(Misc.toDeg((float)Math.Atan2(getPlanetPoint(pl[0]).Y - height / 2, getPlanetPoint(pl[0]).X - width / 2)) + 90, 17);
-					sunPointer.TranslateTo(200, 0, 17);
-					sunPointer.IsVisible = true;
-				}
-				else
-					sunPointer.IsVisible = false;
-			else
-				sunPointer.IsVisible = false;
-			//RotateTo vuole l'angolo in gradi a caso, il +90 serve perchè si e il -dim/2 perchè getPlanetPoint misura a partire dall'angolo in alto a sinistra
+			
 		}
 		
 		#endregion
 
 		//-------------------------------------------------------------------------------------------------------------------\\
 		#region FUNZIONI DISEGNO COSE
+
 		//creazione del popup con i suoi dati
 		private void createPopUp(SKCanvas canvas)
 		{
@@ -178,8 +168,6 @@ namespace Horizon
 			ScroolView.IsVisible = true;
 			LabelPlanetname.Text = pl[iPlanet].name[0].ToString().ToUpper() + pl[iPlanet].name.Substring(1);
 			drawPLanetData(canvas);
-
-
 		}
 		
 		//creazione dei pianeti
@@ -247,7 +235,58 @@ namespace Horizon
 			}
 		}
 
-        public void drawPLanetData(SKCanvas canvas)
+		private void updateSunPointer()
+        {
+			//System.Diagnostics.Debug.WriteLine("\n" + getPlanetPoint(pl[0]).X + "	" + getPlanetPoint(pl[0]).Y + "\n");
+
+			if (!openPopUp)
+				if (getPlanetPoint(pl[0]).Y < 0 || getPlanetPoint(pl[0]).Y > height || getPlanetPoint(pl[0]).X < 0 || getPlanetPoint(pl[0]).X > width)
+				{
+					double a, b, c;
+					a = Misc.toDeg((float)Math.Atan2(height / 2, width / 2));		//ampiezza angolo che va dalla metà dell'altezza dello schermo a un angolo vicino
+					b = Misc.toDeg((float)Math.Atan2(getPlanetPoint(pl[0]).Y - height / 2, getPlanetPoint(pl[0]).X - width / 2));   //angolo tra il centro dello schermo e il sole
+					c = 90 - a;                                                     //complementare di a
+
+					if (b < 0)				//per comodità voglio b compreso tra 0 e 360, non tra -180 e 180
+						b += 360;
+
+					if (b < a || b > 360 - a) 
+                    {
+						if (b > a)
+							b -= 360;
+						double y = b / a * height / 2;
+						System.Diagnostics.Debug.WriteLine("DPI: " + dpi + " y= " + y + " coso/dpi = " + y / dpi);
+						sunPointer.TranslateTo((width - 150) / 2 / dpi, y / dpi * 0.9, 17);		//modifica 0.9 solo per il basso solo se è aperta la barra sotto
+                    }
+					else if (b > a && b < 180 - a)
+                    {
+						double x = - (b - 90) / c * width / 2;
+						System.Diagnostics.Debug.WriteLine("DPI: " + dpi + " x= " + x + " coso/dpi = " + x / dpi);
+						sunPointer.TranslateTo(x / dpi, (height - 50) / 2 / dpi, 17);
+					}
+					else if (b > 180 - a && b < 180 + a)
+                    {
+						double y = - (b - 180) / a * height / 2;
+						System.Diagnostics.Debug.WriteLine("DPI: " + dpi + " y= " + y + " coso/dpi = " + y / dpi);
+						sunPointer.TranslateTo(-(width - 150) / 2 / dpi, y / dpi * 0.9, 17);
+					}
+					else if (b > 180 + a && b < 360 - a)
+                    {
+						double x = (b - 270) / c * width / 2;
+						System.Diagnostics.Debug.WriteLine("DPI: " + dpi + " x= " + x + " coso/dpi = " + x / dpi);
+						sunPointer.TranslateTo(x / dpi, -(height - 600) / 2 / dpi, 17);
+					}
+
+					sunPointer.RotateTo(b + 90, 17);
+					sunPointer.IsVisible = true;
+					return;
+				}
+
+			sunPointer.IsVisible = false;
+			//RotateTo vuole l'angolo in gradi a caso, il +90 serve perchè si e il -dim/2 perchè getPlanetPoint misura a partire dall'angolo in alto a sinistra
+		}
+
+		public void drawPLanetData(SKCanvas canvas)
 		{
 			ScroolView.VerticalScrollBarVisibility = ScrollBarVisibility.Always;
 			LeftData0.Text = pl[iPlanet].planetDataString[0].ToUpper();

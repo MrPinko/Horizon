@@ -27,6 +27,7 @@ namespace Horizon
 
 		static double height = DeviceDisplay.MainDisplayInfo.Height;
 		static double width = DeviceDisplay.MainDisplayInfo.Width;
+		static double dpi = DeviceDisplay.MainDisplayInfo.Density;
 
 		public MainPage(List<Planet> pls2D, List<Planet> pls3D, List<Planet> plsSun, Location location)
 		{
@@ -66,7 +67,7 @@ namespace Horizon
 				camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
 			}
 
-			camera2d = new Camera2D(this, this.pls2D, height, width, "image");
+			camera2d = new Camera2D(this, this.pls2D, height, width, dpi, "image");
 		}
 
 		private void OptionsPressed(object sender, EventArgs e)
