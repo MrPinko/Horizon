@@ -235,49 +235,48 @@ namespace Horizon
 			}
 		}
 
+		class Line
+        {
+			public SKPoint p1;
+			public SKPoint p2;
+			public Line(float x1, float y1, float x2, float y2)
+            {
+				p1 = new SKPoint(x1, y1);
+				p2 = new SKPoint(x2, y2);
+			}
+        }
+
+
 		private void updateSunPointer()
         {
-			//System.Diagnostics.Debug.WriteLine("\n" + getPlanetPoint(pl[0]).X + "	" + getPlanetPoint(pl[0]).Y + "\n");
-
 			if (!openPopUp)
 				if (getPlanetPoint(pl[0]).Y < 0 || getPlanetPoint(pl[0]).Y > height || getPlanetPoint(pl[0]).X < 0 || getPlanetPoint(pl[0]).X > width)
 				{
-					double a, b, c;
-					a = Misc.toDeg((float)Math.Atan2(height / 2, width / 2));		//ampiezza angolo che va dalla metà dell'altezza dello schermo a un angolo vicino
-					b = Misc.toDeg((float)Math.Atan2(getPlanetPoint(pl[0]).Y - height / 2, getPlanetPoint(pl[0]).X - width / 2));   //angolo tra il centro dello schermo e il sole
-					c = 90 - a;                                                     //complementare di a
+					int OSP = 70; //offset del sunPointer rispetto al bordo dello schermo, in pixel
+					int idfk = 250; //boooooh chiedi al rosa che lo ha fatto lui, ma neanche lui lo sa
 
-					if (b < 0)				//per comodità voglio b compreso tra 0 e 360, non tra -180 e 180
-						b += 360;
+					List<Line> sc = new List<Line>(4); //il rettangolo
 
-					if (b < a || b > 360 - a) 
-                    {
-						if (b > a)
-							b -= 360;
-						double y = b / a * height / 2;
-						System.Diagnostics.Debug.WriteLine("DPI: " + dpi + " y= " + y + " coso/dpi = " + y / dpi);
-						sunPointer.TranslateTo((width - 150) / 2 / dpi, y / dpi * 0.9, 17);		//modifica 0.9 solo per il basso solo se è aperta la barra sotto
+					//250 idk roba del rosa
+					sc.Add( new Line(OSP, OSP, (float)width - OSP, OSP) );
+					sc.Add( new Line((float)width - OSP, OSP, (float)width - OSP, (float)height - idfk) );
+					sc.Add( new Line((float)width - OSP, (float)height - idfk, OSP, (float)height - idfk) );
+					sc.Add( new Line(OSP, (float)height - idfk, OSP, OSP) );
+
+					Line sunLine = new Line((float)(width / 2), (float)(height / 2), getPlanetPoint(pl[0]).X, getPlanetPoint(pl[0]).Y);
+
+					SKPoint? intersection = null;
+					for ( int i=0; i<sc.Count; i++)
+					{
+						intersection = Misc.Intersects(sc[i].p1, sc[i].p2, sunLine.p1, sunLine.p2);
+						if (intersection != null)
+							break;
                     }
-					else if (b > a && b < 180 - a)
-                    {
-						double x = - (b - 90) / c * width / 2;
-						System.Diagnostics.Debug.WriteLine("DPI: " + dpi + " x= " + x + " coso/dpi = " + x / dpi);
-						sunPointer.TranslateTo(x / dpi, (height - 50) / 2 / dpi, 17);
-					}
-					else if (b > 180 - a && b < 180 + a)
-                    {
-						double y = - (b - 180) / a * height / 2;
-						System.Diagnostics.Debug.WriteLine("DPI: " + dpi + " y= " + y + " coso/dpi = " + y / dpi);
-						sunPointer.TranslateTo(-(width - 150) / 2 / dpi, y / dpi * 0.9, 17);
-					}
-					else if (b > 180 + a && b < 360 - a)
-                    {
-						double x = (b - 270) / c * width / 2;
-						System.Diagnostics.Debug.WriteLine("DPI: " + dpi + " x= " + x + " coso/dpi = " + x / dpi);
-						sunPointer.TranslateTo(x / dpi, -(height - 600) / 2 / dpi, 17);
-					}
 
-					sunPointer.RotateTo(b + 90, 17);
+					if (intersection != null)
+						sunPointer.TranslateTo(((SKPoint)intersection).X / dpi - sunPointer.X - sunPointer.Height/2, ((SKPoint)intersection).Y / dpi - sunPointer.Y - sunPointer.Width/2, 10);
+					float b = Misc.toDeg((float)Math.Atan2(getPlanetPoint(pl[0]).Y - height / 2, getPlanetPoint(pl[0]).X - width / 2));
+					sunPointer.RotateTo(b + 90, 10);
 					sunPointer.IsVisible = true;
 					return;
 				}
