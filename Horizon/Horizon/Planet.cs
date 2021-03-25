@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Horizon
 {
-    public class Planet
+    public class Planet : ICloneable
     {
         public string name;
         public Point coord;
@@ -188,6 +188,11 @@ namespace Horizon
         private static int toInt(char c)
         {
             return (Convert.ToInt32(c) - 48);
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
     }
 
