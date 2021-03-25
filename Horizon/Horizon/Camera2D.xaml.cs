@@ -141,7 +141,7 @@ namespace Horizon
 						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
 
 			//stampa puntatore sole
-			updateSunPointer();
+			updateSunPointer(canvas);
 
 			//animazioni di cliccare ed uscire dal popup
 			if (clickedPlanet)							//pre apertura popup
@@ -247,21 +247,22 @@ namespace Horizon
         }
 
 
-		private void updateSunPointer()
+		private void updateSunPointer(SKCanvas canvas)
         {
+			int height = (int)(canvasView.Height*dpi);
+			System.Diagnostics.Debug.WriteLine(height);
 			if (!openPopUp)
 				if (getPlanetPoint(pl[0]).Y < 0 || getPlanetPoint(pl[0]).Y > height || getPlanetPoint(pl[0]).X < 0 || getPlanetPoint(pl[0]).X > width)
 				{
 					int OSP = 70; //offset del sunPointer rispetto al bordo dello schermo, in pixel
-					int idfk = 250; //boooooh chiedi al rosa che lo ha fatto lui, ma neanche lui lo sa
 
 					List<Line> sc = new List<Line>(4); //il rettangolo
 
 					//250 idk roba del rosa
 					sc.Add( new Line(OSP, OSP, (float)width - OSP, OSP) );
-					sc.Add( new Line((float)width - OSP, OSP, (float)width - OSP, (float)height - idfk) );
-					sc.Add( new Line((float)width - OSP, (float)height - idfk, OSP, (float)height - idfk) );
-					sc.Add( new Line(OSP, (float)height - idfk, OSP, OSP) );
+					sc.Add( new Line((float)width - OSP, OSP, (float)width - OSP, (float)height - OSP) );
+					sc.Add( new Line((float)width - OSP, (float)height - OSP, OSP, (float)height - OSP) );
+					sc.Add( new Line(OSP, (float)height - OSP, OSP, OSP) );
 
 					Line sunLine = new Line((float)(width / 2), (float)(height / 2), getPlanetPoint(pl[0]).X, getPlanetPoint(pl[0]).Y);
 
@@ -276,13 +277,13 @@ namespace Horizon
 					if (intersection != null)
 						sunPointer.TranslateTo(((SKPoint)intersection).X / dpi - sunPointer.X - sunPointer.Height/2, ((SKPoint)intersection).Y / dpi - sunPointer.Y - sunPointer.Width/2, 10);
 					float b = Misc.toDeg((float)Math.Atan2(getPlanetPoint(pl[0]).Y - height / 2, getPlanetPoint(pl[0]).X - width / 2));
+					//RotateTo vuole l'angolo in gradi a caso, il +90 serve perchè si e il -dim/2 perchè getPlanetPoint misura a partire dall'angolo in alto a sinistra
 					sunPointer.RotateTo(b + 90, 10);
 					sunPointer.IsVisible = true;
 					return;
 				}
 
 			sunPointer.IsVisible = false;
-			//RotateTo vuole l'angolo in gradi a caso, il +90 serve perchè si e il -dim/2 perchè getPlanetPoint misura a partire dall'angolo in alto a sinistra
 		}
 
 		public void drawPLanetData(SKCanvas canvas)
