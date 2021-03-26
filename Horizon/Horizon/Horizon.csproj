@@ -69,9 +69,12 @@
     <None Remove="Assets\MenuButton\options150.png" />
     <None Remove="Assets\MenuButton\options200.png" />
     <None Remove="Assets\rocketLaunch.png" />
+    <None Remove="Assets\Rocket\missile.png" />
+    <None Remove="Assets\Rocket\powerup.png" />
     <None Remove="Assets\Rocket\replay.png" />
     <None Remove="Assets\Rocket\rocketLaunch2.png" />
     <None Remove="Assets\Rocket\spaceShip.png" />
+    <None Remove="Assets\Rocket\spaceShipRed.png" />
     <None Remove="Assets\Theme1.png" />
     <None Remove="Assets\Theme2.png" />
   </ItemGroup>
@@ -130,10 +133,13 @@
     <EmbeddedResource Include="Assets\MenuButton\options.png" />
     <EmbeddedResource Include="Assets\MenuButton\options150.png" />
     <EmbeddedResource Include="Assets\MenuButton\options200.png" />
+    <EmbeddedResource Include="Assets\Rocket\missile.png" />
+    <EmbeddedResource Include="Assets\Rocket\powerup.png" />
     <EmbeddedResource Include="Assets\Rocket\replay.png" />
     <EmbeddedResource Include="Assets\Rocket\rocketLaunch.png" />
     <EmbeddedResource Include="Assets\Rocket\rocketLaunch2.png" />
     <EmbeddedResource Include="Assets\Rocket\spaceShip.png" />
+    <EmbeddedResource Include="Assets\Rocket\spaceShipRed.png" />
   </ItemGroup>
 
   <ItemGroup>

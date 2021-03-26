@@ -12,11 +12,14 @@ namespace Horizon
 		float trueWidth = (float)DeviceDisplay.MainDisplayInfo.Width;
 
 
-		private float height = 75, width = 75;
+		private float height = 50, width = 50;
 		private float x, y;
 		private int health = 5;
+		private bool isHitted = false;
+		private SKCanvas canvas;
 		private List<Enemy> enemies;
-		SKBitmap texture;
+		private SKPaint paint = new SKPaint();
+		SKBitmap texture, textureRed;
 
 		public Enemy(float x, float y, List<Enemy> enemies)
 		{
@@ -28,25 +31,32 @@ namespace Horizon
 
 		public void draw(SKCanvas canvas)
 		{
+			if (!isHitted)
+				canvas.DrawBitmap(texture, SKRect.Create(x, y, width, height), paint);
+			else
+			{
+				canvas.DrawBitmap(textureRed, SKRect.Create(x, y, width, height), paint);
+				isHitted = false;
+			}
 
-			canvas.DrawBitmap(texture, SKRect.Create(x, y, width, height));
 		}
 
 		double autoInc = 0, autoInc2 = 0;
 		bool change = false;
 
+
 		public bool update()
 		{
 
-			if(change)
+			if (change)
 			{
-				y += trueHeight / 14;
-				if (y > trueHeight)
+				y += trueHeight / 5;
+				if (y > trueHeight - 50)
 					return false;
 				change = false;
 			}
 
-			if (autoInc2 % (7 + enemies.Count) == 0)
+			if (autoInc2 % (10 + enemies.Count) == 0)
 			{
 				autoInc2 = 0;
 				x += (float)Math.Sin(autoInc) * 35;
@@ -72,13 +82,26 @@ namespace Horizon
 			return SKRect.Create(x, y, width, height);
 		}
 
-
-		public void hitted()
+		public void hitted(int damage)
 		{
-			health--;
-			if (health <= 0)
-				enemies.Remove(this);
+			health -= damage;
+			isHitted = true;
 
+			if (health <= 0)
+			{
+				enemies.Remove(this);
+				if (!EasterEgg.isRocketPowerUp)
+					dropChance();
+			}
+		}
+
+		public void dropChance()
+		{
+			Random random = new Random();
+			//if (random.NextDouble() <= 0.2)
+			//{
+				EasterEgg.listPowerup.Add(new DropPowerUp(x, y));
+			//}
 		}
 
 		public void setTexture()
@@ -90,6 +113,11 @@ namespace Horizon
 				texture = SKBitmap.Decode(skStream);
 			}
 
+			stream = assembly.GetManifestResourceStream("Horizon.Assets.Rocket.spaceShipRed.png");
+			using (SKManagedStream skStream = new SKManagedStream(stream))
+			{
+				textureRed = SKBitmap.Decode(skStream);
+			}
 		}
 	}
 }
