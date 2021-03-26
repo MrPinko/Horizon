@@ -7,6 +7,7 @@ using SkiaSharp;
 using System.Reflection;
 using Xamarin.Essentials;
 using System.Timers;
+using System.Collections;
 
 namespace Horizon
 {
@@ -17,8 +18,18 @@ namespace Horizon
         private double dpi = DeviceDisplay.MainDisplayInfo.Density;
 
         private MainPage main;
-        private List<Planet> planets;
+        private List<Planet> planets;           //lista dei pianeti guardando dal polo nord, usata nella conversione quando si cambia osservatore
+        private List<Planet> syncPlanets;       //lista dei pianeti dal punto di vista della terra, sincronizzata con la posizione
+        private List<Planet> tempPlanets;       //lista dei pianeti temporanea
         private List<Planet> stars;
+        private List<Planet> syncStars;
+        private List<Planet> tempStars;
+        private Constellations constellations;
+        private Constellations syncConstellations;
+        private Constellations tempConstellations;
+        private List<Planet> points;
+        private List<Planet> syncPoints;
+        private List<Planet> tempPoints;
         private String observer;
 
         CustomButton.ChangeTextureButton changeButton;
@@ -31,25 +42,33 @@ namespace Horizon
         public Boolean sensorExists = true;
 
         private const float baseAmp = 72 / 2; //72 e 90 best imho
-        private double RA;
-        private double DEC;
+        private double RA;      //in gradi
+        private double DEC;     //in gradi
         private int width;
         private int height;
         private float ampWidth;
         private float ampHeight;
 
         private Point panPoint = new Point(0, 0);
+        private float latitude;
         private float tempDEC;
         private float tempRA;
         public float baseX;
         public float baseY;
 
         private Constellations constellations;
+        private Constellations syncConstellations;
+        private Constellations tempConstellations;
 
         //paint per le cose inutili (nord, sud, cerchio nell'equatore)
         public SKPaint uselessPaint = new SKPaint{
             Style = SKPaintStyle.Fill,
             Color = new SKColor(255, 255, 255)};
+        public SKPaint uselessPaint2 = new SKPaint
+        {
+            Style = SKPaintStyle.Fill,
+            Color = new SKColor(255, 0, 0)
+        };
 
         //paint per le linee delle costellazioni
         public SKPaint constellationPaint = new SKPaint {
@@ -70,14 +89,50 @@ namespace Horizon
             this.main = main;
             this.planets = new List<Planet>(planets);
             stars = StarDB.getAll();
+            points = new List<Planet>(planets);
+            points.Add(new Planet("SOUTHPOLE", 0, -90, 60, new SKColor(255, 255, 255)));
+            points.Add(new Planet("NORTHPOLE", 0, 90, 60, new SKColor(255, 255, 255)));
+            for (float i = 0; i <= 360; i = i + 0.2f)
+                points.Add(new Planet("EQUATOR", i, 0, 4, new SKColor(255, 255, 255)));
+
             this.observer = observer;
             this.RA = tempRA = RA;
-            this.DEC = tempDEC = DEC;
+            this.DEC = tempDEC = latitude = DEC;
             this.width = width;
             this.height = height;
             ampWidth = baseAmp / 2;
             ampHeight = ampWidth * height / width;
             this.theme = theme;
+
+            //sync
+            this.syncPlanets = new List<Planet>();
+            for (int i = 0; i < planets.Count; i++)
+                syncPlanets.Add((Planet)planets[i].Clone());
+            syncPlanets = synchronizePlanets(syncPlanets);
+
+            this.syncStars = new List<Planet>();
+            for (int i = 0; i < stars.Count; i++)
+                syncStars.Add((Planet)stars[i].Clone());
+            syncStars = synchronizePlanets(syncStars);
+
+            this.syncPoints = new List<Planet>();
+            for (int i = 0; i < points.Count; i++)
+                syncPoints.Add((Planet)points[i].Clone());
+            syncPoints = synchronizePlanets(syncPoints);
+            for (int i = 0; i < syncPoints.Count; i++)
+                if (syncPoints[i].name.Equals("SOUTHPOLE") || syncPoints[i].name.Equals("NORTHPOLE"))
+                {
+                    syncPoints[i].RA += 180;
+                    if (syncPoints[i].RA > 360)
+                        syncPoints[i].RA -= 360;
+                }
+
+
+            //costellazioni
+            this.constellations = new Constellations(this, stars);
+            this.constellations.printText = true;
+            this.syncConstellations = new Constellations(this, syncStars);
+            this.syncConstellations.printText = true;
 
             //inizializzazioni
             setTexture();
@@ -88,8 +143,11 @@ namespace Horizon
 
             this.constellations = new Constellations(this, stars);
             this.constellations.printText = true;
+            this.syncConstellations = new Constellations(this, syncStars);
+            this.syncConstellations.printText = true;
 
             rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.earth.png", typeof(MainPage).GetTypeInfo().Assembly);
+
         }
 
         //BACK
@@ -114,36 +172,60 @@ namespace Horizon
             SKCanvas canvas = surface.Canvas;
             canvas.Clear();
 
+            //seleziono le liste sincronizzate (terra) o non sincronizzate (tutto il resto)
+            if (observer.Equals("earth"))
+            {
+                tempPlanets = syncPlanets;
+                tempConstellations = syncConstellations;
+                tempStars = syncStars;
+                tempPoints = syncPoints;
+            }
+            else
+            {
+                tempPlanets = planets;
+                tempConstellations = constellations;
+                tempStars = stars;
+                tempPoints = points;
+            }
+
             //stampo le stelle
-            for (int i = 0; i < stars.Count; i++)
-                canvas.DrawCircle(toScreen(stars[i]), 1, stars[i].paint);
+            for (int i = 0; i < tempStars.Count; i++)
+                canvas.DrawCircle(toScreen(tempStars[i]), 1, tempStars[i].paint);
 
             //stampo le costellazioni
             //SI BUGGA SE METTEREMO LO ZOOM, CHIEDI AL PIETRO
-            constellations.drawAll(canvas);
-            
-            
-            //test (sud, nord, equatore)
-            canvas.DrawCircle(toScreen(new Planet("SOUTHPOLE", 0, -90, 10, new SKColor(255, 255, 255))), 60, uselessPaint);
+            tempConstellations.drawAll(canvas);
+
+            //stampo i punti di riferimento (sud, nord, equatore)
+            for (int i = 0; i < tempPoints.Count; i++)
+            {
+                if(tempPoints[i].name.Equals("EQUATOR"))
+                    canvas.DrawCircle(toScreen(tempPoints[i]), 4, uselessPaint);
+                else if(tempPoints[i].name.Equals("SOUTHPOLE"))
+                    canvas.DrawCircle(toScreen(tempPoints[i]), 60, uselessPaint);
+                else
+                    canvas.DrawCircle(toScreen(tempPoints[i]), 60, uselessPaint);
+            }
+            /*canvas.DrawCircle(toScreen(new Planet("SOUTHPOLE", 0, -90, 10, new SKColor(255, 255, 255))), 60, uselessPaint);
             canvas.DrawCircle(toScreen(new Planet("NORTHPOLE", 0, 90, 10, new SKColor(127, 127, 127))), 60, uselessPaint);
             for (float i = 0; i <= 360; i = i + 0.2f)
-                canvas.DrawCircle(toScreen(new Planet("EQUATOR", i, 0, 3, new SKColor(0, 127, 127))), 5, uselessPaint);
-            
-            
-            for (int i = 0; i < planets.Count; i++)
+                canvas.DrawCircle(toScreen(new Planet("EQUATOR", i, 0, 3, new SKColor(0, 127, 127))), 5, uselessPaint);*/
+
+            //stampo i pianeti
+            for (int i = 0; i < tempPlanets.Count; i++)
             {
-                if (planets[i].name == observer)  //non stampo la terra o il sole in base dal punto di vista
+                if (tempPlanets[i].name == observer)  //non stampo la terra o il sole in base dal punto di vista
                     continue;
 
-                SKPoint tempPoint = toScreen(planets[i]);
+                SKPoint tempPoint = toScreen(tempPlanets[i]);
                 //sposto le coordinate di stampa del pianeta in base alla dimensione con cui viene stampato (drawbitmap non disegna partendo dal centro)
-                tempPoint.X -= (200 + planets[i].printSize * 15) / 2;
-                tempPoint.Y -= (200 + planets[i].printSize * 15) / 2;
+                tempPoint.X -= (200 + tempPlanets[i].printSize * 15) / 2;
+                tempPoint.Y -= (200 + tempPlanets[i].printSize * 15) / 2;
 
                 if (theme.Equals("image"))              //disegno i pianeti come immagini stilizzate
-                    canvas.DrawBitmap(planets[i].texture, SKRect.Create(tempPoint, new SKSize(200 + planets[i].printSize * 15, 200 + planets[i].printSize * 15)), null);
+                    canvas.DrawBitmap(tempPlanets[i].texture, SKRect.Create(tempPoint, new SKSize(200 + tempPlanets[i].printSize * 15, 200 + tempPlanets[i].printSize * 15)), null);
                 else if (theme.Equals("imageHD"))            //disegno i pianeti come immagini reali
-                    canvas.DrawBitmap(planets[i].textureHD, SKRect.Create(tempPoint, new SKSize(200 + planets[i].printSize * 15, 200 + planets[i].printSize * 15)), null);
+                    canvas.DrawBitmap(tempPlanets[i].textureHD, SKRect.Create(tempPoint, new SKSize(200 + tempPlanets[i].printSize * 15, 200 + tempPlanets[i].printSize * 15)), null);
             }
 
             if (sensorExists)
@@ -363,6 +445,7 @@ namespace Horizon
             for (int i = 0; i < texturepath.Count; i++)
             {
                 planets[i].setTexture(texturepath[i]);
+                syncPlanets[i].setTexture(texturepath[i]);
             }
             
         }
@@ -387,6 +470,7 @@ namespace Horizon
             for (int i = 0; i < texturepathHD.Count; i++)
             {
                 planets[i].setTextureHD(texturepathHD[i]);
+                syncPlanets[i].setTextureHD(texturepathHD[i]);
             }
         }
         private void loadTextureHD()
@@ -422,12 +506,31 @@ namespace Horizon
         //-------------------------------------------------------------------------------------------------------------------\\
         #region SELEZIONE OSSERVATORE
 
+        private List<Planet> synchronizePlanets(List<Planet> planets)   //conversione sistema di riferimento posizione utente
+        {
+            //https://it.wikipedia.org/wiki/Coordinate_celesti#Conversione_tra_coordinate_di_diversi_sistemi_di_riferimento for more info
+
+            float H, radLatitude, radDEC, newDEC, newRA;
+            for (int i = 0; i < planets.Count; i++)
+            {   
+                H = Misc.toRad(RA - planets[i].RA);
+                radLatitude = Misc.toRad(latitude);
+                radDEC = Misc.toRad(planets[i].DEC);
+
+                newDEC = (float)Math.Asin(Math.Sin(radDEC) * Math.Sin(radLatitude) + Math.Cos(radDEC) * Math.Cos(radLatitude) * Math.Cos(H));
+                newRA = (float)Math.Atan2(Math.Sin(H),  Math.Tan(radDEC) * Math.Cos(radLatitude) - Math.Sin(radLatitude) * Math.Cos(H));
+
+                planets[i].DEC = Misc.toDeg(newDEC);
+                planets[i].RA = 360 - Misc.toDeg(newRA);
+            }
+            
+            return planets;
+        }
+
         private List<Planet> setObserver(List<Planet> planets, String observer)
         {
             int observerIndex = -1;                         //indice del nuovo osservatore
             float Hyp, tempx, tempy, tempz;
-
-            this.observer = observer;
 
             for (int i = 0; i < planets.Count; i++)			//trovo l'indice del nuovo osservatore
                 if (planets[i].name.Equals(observer))
@@ -437,6 +540,8 @@ namespace Horizon
                 }
             if (observerIndex == -1)                        //se non è stato trovato l'osservatore non faccio alcuna modifica
                 return planets;
+
+            this.observer = observer;                       //aggiorno l'osservatore
 
             for (int i = 0; i < planets.Count; i++)			//trasformo RA e DEC in coordinate vettoriali tenendo conto della distanza dall'osservatore iniziale
             {
@@ -460,7 +565,7 @@ namespace Horizon
                 Hyp = (float)Math.Sqrt(planets[i].x * planets[i].x + planets[i].y * planets[i].y);      //converto in RA e DEC
                 planets[i].RA = Misc.toDeg((float)Math.Atan2(planets[i].y, planets[i].x));
                 planets[i].DEC = Misc.toDeg((float)Math.Atan2(planets[i].z, Hyp));
-                planets[i].distanceKm = (float)Math.Sqrt(Math.Pow(planets[i].x, 2) + Math.Pow(planets[i].y, 2) + Math.Pow(planets[i].z, 2));//aggiorno la distanza dall'osservatore così da poter ripetere l'operazione di cambio di osservatore
+                planets[i].distanceKm = (float)Math.Sqrt(Math.Pow(planets[i].x, 2) + Math.Pow(planets[i].y, 2) + Math.Pow(planets[i].z, 2));    //aggiorno la distanza dall'osservatore così da poter ripetere l'operazione di cambio di osservatore
             }
 
             return planets;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
