@@ -6,7 +6,6 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using System.Reflection;
-using System.Diagnostics;
 
 namespace Horizon
 {
@@ -24,7 +23,6 @@ namespace Horizon
 		public bool stopTimer3D = false;
 		private bool isLocationLoaded = false;
 		private bool GPSEnabled;
-		//QuaternionSucks rotor;
 
 		static double height = DeviceDisplay.MainDisplayInfo.Height;
 		static double width = DeviceDisplay.MainDisplayInfo.Width;
@@ -52,15 +50,6 @@ namespace Horizon
 			this.pls3D = pls3D;
 			this.pls2D = pls2D;
 			this.location = location;
-			/*
-			rotor = new QuaternionSucks((float)location.Latitude, (float)sidTime.getSiderealTimeFromLongitude(location.Longitude));
-			for( int i=0; i<pls3D.Count; i++ )
-            {
-				rotor.update(pls3D[i].RA, pls3D[i].DEC);
-				pls3D[i].RA  = (float)(rotor.RA  / Math.PI * 180);
-				pls3D[i].DEC = (float)(rotor.DEC / Math.PI * 180);
-			}
-			*/
 
 			if (location != null)
             {
@@ -72,20 +61,6 @@ namespace Horizon
 
 			camera2d = new Camera2D(this, this.pls2D, height, width, dpi, "image");
 
-		}
-
-		private void OptionsPressed(object sender, EventArgs e)
-        {
-			OpenAppSettings();
-        }
-
-		public void OpenAppSettings()	//apro le impostazioni dell'app (non funziona)
-		{
-			var intent = new Intent(Android.Provider.Settings.ActionApplicationDetailsSettings);
-			intent.AddFlags(ActivityFlags.NewTask);
-			var uri = Android.Net.Uri.FromParts("package", "Horizon", null);
-			intent.SetData(uri);
-            Android.App.Application.Context.StartActivity(intent);
 		}
 
 		public bool isGpsAvailable()	//verifico se il gps è attivato
@@ -131,6 +106,14 @@ namespace Horizon
 		protected override bool OnBackButtonPressed()
 		{
 			return false;
+		}
+
+		private void OptionsPressed(object sender, EventArgs e)
+		{
+			Intent i = new Intent(Android.Provider.Settings.ActionLocat‌​ionSourceSettings);
+			i.AddFlags(Android.Content.ActivityFlags.MultipleTask);
+			i.AddFlags(Android.Content.ActivityFlags.NewTask);
+			Android.App.Application.Context.StartActivity(i);
 		}
 
 		private async void Button_Pressed_3D(object sender, EventArgs e)

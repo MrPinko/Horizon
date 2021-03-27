@@ -56,19 +56,10 @@ namespace Horizon
         public float baseX;
         public float baseY;
 
-        private Constellations constellations;
-        private Constellations syncConstellations;
-        private Constellations tempConstellations;
-
         //paint per le cose inutili (nord, sud, cerchio nell'equatore)
         public SKPaint uselessPaint = new SKPaint{
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(255, 255, 255)};
-        public SKPaint uselessPaint2 = new SKPaint
-        {
-            Style = SKPaintStyle.Fill,
-            Color = new SKColor(255, 0, 0)
-        };
+            Color = new SKColor(224, 224, 224)};
 
         //paint per le linee delle costellazioni
         public SKPaint constellationPaint = new SKPaint {
@@ -199,12 +190,12 @@ namespace Horizon
             //stampo i punti di riferimento (sud, nord, equatore)
             for (int i = 0; i < tempPoints.Count; i++)
             {
-                if(tempPoints[i].name.Equals("EQUATOR"))
-                    canvas.DrawCircle(toScreen(tempPoints[i]), 4, uselessPaint);
+                if(tempPoints[i].name.Equals("NORTHPOLE"))
+                    canvas.DrawCircle(toScreen(tempPoints[i]), 60, uselessPaint);
                 else if(tempPoints[i].name.Equals("SOUTHPOLE"))
                     canvas.DrawCircle(toScreen(tempPoints[i]), 60, uselessPaint);
                 else
-                    canvas.DrawCircle(toScreen(tempPoints[i]), 60, uselessPaint);
+                    canvas.DrawCircle(toScreen(tempPoints[i]), 4, uselessPaint);
             }
             /*canvas.DrawCircle(toScreen(new Planet("SOUTHPOLE", 0, -90, 10, new SKColor(255, 255, 255))), 60, uselessPaint);
             canvas.DrawCircle(toScreen(new Planet("NORTHPOLE", 0, 90, 10, new SKColor(127, 127, 127))), 60, uselessPaint);
