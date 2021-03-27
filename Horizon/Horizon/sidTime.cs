@@ -14,6 +14,14 @@ namespace Horizon
 			return HoursMinutesSecondsToDegrees(LMST);
 		}
 
+		public static double getNonDegrees(double longitude)
+        {
+			var jd = DateTime.UtcNow.ToOADate() + 2415018.5;
+
+			var GMST = GM_Sidereal_Time(jd);
+			var LMST = 24.0 * frac((GMST + longitude / 15.0) / 24.0);
+			return LMST;
+		}
 
 		private static double GM_Sidereal_Time(double jd)
 		{

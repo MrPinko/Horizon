@@ -192,7 +192,7 @@ namespace Horizon
 
         public object Clone()
         {
-            return this.MemberwiseClone();
+            return (Planet)this.MemberwiseClone();
         }
     }
 

@@ -6,6 +6,7 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace Horizon
 {
@@ -67,7 +68,10 @@ namespace Horizon
 				camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
 			}
 
+			//Debug.WriteLine("status == PermissionStatus.Granted" + status + "==" + PermissionStatus.Granted);
+
 			camera2d = new Camera2D(this, this.pls2D, height, width, dpi, "image");
+
 		}
 
 		private void OptionsPressed(object sender, EventArgs e)
@@ -115,7 +119,6 @@ namespace Horizon
 				}
 				catch (Exception e)
 				{
-					System.Diagnostics.Debug.WriteLine(e.Message);
 					GPSEnabled = false;
 				}
 			}

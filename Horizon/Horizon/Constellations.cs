@@ -24,7 +24,6 @@ namespace Horizon
 
         public void drawAll(SKCanvas canvas)
         {
-            //foreach (Constellation constellation in this.cons)
             for(int i = 0; i < cons.Length; i++)
             {
                 for (int j = 0; j < cons[i].starIds.Length; j += 2)
