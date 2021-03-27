@@ -5,6 +5,11 @@ namespace Horizon
 {
     static class Misc
     {
+		public static void println(String s)
+        {
+			System.Diagnostics.Debug.WriteLine(s);
+        }
+
         public static float toRad(double x)
         {
             return (float)(x / 180 * Math.PI);
