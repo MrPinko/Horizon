@@ -295,43 +295,19 @@ namespace Horizon
 
 		private void resetCameraFunction()
 		{
-			if (center.X != width / 2)
-			{
-				if (center.X > width / 2)             //sinistra rispetto al centro
-				{
-					center.X -= d / 50;
-				}
-				else                                 //destra
-				{
-					center.X += d / 50;
-				}
+			d = Math.Sqrt(Math.Pow(center.X - width / 2, 2) + Math.Pow(center.Y - height / 2, 2));
+			double dx = (center.X - width / 2) / d;
+			double dy = (center.Y - height / 2) / d;
 
-			}
+			double spd = 2.5;
 
-			if (center.Y != height / 2)
-			{
-				if (center.Y > height / 2)          //alto rispetto al centro
-				{
-					center.Y -= d / 50;
-				}
-				else                                //basso
-				{
-					center.Y += d / 50;
-				}
+			center.X -= dx * (d / 50 + 30);
+			center.Y -= dy * (d / 50 + 30);
+			Misc.println((dx * (d / 250 + 30)).ToString());
+			
 
-			}
 
-			if (center.X > (width / 2) - 50 && center.X < (width / 2) + 50)
-			{
-				center.X = width / 2;
-			}
-
-			if (center.Y > (height / 2) - 50 && center.Y < (height / 2) + 50)
-			{
-				center.Y = height / 2;
-			}
-
-			if (center.X == width / 2 && center.Y == height / 2)
+			if ( Math.Abs(center.X - width / 2) < 20)
 				resetCamera = false;
 
 		}
@@ -600,7 +576,6 @@ namespace Horizon
 		double d;
 		private void sunPointer_gesture(object sender, EventArgs e)
 		{
-			d = Math.Sqrt(Math.Pow(center.X - width / 2, 2) + Math.Pow(center.Y - height / 2, 2));
 			resetCamera = true;
 		}
 
