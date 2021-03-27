@@ -30,6 +30,8 @@ namespace Horizon
 		private float scale = 1, oldScale;
 		private Point panPoint = new Point(0, 0);  //panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
 		private bool resetCamera = false;
+		private bool isPinCamActive = false;
+
 
 		private String theme;      //immagini pianeti 3 disponibili 
 
@@ -156,9 +158,17 @@ namespace Horizon
 				createPopUp(canvas);
 
 			if (resetCamera)
-			{
 				resetCameraFunction();
-			}
+
+			if(!openPopUp)
+				if (isPinCamActive)
+				{
+					center.X = (float)getPlanetPoint(pl[iPlanet]).X - (pl[iPlanet].Size * scale) / 2;
+					center.Y = (float)getPlanetPoint(pl[iPlanet]).Y - (pl[iPlanet].Size * scale) / 2;
+
+					
+				}
+
 
 		}
 
@@ -378,6 +388,7 @@ namespace Horizon
 			{
 				openPopUp = true;
 				clickedPlanet = false;
+				pinCam.IsVisible = true;
 			}
 			else if (scale < popUpScale)
 			{
@@ -602,6 +613,11 @@ namespace Horizon
 		{
 			d = Math.Sqrt(Math.Pow(center.X - width / 2, 2) + Math.Pow(center.Y - height / 2, 2));
 			resetCamera = true;
+		}
+
+		private void pinCam_Tapped(object sender, EventArgs e)
+		{
+			isPinCamActive = !isPinCamActive;
 		}
 
 		#endregion

@@ -160,6 +160,18 @@
 			AbsoluteLayout.LayoutBounds="0.5,0.05,0.85,0.1"
 			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
 		</Label>
+		
+		<Image
+			x:Name="pinCam"
+			Source="pinCam.png"
+			Rotation="45"
+			AbsoluteLayout.LayoutBounds="0.7,0.2,0.1,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional"
+			IsVisible="false">
+			<Image.GestureRecognizers>
+				<TapGestureRecognizer Tapped="pinCam_Tapped"></TapGestureRecognizer>
+			</Image.GestureRecognizers>
+		</Image>
 
 		<ScrollView
 			x:Name="ScroolView"
