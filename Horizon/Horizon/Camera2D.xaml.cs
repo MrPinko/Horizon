@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -24,12 +23,13 @@ namespace Horizon
 		private long maxDistanceKm;          //DISTANZA MASSIMA NETTUNO
 		private double height;               //ALTEZZA SCHERMO
 		private double width;                //LARGHEZZA SCHERMO
-		private double dpi;				     //DENSITA' SCHERMO
+		private double dpi;                  //DENSITA' SCHERMO
 		private CustomButton.JoyStick joyStick;
 		private CustomButton.SwitchJoyStick switchJoyStick;
 
 		private float scale = 1, oldScale;
 		private Point panPoint = new Point(0, 0);  //panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
+		private bool resetCamera = false;
 
 		private String theme;      //immagini pianeti 3 disponibili 
 
@@ -41,9 +41,11 @@ namespace Horizon
 		private bool timeWasMoving = false;
 
 		private List<parallaxObj> stars = new List<parallaxObj>();
-		public SKPaint starPaint = new SKPaint{
+		public SKPaint starPaint = new SKPaint
+		{
 			Style = SKPaintStyle.Fill,
-			Color = new SKColor(191, 196, 100)};
+			Color = new SKColor(191, 196, 100)
+		};
 		public SKRect phoneRect;
 
 		//-------------------------------------------------------------------------------------------------------------------\\
@@ -77,7 +79,7 @@ namespace Horizon
 			loadBottomBarTexture();
 			StarColor.initialize();
 
-			phoneRect = SKRect.Create(0, 0, (float)width,(float) height);
+			phoneRect = SKRect.Create(0, 0, (float)width, (float)height);
 			joyStick = new CustomButton.JoyStick((float)width, (float)height, (float)width / 3, (float)height / 6);
 			switchJoyStick = new CustomButton.SwitchJoyStick((float)width, (float)height, 100, 100);
 			setPositions();
@@ -88,11 +90,11 @@ namespace Horizon
 						Math.Pow(pl[i].coord.Y, 2) +
 						Math.Pow(pl[i].coord.X, 2));
 			}
-			
+
 			Random r = new Random();
 
 			double a;
-			for ( int i=0; i<15000; i++)
+			for (int i = 0; i < 15000; i++)
 			{
 				if (r.NextDouble() > 0)
 					a = r.NextDouble() * 0.6;
@@ -126,17 +128,17 @@ namespace Horizon
 			canvas.Clear();
 
 			if (!openPopUp)
-				foreach (parallaxObj st in stars)		//stelle sotto
+				foreach (parallaxObj st in stars)       //stelle sotto
 					if (st.paral < 1)
 						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
 
-			if (!openPopUp) 
-				dottedOrbit(canvas);					//orbite
+			if (!openPopUp)
+				dottedOrbit(canvas);                    //orbite
 
-			createPlanet(canvas);						//pianeti
+			createPlanet(canvas);                       //pianeti
 
 			if (!openPopUp)
-				foreach (parallaxObj st in stars)		//stelle sopra
+				foreach (parallaxObj st in stars)       //stelle sopra
 					if (st.paral > 1)
 						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
 
@@ -144,17 +146,22 @@ namespace Horizon
 			updateSunPointer(canvas);
 
 			//animazioni di cliccare ed uscire dal popup
-			if (clickedPlanet)							//pre apertura popup
+			if (clickedPlanet)                          //pre apertura popup
 				planetTranslationFunction();
-			if (restoreCamera)							//riportare lo zoom alla posizione prima dello zoom
+			if (restoreCamera)                          //riportare lo zoom alla posizione prima dello zoom
 				restoreCameraFunction();
 
 			//creazione del popup con i suoi dati
 			if (openPopUp)
 				createPopUp(canvas);
-			
+
+			if (resetCamera)
+			{
+				resetCameraFunction();
+			}
+
 		}
-		
+
 		#endregion
 
 		//-------------------------------------------------------------------------------------------------------------------\\
@@ -169,7 +176,7 @@ namespace Horizon
 			LabelPlanetname.Text = pl[iPlanet].name[0].ToString().ToUpper() + pl[iPlanet].name.Substring(1);
 			drawPLanetData(canvas);
 		}
-		
+
 		//creazione dei pianeti
 		private void createPlanet(SKCanvas canvas)
 		{
@@ -195,7 +202,9 @@ namespace Horizon
 					{
 						if (i == iPlanet)
 							canvas.DrawBitmap(pl[i].textureHD, SKRect.Create((float)getPlanetPoint(pl[i]).X - (pl[i].Size * scale) / 2, (float)getPlanetPoint(pl[i]).Y - (pl[i].Size * scale) / 2, pl[i].Size * scale, pl[i].Size * scale), null);
-					}else{
+					}
+					else
+					{
 						canvas.DrawBitmap(pl[i].textureHD, SKRect.Create((float)getPlanetPoint(pl[i]).X - (pl[i].Size * scale) / 2, (float)getPlanetPoint(pl[i]).Y - (pl[i].Size * scale) / 2, pl[i].Size * scale, pl[i].Size * scale), null);
 					}
 				}
@@ -236,21 +245,20 @@ namespace Horizon
 		}
 
 		class Line
-        {
+		{
 			public SKPoint p1;
 			public SKPoint p2;
 			public Line(float x1, float y1, float x2, float y2)
-            {
+			{
 				p1 = new SKPoint(x1, y1);
 				p2 = new SKPoint(x2, y2);
 			}
-        }
+		}
 
 
 		private void updateSunPointer(SKCanvas canvas)
-        {
-			int height = (int)(canvasView.Height*dpi);
-			System.Diagnostics.Debug.WriteLine(height);
+		{
+			int height = (int)(canvasView.Height * dpi);
 			if (!openPopUp)
 				if (getPlanetPoint(pl[0]).Y < 0 || getPlanetPoint(pl[0]).Y > height || getPlanetPoint(pl[0]).X < 0 || getPlanetPoint(pl[0]).X > width)
 				{
@@ -258,24 +266,23 @@ namespace Horizon
 
 					List<Line> sc = new List<Line>(4); //il rettangolo
 
-					//250 idk roba del rosa
-					sc.Add( new Line(OSP, OSP, (float)width - OSP, OSP) );
-					sc.Add( new Line((float)width - OSP, OSP, (float)width - OSP, (float)height - OSP) );
-					sc.Add( new Line((float)width - OSP, (float)height - OSP, OSP, (float)height - OSP) );
-					sc.Add( new Line(OSP, (float)height - OSP, OSP, OSP) );
+					sc.Add(new Line(OSP, OSP, (float)width - OSP, OSP));
+					sc.Add(new Line((float)width - OSP, OSP, (float)width - OSP, (float)height - OSP));
+					sc.Add(new Line((float)width - OSP, (float)height - OSP, OSP, (float)height - OSP));
+					sc.Add(new Line(OSP, (float)height - OSP, OSP, OSP));
 
-					Line sunLine = new Line((float)(width / 2), (float)(height / 2), getPlanetPoint(pl[0]).X, getPlanetPoint(pl[0]).Y);
+					Line sunLine = new Line((float)(width / 2), height / 2, getPlanetPoint(pl[0]).X, getPlanetPoint(pl[0]).Y);
 
 					SKPoint? intersection = null;
-					for ( int i=0; i<sc.Count; i++)
+					for (int i = 0; i < sc.Count; i++)
 					{
 						intersection = Misc.Intersects(sc[i].p1, sc[i].p2, sunLine.p1, sunLine.p2);
 						if (intersection != null)
 							break;
-                    }
+					}
 
 					if (intersection != null)
-						sunPointer.TranslateTo(((SKPoint)intersection).X / dpi - sunPointer.X - sunPointer.Height/2, ((SKPoint)intersection).Y / dpi - sunPointer.Y - sunPointer.Width/2, 10);
+						sunPointer.TranslateTo(((SKPoint)intersection).X / dpi - sunPointer.X - sunPointer.Height / 2, ((SKPoint)intersection).Y / dpi - sunPointer.Y - sunPointer.Width / 2, 10);
 					float b = Misc.toDeg((float)Math.Atan2(getPlanetPoint(pl[0]).Y - height / 2, getPlanetPoint(pl[0]).X - width / 2));
 					//RotateTo vuole l'angolo in gradi a caso, il +90 serve perchè si e il -dim/2 perchè getPlanetPoint misura a partire dall'angolo in alto a sinistra
 					sunPointer.RotateTo(b + 90, 10);
@@ -285,6 +292,51 @@ namespace Horizon
 
 			sunPointer.IsVisible = false;
 		}
+
+		private void resetCameraFunction()
+		{
+			if (center.X != width / 2)
+			{
+				if (center.X > width / 2)             //sinistra rispetto al centro
+				{
+					center.X -= d / 50;
+				}
+				else                                 //destra
+				{
+					center.X += d / 50;
+				}
+
+			}
+
+			if (center.Y != height / 2)
+			{
+				if (center.Y > height / 2)          //alto rispetto al centro
+				{
+					center.Y -= d / 50;
+				}
+				else                                //basso
+				{
+					center.Y += d / 50;
+				}
+
+			}
+
+			if (center.X > (width / 2) - 50 && center.X < (width / 2) + 50)
+			{
+				center.X = width / 2;
+			}
+
+			if (center.Y > (height / 2) - 50 && center.Y < (height / 2) + 50)
+			{
+				center.Y = height / 2;
+			}
+
+			if (center.X == width / 2 && center.Y == height / 2)
+				resetCamera = false;
+
+		}
+	
+	
 
 		public void drawPLanetData(SKCanvas canvas)
 		{
@@ -332,7 +384,7 @@ namespace Horizon
 				scale += velocity / 30;
 
 				center.X = -pl[iPlanet].coord.X + width / 2;
-				center.Y = (-pl[iPlanet].coord.Y + height / 2 ) - (height / 4) / scale;
+				center.Y = (-pl[iPlanet].coord.Y + height / 2) - (height / 4) / scale;
 				pl[iPlanet].Size = (float)(30 * dpi);              // 80 = valore che voglio ottenere con uno schermo con un dpi di 2.6 quindi 30+2.6 e sarà ugguale ad uno schermo con 3 dpi 
 
 			}
@@ -352,12 +404,12 @@ namespace Horizon
 				}
 
 		}
-        #endregion
+		#endregion
 
-        //-------------------------------------------------------------------------------------------------------------------\\
+		//-------------------------------------------------------------------------------------------------------------------\\
 		#region FUNZIONI TOCCO
 
-        private Boolean clickedPlanet = false, openPopUp = false, joyStickVisible = false;
+		private Boolean clickedPlanet = false, openPopUp = false, joyStickVisible = false;
 		private int iPlanet;
 		private Boolean top = false, right = false, down = false, left = false;
 		private int zoomGesture = 0;             //questa variabile può avere 3 stati [ 0 se non sto zommando ], [ 1 se ho finito di zoomare*], [ 2 se non sto zoommando]
@@ -369,7 +421,7 @@ namespace Horizon
 
 			//listener pianeti
 			if (e.ActionType == SKTouchAction.Pressed && openPopUp == false && !touchRect.IntersectsWith(joyStick.GetRect()) &&
-				!touchRect.IntersectsWith(switchJoyStick.GetRect()) )
+				!touchRect.IntersectsWith(switchJoyStick.GetRect()))
 			{
 				for (int i = 0; i < pl.Count; i++)
 				{
@@ -388,7 +440,7 @@ namespace Horizon
 			//funzioni bottoni personalizzati
 			if (!openPopUp)
 			{
-								//clicco il pulsante per mostrare il joystick
+				//clicco il pulsante per mostrare il joystick
 				if (touchRect.IntersectsWith(switchJoyStick.GetRect()))
 				{
 					joyStickVisible = !joyStickVisible;
@@ -398,12 +450,12 @@ namespace Horizon
 				//clicco il joystick
 				if (e.ActionType == SKTouchAction.Pressed && joyStickVisible)
 				{
-					if (touchRect.IntersectsWith(joyStick.getTop()))		  //tasto sopra
+					if (touchRect.IntersectsWith(joyStick.getTop()))          //tasto sopra
 					{
 						top = true;
 						e.Handled = true;
 					}
-					if (touchRect.IntersectsWith(joyStick.getDown()))		    //sotto
+					if (touchRect.IntersectsWith(joyStick.getDown()))           //sotto
 					{
 						down = true;
 						e.Handled = true;
@@ -436,8 +488,8 @@ namespace Horizon
 					pl[iPlanet].Size = 70;         //ripristino le dimensioni del pianeta quando esco dalla visualizzazione popup
 			}
 
-            //rilascio la pressione su un tasto del joystick
-            if (e.ActionType == SKTouchAction.Released)
+			//rilascio la pressione su un tasto del joystick
+			if (e.ActionType == SKTouchAction.Released)
 			{
 				top = false;
 				right = false;
@@ -545,6 +597,12 @@ namespace Horizon
 			else
 				theme = "image";
 		}
+		double d;
+		private void sunPointer_gesture(object sender, EventArgs e)
+		{
+			d = Math.Sqrt(Math.Pow(center.X - width / 2, 2) + Math.Pow(center.Y - height / 2, 2));
+			resetCamera = true;
+		}
 
 		#endregion
 
@@ -640,18 +698,18 @@ namespace Horizon
 		}
 
 		private SKPoint getPlanetPoint(Planet pl)
-		{  
+		{
 			return getPoint(pl.coord.X, pl.coord.Y, 1);
 		}
 
 		private SKPoint getPoint(double x, double y, double paral)
-        {
+		{
 			return new SKPoint(
-                (float)(x * scale+										//la posizione iniziale del pianeta (che non viene mai cambiata!) zoommata  +
-				width / 2 + (center.X - width / 2) * scale * paral  +	//il centro della telecamera zoommato (with / 2 non deve venir scalato però quindi lo tiro fuori)  +
-				panPoint.X * scale * paral),							//panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
+				(float)(x * scale +                                     //la posizione iniziale del pianeta (che non viene mai cambiata!) zoommata  +
+				width / 2 + (center.X - width / 2) * scale * paral +    //il centro della telecamera zoommato (with / 2 non deve venir scalato però quindi lo tiro fuori)  +
+				panPoint.X * scale * paral),                            //panPoint è il movimento totale che ha fatto il dito mentre si sta spostando, see panGesture for more info
 
-				(float)(y * scale +										//stessa cosa ma per la Y
+				(float)(y * scale +                                     //stessa cosa ma per la Y
 				height / 2 + (center.Y - height / 2) * scale * paral +
 				panPoint.Y * scale * paral));
 		}
@@ -729,7 +787,7 @@ namespace Horizon
 			stopBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.pause.png", typeof(Camera2D).GetTypeInfo().Assembly);
 			resetBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.hourglass.png", typeof(Camera2D).GetTypeInfo().Assembly);
 			forwardBtn.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.notbackarrow.png", typeof(Camera2D).GetTypeInfo().Assembly);
-			ChangeThemeButton1.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme1.png", typeof(Camera2D).GetTypeInfo().Assembly); 
+			ChangeThemeButton1.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme1.png", typeof(Camera2D).GetTypeInfo().Assembly);
 			ChangeThemeButton2.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme2.png", typeof(Camera2D).GetTypeInfo().Assembly);
 			bottombartoggle.ScaleTo(0.7);
 			backBtn.ScaleTo(0.7);
