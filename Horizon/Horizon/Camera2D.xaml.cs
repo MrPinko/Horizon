@@ -622,6 +622,7 @@ namespace Horizon
 				pl[i].coord.Y = (int)(Math.Sin(a) * pl[i].sunDist);
 			}
 		}
+
 		private void backPressed(object sender, EventArgs e)
 		{
 			timeIsMoving = true;
