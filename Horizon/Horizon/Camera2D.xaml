@@ -128,8 +128,9 @@
 							Tapped="resetPressed"
 							NumberOfTapsRequired="1" />
 					</Image.GestureRecognizers>
-
 				</Image>
+
+
 
 
 				<!--  forward time travel   -->
@@ -163,9 +164,18 @@
 		
 		<Image
 			x:Name="pinCam"
-			Source="pinCam.png"
-			Rotation="45"
+			Source="pin.png"
 			AbsoluteLayout.LayoutBounds="0.7,0.2,0.1,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional"
+			IsVisible="false">
+			<Image.GestureRecognizers>
+				<TapGestureRecognizer Tapped="pinCam_Tapped"></TapGestureRecognizer>
+			</Image.GestureRecognizers>
+		</Image>
+
+		<Image x:Name="noPinCam"
+			Source="disablePin.png"
+			AbsoluteLayout.LayoutBounds="1,0,0.07,0.04"
 			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional"
 			IsVisible="false">
 			<Image.GestureRecognizers>

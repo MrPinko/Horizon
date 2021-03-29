@@ -160,15 +160,12 @@ namespace Horizon
 			if (resetCamera)
 				resetCameraFunction();
 
-			if(!openPopUp)
+			if(!openPopUp && !restoreCamera)
 				if (isPinCamActive)
 				{
-					center.X = (float)getPlanetPoint(pl[iPlanet]).X - (pl[iPlanet].Size * scale) / 2;
-					center.Y = (float)getPlanetPoint(pl[iPlanet]).Y - (pl[iPlanet].Size * scale) / 2;
-
-					
+					center.X = -pl[iPlanet].coord.X  + (width / 2) ;
+					center.Y = -pl[iPlanet].coord.Y  + (height / 2) ;
 				}
-
 
 		}
 
@@ -358,13 +355,14 @@ namespace Horizon
 		//-------------------------------------------------------------------------------------------------------------------\\
 		#region ANIMAZIONI POPUP
 		private Boolean restoreCamera = false;
-		public void planetTranslationFunction()
+		public void planetTranslationFunction()       //zoom function
 		{
 			if (scale >= popUpScale)
 			{
 				openPopUp = true;
 				clickedPlanet = false;
 				pinCam.IsVisible = true;
+				noPinCam.IsVisible = false;
 			}
 			else if (scale < popUpScale)
 			{
@@ -379,9 +377,12 @@ namespace Horizon
 
 		public void restoreCameraFunction()
 		{
+			pinCam.IsVisible = false;
 			BottomBar.IsVisible = true;
 			if (scale <= oldScale)
+			{
 				restoreCamera = false;
+			}
 			else if (scale > oldScale)
 				if (scale * velocity / 30 > 0)
 				{
@@ -389,6 +390,21 @@ namespace Horizon
 					if (scale < oldScale)
 						scale = oldScale;
 				}
+
+		}
+
+		public void resetViewAfterPopUp()
+		{
+			openPopUp = false;
+			LabelPlanetname.IsVisible = false;
+			ScroolView.IsVisible = false;
+			timeIsMoving = timeWasMoving;
+
+			restoreCamera = true;
+			if (iPlanet == 2)      //luna
+				pl[iPlanet].Size = 20;
+			else
+				pl[iPlanet].Size = 70;         //ripristino le dimensioni del pianeta quando esco dalla visualizzazione popup
 
 		}
 		#endregion
@@ -410,7 +426,7 @@ namespace Horizon
 			if (e.ActionType == SKTouchAction.Pressed && openPopUp == false && !touchRect.IntersectsWith(joyStick.GetRect()) &&
 				!touchRect.IntersectsWith(switchJoyStick.GetRect()))
 			{
-				for (int i = 0; i < pl.Count; i++)
+				for (int i = 0; i < pl.Count; i++)            //che pianeta ho cliccato??
 				{
 					if (touchRect.IntersectsWith(pl[i].hitBox(getPlanetPoint(pl[i]).X, getPlanetPoint(pl[i]).Y, pl[i].Size, scale)))
 					{
@@ -463,16 +479,7 @@ namespace Horizon
 			//aperto il popup se clicco fuori da essi esco dalla modalità
 			if (openPopUp && touchRect.IntersectsWith(phoneRect))             //non prende il tocco se clicco un elemento xaml
 			{
-				openPopUp = false;
-				LabelPlanetname.IsVisible = false;
-				ScroolView.IsVisible = false;
-				timeIsMoving = timeWasMoving;
-
-				restoreCamera = true;
-				if (iPlanet == 2)      //luna
-					pl[iPlanet].Size = 20;
-				else
-					pl[iPlanet].Size = 70;         //ripristino le dimensioni del pianeta quando esco dalla visualizzazione popup
+				resetViewAfterPopUp();	
 			}
 
 			//rilascio la pressione su un tasto del joystick
@@ -593,6 +600,15 @@ namespace Horizon
 		private void pinCam_Tapped(object sender, EventArgs e)
 		{
 			isPinCamActive = !isPinCamActive;
+
+			pinCam.IsVisible = false;
+
+			if(noPinCam.IsVisible)
+				noPinCam.IsVisible = false;
+			else
+				noPinCam.IsVisible = true;
+
+			resetViewAfterPopUp();
 		}
 
 		#endregion
