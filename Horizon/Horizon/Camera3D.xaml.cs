@@ -32,9 +32,6 @@ namespace Horizon
         private List<Planet> tempPoints;
         private String observer;
 
-        CustomButton.ChangeTextureButton changeButton;
-        CustomButton.SwitchJoyStick switchJoyStick;
-
         private String theme;
         private List<String> texturepath = new List<string>();
         private List<String> texturepathHD = new List<string>();
@@ -129,8 +126,6 @@ namespace Horizon
             setTexture();
             setTextureHD();
             loadBottomBarTexture();
-            changeButton = new CustomButton.ChangeTextureButton((float)width, (float)height, 150, 150);
-            switchJoyStick = new CustomButton.SwitchJoyStick((float)width, (float)height, 100, 100);
 
             this.constellations = new Constellations(this, stars);
             this.constellations.printText = true;
@@ -218,9 +213,6 @@ namespace Horizon
                 else if (theme.Equals("imageHD"))            //disegno i pianeti come immagini reali
                     canvas.DrawBitmap(tempPlanets[i].textureHD, SKRect.Create(tempPoint, new SKSize(200 + tempPlanets[i].printSize * 15, 200 + tempPlanets[i].printSize * 15)), null);
             }
-
-            if (sensorExists)
-                switchJoyStick.draw(canvas);
         }
 
 
@@ -272,22 +264,22 @@ namespace Horizon
 
 
         //BOTTONI
-        private void canvasView_Touch(object sender, SKTouchEventArgs e)
+        private void SwitchJoystickToggle(object sender, EventArgs e)
         {
-            SKRect touchRect = SKRect.Create(e.Location.X, e.Location.Y, 1, 1);
-
-            //abilito/disabilito giroscopio
-            if (touchRect.IntersectsWith(switchJoyStick.GetRect()))
+            if (sensorExists)
             {
-                if (sensorExists)
+                useSensor = !useSensor;
+                if (!useSensor)
                 {
-                    switchJoyStick.changeStateOn();
-                    useSensor = !useSensor;
-                    if (!useSensor)
-                    {
-                        tempRA = (float)RA;
-                        tempDEC = (float)DEC;
-                    }
+                    tempRA = (float)RA;
+                    tempDEC = (float)DEC;
+                    SwitchJoystickButton1.FadeTo(0, 200);
+                    SwitchJoystickButton2.FadeTo(1, 200);
+                }
+                else
+                {
+                    SwitchJoystickButton1.FadeTo(1, 200);
+                    SwitchJoystickButton2.FadeTo(0, 200);
                 }
             }
         }
@@ -485,11 +477,20 @@ namespace Horizon
             ChangeThemeButton1.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme1.png", typeof(Camera3D).GetTypeInfo().Assembly);
             ChangeThemeButton2.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.Theme2.png", typeof(Camera3D).GetTypeInfo().Assembly);
             rocketLabelImage.Source = ImageSource.FromResource("Horizon.Assets.Rocket.rocketLaunch.png", typeof(Camera3D).GetTypeInfo().Assembly);
+            SwitchJoystickButton1.Source = ImageSource.FromResource("Horizon.Assets.CustomButton.controllerSwitch.png", typeof(Camera3D).GetTypeInfo().Assembly);
+            SwitchJoystickButton2.Source = ImageSource.FromResource("Horizon.Assets.CustomButton.controllerSwitch2.png", typeof(Camera3D).GetTypeInfo().Assembly);
+
             bottombartoggle.ScaleTo(0.7);
             ChangeThemeButton1.ScaleTo(0.7);
             ChangeThemeButton2.ScaleTo(0.7);
-            ChangeThemeButton2.FadeTo(0, 0);
+            SwitchJoystickButton1.ScaleTo(0.7);
+            SwitchJoystickButton2.ScaleTo(0.7);
 
+            ChangeThemeButton2.FadeTo(0, 0);
+            if(sensorExists)
+                ChangeThemeButton2.FadeTo(0, 0);
+            else
+                ChangeThemeButton1.FadeTo(0, 0);
         }
 
         #endregion

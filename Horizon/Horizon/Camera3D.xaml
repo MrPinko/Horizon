@@ -8,7 +8,6 @@
 	<AbsoluteLayout>
 		<skia:SKCanvasView x:Name="canvasView"
                            PaintSurface="canvasView_PaintSurface"
-                           Touch="canvasView_Touch"
                            EnableTouchEvents="True"
                            AbsoluteLayout.LayoutBounds="0,0,1,1"
 					       AbsoluteLayout.LayoutFlags="HeightProportional,WidthProportional">
@@ -40,15 +39,16 @@
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                     
                 </Grid.ColumnDefinitions>
 
-				<Label Background="#2F2F2F" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"></Label>
+				<Label Background="#2F2F2F" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"></Label>
 
 
 				<Image 
 					x:Name="bottombartoggle"
-					Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+					Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
 					<Image.GestureRecognizers>
 						<TapGestureRecognizer
 							Tapped="Button_Clicked"
@@ -83,6 +83,26 @@
                     BackgroundColor="Transparent"
                     BorderColor="Transparent">
                 </Button>
+
+                <Image 
+					x:Name="SwitchJoystickButton1"
+					Grid.Row="3" Grid.Column="2">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer
+							Tapped="SwitchJoystickToggle"
+							NumberOfTapsRequired="1" />
+                    </Image.GestureRecognizers>
+                </Image>
+
+                <Image 
+					x:Name="SwitchJoystickButton2"
+					Grid.Row="3" Grid.Column="2">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer
+							Tapped="SwitchJoystickToggle"
+							NumberOfTapsRequired="1" />
+                    </Image.GestureRecognizers>
+                </Image>
 
             </Grid>
 
