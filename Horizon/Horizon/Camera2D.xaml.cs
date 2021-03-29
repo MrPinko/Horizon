@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Newtonsoft.Json;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
@@ -91,6 +92,7 @@ namespace Horizon
 						Math.Pow(pl[i].coord.X, 2));
 			}
 
+			//creaazione delle stelle nello sfondo
 			Random r = new Random();
 
 			double a;
@@ -121,6 +123,7 @@ namespace Horizon
 			if (startup)
 			{
 				translateBottonBarDown();              //abbasso al barra
+				this.height = (int)(canvasView.Height * dpi);
 				startup = false;
 			}
 
@@ -143,7 +146,7 @@ namespace Horizon
 						canvas.DrawCircle(getPoint(st.cp.X, st.cp.Y, st.paral), (float)(3.5 * scale), StarColor.colors[st.colorIndex]);
 
 			//stampa puntatore sole
-			updateSunPointer(canvas);
+			updateSunPointer();
 
 			//animazioni di cliccare ed uscire dal popup
 			if (clickedPlanet)                          //pre apertura popup
@@ -234,7 +237,7 @@ namespace Horizon
 				double a = 360 / Math.Floor(x);
 				for (double i = 0; i < 360; i += a)
 				{
-					canvas.DrawCircle(new SKPoint((float)(cx + r * Math.Cos((i * Math.PI / 180))), (float)(cy + r * Math.Sin((i * Math.PI / 180)))), 2 * scale,       //formula per ricavare un punto sul cerchio dato l'angolo (cx+r*cos||sin(a))
+					canvas.DrawCircle((float)(cx + r * Math.Cos(i * Math.PI / 180)), (float)(cy + r * Math.Sin(i * Math.PI / 180)), 2 * scale,       //formula per ricavare un punto sul cerchio dato l'angolo (cx+r*cos||sin(a))
 						new SKPaint
 						{
 							Style = SKPaintStyle.Fill,
@@ -256,41 +259,47 @@ namespace Horizon
 		}
 
 
-		private void updateSunPointer(SKCanvas canvas)
+		private void updateSunPointer()
 		{
-			int height = (int)(canvasView.Height * dpi);
-			if (!openPopUp)
-				if (getPlanetPoint(pl[0]).Y < 0 || getPlanetPoint(pl[0]).Y > height || getPlanetPoint(pl[0]).X < 0 || getPlanetPoint(pl[0]).X > width)
+			//è brutto, ma ci ho provato
+			if (isOnScreen)
+				height = this.height - BottomBar.Height * dpi;
+			else
+				height = this.height - BottomBar.Height;
+
+			if (!openPopUp) {
+				int OSP = 70; //offset del sunPointer rispetto al bordo dello schermo, in pixel
+				//double height;
+
+				List<Line> sc = new List<Line>(4); //il rettangolo
+
+				sc.Add(new Line(OSP, OSP, (float)width - OSP, OSP));
+				sc.Add(new Line((float)width - OSP, OSP, (float)width - OSP, (float)height - OSP));
+				sc.Add(new Line((float)width - OSP, (float)height - OSP, OSP, (float)height - OSP));
+				sc.Add(new Line(OSP, (float)height - OSP, OSP, OSP));
+
+				Line sunLine = new Line((float)(width / 2), (float)(height / 2), getPlanetPoint(pl[0]).X, getPlanetPoint(pl[0]).Y);
+
+				SKPoint? intersection = null;
+				for (int i = 0; i < sc.Count; i++)
 				{
-					int OSP = 70; //offset del sunPointer rispetto al bordo dello schermo, in pixel
-
-					List<Line> sc = new List<Line>(4); //il rettangolo
-
-					sc.Add(new Line(OSP, OSP, (float)width - OSP, OSP));
-					sc.Add(new Line((float)width - OSP, OSP, (float)width - OSP, (float)height - OSP));
-					sc.Add(new Line((float)width - OSP, (float)height - OSP, OSP, (float)height - OSP));
-					sc.Add(new Line(OSP, (float)height - OSP, OSP, OSP));
-
-					Line sunLine = new Line((float)(width / 2), height / 2, getPlanetPoint(pl[0]).X, getPlanetPoint(pl[0]).Y);
-
-					SKPoint? intersection = null;
-					for (int i = 0; i < sc.Count; i++)
-					{
-						intersection = Misc.Intersects(sc[i].p1, sc[i].p2, sunLine.p1, sunLine.p2);
-						if (intersection != null)
-							break;
-					}
-
+					intersection = Misc.Intersects(sc[i].p1, sc[i].p2, sunLine.p1, sunLine.p2);
 					if (intersection != null)
-						sunPointer.TranslateTo(((SKPoint)intersection).X / dpi - sunPointer.X - sunPointer.Height / 2, ((SKPoint)intersection).Y / dpi - sunPointer.Y - sunPointer.Width / 2, 10);
-					float b = Misc.toDeg((float)Math.Atan2(getPlanetPoint(pl[0]).Y - height / 2, getPlanetPoint(pl[0]).X - width / 2));
-					//RotateTo vuole l'angolo in gradi a caso, il +90 serve perchè si e il -dim/2 perchè getPlanetPoint misura a partire dall'angolo in alto a sinistra
-					sunPointer.RotateTo(b + 90, 10);
-					sunPointer.IsVisible = true;
-					return;
+						break;
 				}
 
-			sunPointer.IsVisible = false;
+				if (intersection != null)
+					sunPointer.TranslateTo(((SKPoint)intersection).X / dpi - sunPointer.X - sunPointer.Height / 2, ((SKPoint)intersection).Y / dpi - sunPointer.Y - sunPointer.Width / 2, 10);
+				float b = Misc.toDeg((float)Math.Atan2(getPlanetPoint(pl[0]).Y - height / 2, getPlanetPoint(pl[0]).X - width / 2));
+				//RotateTo vuole l'angolo in gradi a caso, il +90 serve perchè si e il -dim/2 perchè getPlanetPoint misura a partire dall'angolo in alto a sinistra
+				sunPointer.RotateTo(b + 90, 10);
+			}
+
+			//la roba sopra la faccio sempre perchè se no a volte il puntatore flashava da un lato quando era dall'altro
+			if (getPlanetPoint(pl[0]).Y < 0 || getPlanetPoint(pl[0]).Y > height || getPlanetPoint(pl[0]).X < 0 || getPlanetPoint(pl[0]).X > width)
+				sunPointer.IsVisible = true;
+			else
+				sunPointer.IsVisible = false;
 		}
 
 		private void resetCameraFunction()
@@ -299,17 +308,12 @@ namespace Horizon
 			double dx = (center.X - width / 2) / d;
 			double dy = (center.Y - height / 2) / d;
 
-			double spd = 2.5;
-
 			center.X -= dx * (d / 50 + 30);
 			center.Y -= dy * (d / 50 + 30);
-			Misc.println((dx * (d / 250 + 30)).ToString());
-			
-
+			//Misc.println((dx * (d / 50 + 30)).ToString());
 
 			if ( Math.Abs(center.X - width / 2) < 20)
 				resetCamera = false;
-
 		}
 	
 	

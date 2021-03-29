@@ -8,28 +8,6 @@ namespace Horizon
 {
     class Request
     {
-        /* //visto che c'è un loading screen questa cosa la faccio in LoadingPage.xaml.cs
-        public static List<Planet> getPlanetList()
-        {
-            List<Planet> planets = new List<Planet>();
-            string[] planetNames = { "sun", "earth", "mercury", "venus", "mars", "jupiter", "saturn", "uranus", "neptune" };
-
-            for (int i = 0; i < planetNames.Length; i++)
-            {
-                if (i == 1) //la terra
-                {
-                    planets.Add(new Planet(planetNames[i], 0, 0, 0, 0));
-                    continue;
-                }
-
-                Task<Planet> task = Task.Run<Planet>(async () => await Request.getPlanet(planetNames[i]));
-                planets.Add(task.Result);
-
-            }
-            
-            return planets;
-        }*/
-
         public static async Task<PlanetRaw> getPlanet(string name)
         {
             System.Diagnostics.Debug.WriteLine("\n\n\n--"+name+"--\n\n\n");
