@@ -440,7 +440,7 @@ namespace Horizon
 
 			//listener pianeti
 			if (e.ActionType == SKTouchAction.Pressed && openPopUp == false && !touchRect.IntersectsWith(joyStick.GetRect()) &&
-				!touchRect.IntersectsWith(switchJoyStick.GetRect()))
+				!touchRect.IntersectsWith(switchJoyStick.GetRect()) && !noPinCam.IsVisible)
 			{
 				for (int i = 0; i < pl.Count; i++)            //che pianeta ho cliccato??
 				{
@@ -513,7 +513,7 @@ namespace Horizon
 
 		private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)  //dito che preme e si muove in giro
 		{
-			if (!clickedPlanet && !openPopUp && !joyStickVisible && zoomGesture != 2)
+			if (!clickedPlanet && !openPopUp && !joyStickVisible && zoomGesture != 2 && !noPinCam.IsVisible)      //controlli 
 			{
 				if (e.StatusType.ToString() == "Running" && zoomGesture != 1)
 				{
@@ -533,7 +533,7 @@ namespace Horizon
 
 		private void PinchGestureRecognizer_PinchUpdated(object sender, PinchGestureUpdatedEventArgs e) //due dita che zoommano
 		{
-			if (!openPopUp)
+			if (!openPopUp && !noPinCam.IsVisible)        //controllo se il popup non è aperto e se non è pinnato alcun pianeta
 			{
 				if (e.Status.ToString() == "Running")
 				{
@@ -625,6 +625,13 @@ namespace Horizon
 				noPinCam.IsVisible = false;
 			else
 				noPinCam.IsVisible = true;
+			
+			if (!timeIsMoving && !timeWasMoving && noPinCam.IsVisible)
+			{
+				skipIncrement = -2;
+				timeIsMoving = true;
+				timeWasMoving = true;
+			}
 
 			resetViewAfterPopUp();
 		}
