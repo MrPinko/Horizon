@@ -6,6 +6,8 @@
 			 Title="MainDrawPage">
 
 	<AbsoluteLayout>
+        
+        <!-- CANVAS -->
 		<skia:SKCanvasView x:Name="canvasView"
                            PaintSurface="canvasView_PaintSurface"
                            EnableTouchEvents="True"
@@ -19,6 +21,78 @@
 
 		</skia:SKCanvasView>
 
+        <!-- SELEZIONE POSIZIONE -->
+        <RadioButton x:Name="normalGPSRadio"
+            GroupName="position"
+			IsVisible="false"
+			AbsoluteLayout.LayoutBounds="0.3,0.1,0.6,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
+        </RadioButton>
+        <Label x:Name="normalGPSLabel" 
+            Text="Use GPS location"
+            IsVisible="false"
+            FontSize="Medium" FontFamily="Georgia"
+			TextColor="#c3c3c3"
+            HorizontalOptions="Start" VerticalOptions="Center"
+            AbsoluteLayout.LayoutBounds="0.55,0.1,0.6,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional"/>
+
+        <RadioButton x:Name="customGPSRadio"
+            GroupName="position"
+			IsVisible="false"
+			AbsoluteLayout.LayoutBounds="0.3,0.2,0.6,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
+        </RadioButton>
+        <Label x:Name="customGPSLabel" 
+            Text="Use custom location"
+            IsVisible="false"
+            FontSize="Medium" FontFamily="Georgia"
+			TextColor="#c3c3c3"
+            HorizontalOptions="Start" VerticalOptions="Center"
+            AbsoluteLayout.LayoutBounds="0.55,0.2,0.6,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional"/>
+
+        <Label x:Name="latitudeLabel"
+            Text="Latitude: "
+			IsVisible="false"
+			HorizontalTextAlignment="Start" VerticalTextAlignment="Center"
+			FontSize="Medium" FontFamily="Georgia"
+			TextColor="#c3c3c3"
+			AbsoluteLayout.LayoutBounds="0.4,0.25,0.3,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
+        </Label>
+
+        <Label x:Name="longitudeLabel"
+            Text="Longitude: "
+			IsVisible="false"
+			HorizontalTextAlignment="Start" VerticalTextAlignment="Center"
+			FontSize="Medium" FontFamily="Georgia"
+			TextColor="#c3c3c3"
+			AbsoluteLayout.LayoutBounds="0.4,0.3,0.3,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
+        </Label>
+        
+        <Editor x:Name="latitudeText"
+			IsVisible="false"
+            MaxLength="10"
+            Keyboard="Numeric"
+			FontSize="Medium" FontFamily="Georgia"
+			TextColor="#c3c3c3"
+			AbsoluteLayout.LayoutBounds="0.75,0.265,0.3,0.05"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
+        </Editor>
+
+        <Editor x:Name="longitudeText"
+			IsVisible="false"
+            MaxLength="10"
+            Keyboard="Numeric"
+			FontSize="Medium" FontFamily="Georgia"
+			TextColor="#c3c3c3"
+			AbsoluteLayout.LayoutBounds="0.75,0.31,0.30,0.05"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
+        </Editor>
+
+        <!-- BOTTOM BAR-->
 		<Frame x:Name="BottomBar"  Padding="1" BackgroundColor="#15ffffff"                
 			    AbsoluteLayout.LayoutBounds="0.5,1,1,0.26"
 				AbsoluteLayout.LayoutFlags="All"
@@ -104,10 +178,31 @@
                     </Image.GestureRecognizers>
                 </Image>
 
+                <Image 
+					x:Name="GPSMode1"
+					Grid.Row="3" Grid.Column="3">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer
+							Tapped="GPSModeToggle"
+							NumberOfTapsRequired="1" />
+                    </Image.GestureRecognizers>
+                </Image>
+
+                <Image 
+					x:Name="GPSMode2"
+					Grid.Row="3" Grid.Column="3">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer
+							Tapped="GPSModeToggle"
+							NumberOfTapsRequired="1" />
+                    </Image.GestureRecognizers>
+                </Image>
+
             </Grid>
 
 		</Frame>
 
+        <!-- RAZZO-->
 		<Image x:Name="rocketLabelImage"
 			   IsEnabled="False"
 			   InputTransparent="True"

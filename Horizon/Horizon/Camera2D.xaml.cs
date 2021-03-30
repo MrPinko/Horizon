@@ -442,6 +442,7 @@ namespace Horizon
 						oldScale = scale;
 						clickedPlanet = true;
 						iPlanet = i;
+						sunPointer.IsVisible = false;
 					}
 				}
 			}
@@ -485,7 +486,8 @@ namespace Horizon
 			//aperto il popup se clicco fuori da essi esco dalla modalità
 			if (openPopUp && touchRect.IntersectsWith(phoneRect))             //non prende il tocco se clicco un elemento xaml
 			{
-				resetViewAfterPopUp();	
+				resetViewAfterPopUp();
+				sunPointer.IsVisible = true;
 			}
 
 			//rilascio la pressione su un tasto del joystick
@@ -638,6 +640,7 @@ namespace Horizon
 
 		private void backPressed(object sender, EventArgs e)
 		{
+			timeWasMoving = true;
 			timeIsMoving = true;
 
 			if (skipIncrement > 0 && skipIncrement < 32)
@@ -653,6 +656,7 @@ namespace Horizon
 
 		private void forwardPressed(object sender, EventArgs e)
 		{
+			timeWasMoving = true;
 			timeIsMoving = true;
 
 			if (skipIncrement > 2)
@@ -668,12 +672,14 @@ namespace Horizon
 
 		private void stopPressed(object sender, EventArgs e)
 		{
+			timeWasMoving = false;
 			timeIsMoving = false;
 			skipIncrement = 0;
 		}
 
 		private void resetPressed(object sender, EventArgs e)
 		{
+			timeWasMoving = false;
 			timeIsMoving = false;
 			skipIncrement = 0;
 			timeSkip = 0;

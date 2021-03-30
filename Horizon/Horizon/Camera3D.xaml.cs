@@ -37,6 +37,8 @@ namespace Horizon
         private List<String> texturepathHD = new List<string>();
         public Boolean useSensor = true;
         public Boolean sensorExists = true;
+        public Boolean positionLoaded = true;
+        public Boolean usingGPS = true;
 
         private const float baseAmp = 72 / 2; //72 e 90 best imho
         private double RA;      //in gradi
@@ -48,6 +50,7 @@ namespace Horizon
 
         private Point panPoint = new Point(0, 0);
         private float latitude;
+        private float longitude;
         private float tempDEC;
         private float tempRA;
         public float baseX;
@@ -84,7 +87,7 @@ namespace Horizon
                 points.Add(new Planet("EQUATOR", i, 0, 4, new SKColor(255, 255, 255)));
 
             this.observer = observer;
-            this.RA = tempRA = RA;
+            this.RA = tempRA = longitude = RA;
             this.DEC = tempDEC = latitude = DEC;
             this.width = width;
             this.height = height;
@@ -264,6 +267,41 @@ namespace Horizon
 
 
         //BOTTONI
+        private void GPSModeToggle(object sender, EventArgs e)
+        {
+            if (positionLoaded) //!
+            {
+                //normalGPSRadio.FadeTo(0.5, 0);
+                normalGPSLabel.IsEnabled = false;
+                normalGPSRadio.IsEnabled = false;
+                customGPSRadio.IsChecked = true;
+            }
+            else if (usingGPS)
+            {
+                normalGPSRadio.IsChecked = true;
+            }
+            else if (!usingGPS)
+            {
+                customGPSRadio.IsChecked = true;
+            }
+            latitudeText.Text = latitude.ToString();
+            longitudeText.Text = longitude.ToString();
+
+            normalGPSRadio.IsVisible = true;
+            customGPSRadio.IsVisible = true;
+
+            normalGPSLabel.IsVisible = true;
+            customGPSLabel.IsVisible = true;
+
+            latitudeLabel.IsVisible = true;
+            longitudeLabel.IsVisible = true;
+            latitudeText.IsVisible = true;
+            longitudeText.IsVisible = true;
+
+            //customGPSLabel.IsVisible = true;
+            //customGPSLabel.IsVisible = true;
+        }
+
         private void SwitchJoystickToggle(object sender, EventArgs e)
         {
             if (sensorExists)
@@ -372,13 +410,6 @@ namespace Horizon
                 theme = "image";
         }
 
-        //GIROSCOPIO
-        public void updateFromSensor()  //base = se guardasse precisamente in alto  
-        {
-            RA = Misc.toDeg((float)main.giroscope.yaw);
-            DEC = Misc.toDeg((float)main.giroscope.roll);
-        }
-
         #endregion
 
         //-------------------------------------------------------------------------------------------------------------------\\
@@ -415,6 +446,13 @@ namespace Horizon
             }
 
             return cord;
+        }
+
+        //GIROSCOPIO
+        public void updateFromSensor()  //base = se guardasse precisamente in alto  
+        {
+            RA = Misc.toDeg((float)main.giroscope.yaw);
+            DEC = Misc.toDeg((float)main.giroscope.roll);
         }
 
         #endregion
@@ -479,15 +517,24 @@ namespace Horizon
             rocketLabelImage.Source = ImageSource.FromResource("Horizon.Assets.Rocket.rocketLaunch.png", typeof(Camera3D).GetTypeInfo().Assembly);
             SwitchJoystickButton1.Source = ImageSource.FromResource("Horizon.Assets.CustomButton.controllerSwitch.png", typeof(Camera3D).GetTypeInfo().Assembly);
             SwitchJoystickButton2.Source = ImageSource.FromResource("Horizon.Assets.CustomButton.controllerSwitch2.png", typeof(Camera3D).GetTypeInfo().Assembly);
+            GPSMode1.Source = ImageSource.FromResource("Horizon.Assets.CustomButton.controllerSwitch.png", typeof(Camera3D).GetTypeInfo().Assembly);
+            GPSMode2.Source = ImageSource.FromResource("Horizon.Assets.CustomButton.controllerSwitch2.png", typeof(Camera3D).GetTypeInfo().Assembly);
 
             bottombartoggle.ScaleTo(0.7);
             ChangeThemeButton1.ScaleTo(0.7);
             ChangeThemeButton2.ScaleTo(0.7);
             SwitchJoystickButton1.ScaleTo(0.7);
             SwitchJoystickButton2.ScaleTo(0.7);
+            GPSMode1.ScaleTo(0.7);
+            GPSMode2.ScaleTo(0.7);
+
 
             ChangeThemeButton2.FadeTo(0, 0);
-            if(sensorExists)
+            if(positionLoaded)
+                GPSMode2.FadeTo(0, 0);
+            else
+                GPSMode1.FadeTo(0, 0);
+            if (sensorExists)
                 ChangeThemeButton2.FadeTo(0, 0);
             else
                 ChangeThemeButton1.FadeTo(0, 0);
