@@ -268,43 +268,53 @@ namespace Horizon
 
 		private void updateSunPointer()
 		{
-			double height = this.height;
-			//è brutto, ma ci ho provato
-			if (isOnScreen)
-				height = height - BottomBar.Height * dpi;
-			else
-				height = height - BottomBar.Height;
-
-			Misc.println(BottomBar.Y);
-			if (!openPopUp) {
-				int OSP = 70; //offset del sunPointer rispetto al bordo dello schermo, in pixel
-				//double height;
-
-				List<Line> sc = new List<Line>(4); //il rettangolo
-
-				sc.Add(new Line(OSP, OSP, (float)width - OSP, OSP));
-				sc.Add(new Line((float)width - OSP, OSP, (float)width - OSP, (float)height - OSP));
-				sc.Add(new Line((float)width - OSP, (float)height - OSP, OSP, (float)height - OSP));
-				sc.Add(new Line(OSP, (float)height - OSP, OSP, OSP));
-
-				Line sunLine = new Line((float)(width / 2), (float)(height / 2), getPlanetPoint(pl[0]).X, getPlanetPoint(pl[0]).Y);
-
-				SKPoint? intersection = null;
-				for (int i = 0; i < sc.Count; i++)
-				{
-					intersection = Misc.Intersects(sc[i].p1, sc[i].p2, sunLine.p1, sunLine.p2);
-					if (intersection != null)
-						break;
-				}
-
-				if (intersection != null)
-					sunPointer.TranslateTo(((SKPoint)intersection).X / dpi - sunPointer.X - sunPointer.Height / 2, ((SKPoint)intersection).Y / dpi - sunPointer.Y - sunPointer.Width / 2, 10);
-				float b = Misc.toDeg((float)Math.Atan2(getPlanetPoint(pl[0]).Y - height / 2, getPlanetPoint(pl[0]).X - width / 2));
-				//RotateTo vuole l'angolo in gradi a caso, il +90 serve perchè si e il -dim/2 perchè getPlanetPoint misura a partire dall'angolo in alto a sinistra
-				sunPointer.RotateTo(b + 90, 10);
+			if (openPopUp)
+			{
+				sunPointer.IsVisible = false;
+				return;
+            }else{
+				sunPointer.IsVisible = true;
 			}
 
+			double height;
+			//è brutto, ma ci ho provato
+			if (isOnScreen) //la bottom bar
+				height = this.height - BottomBar.Height * dpi;
+			else
+				height = this.height - BottomBar.Height;
+
+			Misc.println(BottomBar.Y);
+
+			int OSP = 70; //offset del sunPointer rispetto al bordo dello schermo, in pixel
+			//double height;
+
+			List<Line> sc = new List<Line>(4); //il rettangolo
+
+			sc.Add(new Line(OSP, OSP, (float)width - OSP, OSP));
+			sc.Add(new Line((float)width - OSP, OSP, (float)width - OSP, (float)height - OSP));
+			sc.Add(new Line((float)width - OSP, (float)height - OSP, OSP, (float)height - OSP));
+			sc.Add(new Line(OSP, (float)height - OSP, OSP, OSP));
+
+			Line sunLine = new Line((float)(width / 2), (float)(this.height / 2), getPlanetPoint(pl[0]).X, getPlanetPoint(pl[0]).Y);
+
+			SKPoint? intersection = null;
+			for (int i = 0; i < sc.Count; i++)
+			{
+				intersection = Misc.Intersects(sc[i].p1, sc[i].p2, sunLine.p1, sunLine.p2);
+				if (intersection != null)
+					break;
+			}
+
+			if (intersection != null)
+				sunPointer.TranslateTo(((SKPoint)intersection).X / dpi - sunPointer.X - sunPointer.Height / 2, ((SKPoint)intersection).Y / dpi - sunPointer.Y - sunPointer.Width / 2, 1);
+			
+			//RotateTo vuole l'angolo in gradi a caso, il +90 serve perchè si e il -dim/2 perchè getPlanetPoint misura a partire dall'angolo in alto a sinistra
+			float b = Misc.toDeg((float)Math.Atan2(getPlanetPoint(pl[0]).Y - this.height / 2, getPlanetPoint(pl[0]).X - width / 2));
+			sunPointer.RotateTo(b + 90, 1);
+			
+
 			//la roba sopra la faccio sempre perchè se no a volte il puntatore flashava da un lato quando era dall'altro
+
 			if (getPlanetPoint(pl[0]).Y < 0 || getPlanetPoint(pl[0]).Y > height || getPlanetPoint(pl[0]).X < 0 || getPlanetPoint(pl[0]).X > width)
 				sunPointer.IsVisible = true;
 			else
