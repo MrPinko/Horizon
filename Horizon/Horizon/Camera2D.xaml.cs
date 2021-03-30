@@ -125,6 +125,7 @@ namespace Horizon
 			if (startup)
 			{
 				translateBottonBarDown();              //abbasso al barra
+				height = (int)(canvasView.Height * dpi);
 				startup = false;
 			}
 
@@ -267,13 +268,14 @@ namespace Horizon
 
 		private void updateSunPointer()
 		{
-			int height = (int)(canvasView.Height * dpi);
+			double height = this.height;
 			//è brutto, ma ci ho provato
 			if (isOnScreen)
-				height = (int)(height - BottomBar.Height * dpi);
+				height = height - BottomBar.Height * dpi;
 			else
-				height = (int)(height - BottomBar.Height);
+				height = height - BottomBar.Height;
 
+			Misc.println(BottomBar.Y);
 			if (!openPopUp) {
 				int OSP = 70; //offset del sunPointer rispetto al bordo dello schermo, in pixel
 				//double height;
