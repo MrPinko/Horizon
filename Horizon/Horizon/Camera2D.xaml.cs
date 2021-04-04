@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Newtonsoft.Json;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
@@ -452,7 +451,6 @@ namespace Horizon
 						oldScale = scale;
 						clickedPlanet = true;
 						iPlanet = i;
-						sunPointer.IsVisible = false;
 					}
 				}
 			}
@@ -612,7 +610,8 @@ namespace Horizon
 		double d;
 		private void sunPointer_gesture(object sender, EventArgs e)
 		{
-			resetCamera = true;
+			if(!isPinCamActive)
+				resetCamera = true;
 		}
 
 		private void pinCam_Tapped(object sender, EventArgs e)
@@ -626,7 +625,7 @@ namespace Horizon
 			else
 				noPinCam.IsVisible = true;
 			
-			if (!timeIsMoving && !timeWasMoving && noPinCam.IsVisible)
+			if (!timeIsMoving && !timeWasMoving && noPinCam.IsVisible)	//lo stavo per togliere perchè mi sembrava un bug però mi fido -succe
 			{
 				skipIncrement = -2;
 				timeIsMoving = true;

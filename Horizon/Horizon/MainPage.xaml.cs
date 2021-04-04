@@ -54,7 +54,7 @@ namespace Horizon
 			if (location != null)
             {
 				isLocationLoaded = true;
-				camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
+				camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (float)location.Longitude, isLocationLoaded, (int)height, (int)width, "image");
 			}
 
 			//Debug.WriteLine("status == PermissionStatus.Granted" + status + "==" + PermissionStatus.Granted);
@@ -89,12 +89,13 @@ namespace Horizon
 					location = await Geolocation.GetLocationAsync(req);
 
 					//passo alla pagina con il menu
-					camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (int)height, (int)width, "image");
 					isLocationLoaded = true;
+					camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(location.Longitude), (float)location.Latitude, (float)location.Longitude, isLocationLoaded, (int)height, (int)width, "image");
 				}
 				catch (Exception e)
 				{
 					GPSEnabled = false;
+					isLocationLoaded = false;
 				}
 			}
             else {		
@@ -121,10 +122,10 @@ namespace Horizon
 			GPSEnabled = true;
 			if (!isLocationLoaded)
 			{
-				await askPermissionAsync();
+				await askPermissionAsync();			//se non ho i permessi o il gps è spento GPSEnabled diventa false
 				if (!isLocationLoaded)
 				{																				//se non ho i permessi o gps spento pusho lo stesso camera 3d ma con coordinate 0,90
-					camera3d = new Camera3D(this, this.pls3D, "earth", 0, 90, (int)height, (int)width, "image");
+					camera3d = new Camera3D(this, this.pls3D, "earth", (float)sidTime.getSiderealTimeFromLongitude(0), 90, 0, isLocationLoaded, (int)height, (int)width, "image");
 					if(!GPSEnabled)
 						DisplayAlert("", "GPS disattivato. Attiva il GPS per usare la tua posizione reale.", "OK");     //GPS disattivato
 				}

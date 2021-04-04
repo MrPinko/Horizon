@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using SkiaSharp.Views.Forms;
 using SkiaSharp;
 using System.Reflection;
 using Xamarin.Essentials;
-using System.Timers;
-using System.Collections;
+using Android.App;
+using Android.OS;
+using System.Threading;
+using Android.Views.InputMethods;
+using Android.Content;
 
 namespace Horizon
 {
@@ -18,7 +20,7 @@ namespace Horizon
         private double dpi = DeviceDisplay.MainDisplayInfo.Density;
 
         private MainPage main;
-        private List<Planet> planets;           //lista dei pianeti guardando dal polo nord, usata nella conversione quando si cambia osservatore
+        private List<Planet> planets;           //lista dei pianeti guardando dal polo nord, usata nella conversione quando si cambia osservatore e come punto di partenza quando si cambia la posizione GPS
         private List<Planet> syncPlanets;       //lista dei pianeti dal punto di vista della terra, sincronizzata con la posizione
         private List<Planet> tempPlanets;       //lista dei pianeti temporanea
         private List<Planet> stars;
@@ -35,10 +37,11 @@ namespace Horizon
         private String theme;
         private List<String> texturepath = new List<string>();
         private List<String> texturepathHD = new List<string>();
-        public Boolean useSensor = true;
-        public Boolean sensorExists = true;
-        public Boolean positionLoaded = true;
-        public Boolean usingGPS = true;
+        public Boolean useSensor = true;    //lasciare public
+        public Boolean sensorExists = true; //same here
+        private Boolean positionLoaded = true;
+        private Boolean usingGPS = true;
+        private Boolean isCustomLocationOpen = false;
 
         private const float baseAmp = 72 / 2; //72 e 90 best imho
         private double RA;      //in gradi
@@ -51,12 +54,14 @@ namespace Horizon
         private Point panPoint = new Point(0, 0);
         private float latitude;
         private float longitude;
+        private float customLatitude;
+        private float customLongitude;
         private float tempDEC;
         private float tempRA;
         public float baseX;
         public float baseY;
 
-        //paint per le cose inutili (nord, sud, cerchio nell'equatore)
+        //paint per i punti di riferimento (nord, sud, cerchio nell'equatore)
         public SKPaint uselessPaint = new SKPaint{
             Style = SKPaintStyle.Fill,
             Color = new SKColor(224, 224, 224)};
@@ -74,7 +79,7 @@ namespace Horizon
         #region COSE PRINCIPALI
 
         //COSTRUTTORE
-        public Camera3D(MainPage main, List<Planet> planets, String observer, float RA, float DEC, int height, int width, String theme)    //quel dec è dove guardiamo se guardiamo in alto
+        public Camera3D(MainPage main, List<Planet> planets, String observer, float RA, float DEC, float longitude, Boolean isLocationLoaded, int height, int width, String theme)    //quel dec è dove guardiamo se guardiamo in alto
         {
             InitializeComponent();
             this.main = main;
@@ -87,8 +92,10 @@ namespace Horizon
                 points.Add(new Planet("EQUATOR", i, 0, 4, new SKColor(255, 255, 255)));
 
             this.observer = observer;
-            this.RA = tempRA = longitude = RA;
-            this.DEC = tempDEC = latitude = DEC;
+            this.RA = tempRA = RA;
+            this.DEC = tempDEC = latitude = customLatitude = DEC;
+            this.longitude = customLongitude = longitude;
+            positionLoaded = usingGPS = isLocationLoaded;
             this.width = width;
             this.height = height;
             ampWidth = baseAmp / 2;
@@ -99,25 +106,17 @@ namespace Horizon
             this.syncPlanets = new List<Planet>();
             for (int i = 0; i < planets.Count; i++)
                 syncPlanets.Add((Planet)planets[i].Clone());
-            syncPlanets = synchronizePlanets(syncPlanets);
+            syncPlanets = synchronizePlanets(syncPlanets, customLongitude, customLatitude);
 
             this.syncStars = new List<Planet>();
             for (int i = 0; i < stars.Count; i++)
                 syncStars.Add((Planet)stars[i].Clone());
-            syncStars = synchronizePlanets(syncStars);
+            syncStars = synchronizePlanets(syncStars, customLongitude, customLatitude);
 
             this.syncPoints = new List<Planet>();
             for (int i = 0; i < points.Count; i++)
                 syncPoints.Add((Planet)points[i].Clone());
-            syncPoints = synchronizePlanets(syncPoints);
-            for (int i = 0; i < syncPoints.Count; i++)
-                if (syncPoints[i].name.Equals("SOUTHPOLE") || syncPoints[i].name.Equals("NORTHPOLE"))
-                {
-                    syncPoints[i].RA += 180;
-                    if (syncPoints[i].RA > 360)
-                        syncPoints[i].RA -= 360;
-                }
-
+            syncPoints = synchronizePlanets(syncPoints, customLongitude, customLatitude);
 
             //costellazioni
             this.constellations = new Constellations(this, stars);
@@ -125,17 +124,13 @@ namespace Horizon
             this.syncConstellations = new Constellations(this, syncStars);
             this.syncConstellations.printText = true;
 
+            //fix polo nord e sud
+            FixNorthSouthPole();
+
             //inizializzazioni
             setTexture();
             setTextureHD();
             loadBottomBarTexture();
-
-            this.constellations = new Constellations(this, stars);
-            this.constellations.printText = true;
-            this.syncConstellations = new Constellations(this, syncStars);
-            this.syncConstellations.printText = true;
-
-            rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.earth.png", typeof(MainPage).GetTypeInfo().Assembly);
 
         }
 
@@ -218,7 +213,6 @@ namespace Horizon
             }
         }
 
-
         //loop che viene chiamato dal main
         public void loop()
         {
@@ -265,13 +259,29 @@ namespace Horizon
 
         }
 
-
         //BOTTONI
-        private void GPSModeToggle(object sender, EventArgs e)
+        private void GPSModePressed(object sender, EventArgs e)  //apro la personalizzazione della posizione
         {
-            if (positionLoaded) //!
+            if (!observer.Equals("earth"))                       //disponibile solo con la terra
+                return;
+
+            if (isCustomLocationOpen)
             {
-                //normalGPSRadio.FadeTo(0.5, 0);
+                CloseCustomGPS();
+                return;
+            }
+
+            if (!isBarOnScreen)
+                return;
+
+            if (isRocketOnScreen)
+            {
+                translateRocketUp();
+                isRocketOnScreen = false;
+            }
+
+            if (!positionLoaded)
+            {
                 normalGPSLabel.IsEnabled = false;
                 normalGPSRadio.IsEnabled = false;
                 customGPSRadio.IsChecked = true;
@@ -284,9 +294,11 @@ namespace Horizon
             {
                 customGPSRadio.IsChecked = true;
             }
-            latitudeText.Text = latitude.ToString();
-            longitudeText.Text = longitude.ToString();
+            latitudeText.Text = customLatitude.ToString();
+            longitudeText.Text = customLongitude.ToString();
 
+            GPSBackground.IsVisible = true;
+            
             normalGPSRadio.IsVisible = true;
             customGPSRadio.IsVisible = true;
 
@@ -298,12 +310,158 @@ namespace Horizon
             latitudeText.IsVisible = true;
             longitudeText.IsVisible = true;
 
-            //customGPSLabel.IsVisible = true;
-            //customGPSLabel.IsVisible = true;
+            cancelLabel.IsVisible = true;
+            applyLabel.IsVisible = true;
+
+            GPSBackground.FadeTo(1, 200);
+
+            normalGPSRadio.FadeTo(1, 200);
+            customGPSRadio.FadeTo(1, 200);
+
+            normalGPSLabel.FadeTo(1, 200);
+            customGPSLabel.FadeTo(1, 200);
+
+            latitudeLabel.FadeTo(1, 200);
+            longitudeLabel.FadeTo(1, 200);
+            latitudeText.FadeTo(1, 200);
+            longitudeText.FadeTo(1, 200);
+
+            cancelLabel.FadeTo(1, 200);
+            applyLabel.FadeTo(1, 200);
+
+            isCustomLocationOpen = true;
+        }
+
+        private void NormalGPSPressed(object sender, EventArgs e)   //listener per la label del radio
+        {
+            normalGPSRadio.IsChecked = true;
+        }
+
+        private void CustomGPSPressed(object sender, EventArgs e)   //listener per la label del radio
+        {
+            customGPSRadio.IsChecked = true;
+        }
+
+        private void ApplyPressed(object sender, EventArgs e)  //chiudo la personalizzazione e applico le modifiche
+        {
+            if (normalGPSRadio.IsChecked)
+            {
+                usingGPS = true;
+                customLatitude = latitude;
+                customLongitude = longitude;
+                GPSMode1.FadeTo(1, 200);
+                GPSMode2.FadeTo(0, 200);
+            }
+            else
+            {
+                usingGPS = false;
+                customLatitude =  float.Parse(latitudeText.Text.Replace('.', ','));
+                customLongitude = float.Parse(longitudeText.Text.Replace('.', ','));
+                if (customLatitude > 90)
+                    customLatitude = 90;
+                else if (customLatitude < -90)
+                    customLatitude = -90;
+                if (customLongitude > 360)
+                    customLongitude = 360;
+                else if (customLongitude < 0)
+                    customLongitude = 0;
+                GPSMode1.FadeTo(0, 200);
+                GPSMode2.FadeTo(1, 200);
+            }
+
+            for(int i = 0; i < planets.Count; i++)
+                syncPlanets[i] = (Planet)planets[i].Clone();
+            for (int i = 0; i < stars.Count; i++)
+                syncStars[i] = (Planet)stars[i].Clone();
+            for (int i = 0; i < points.Count; i++)
+                syncPoints[i] = (Planet)points[i].Clone();
+
+            syncPlanets = synchronizePlanets(syncPlanets, customLongitude, customLatitude);
+            syncStars = synchronizePlanets(syncStars, customLongitude, customLatitude);
+            syncPoints = synchronizePlanets(syncPoints, customLongitude, customLatitude);
+            syncConstellations = new Constellations(this, syncStars);
+            FixNorthSouthPole();
+
+            CloseCustomGPS();
+        }
+
+        private void CancelPressed(object sender, EventArgs e)  //chiudo la personalizzazione senza applicare le modifiche
+        {
+            CloseCustomGPS();
+        }
+
+        public class UiThread : Activity        //serve per creare un thread che ritardi il isVisible = false del menu del GPS(thread sucks lol)
+        {                                       //e per chiudere la tastiera quando perde focus
+            Camera3D cam3D;
+
+            public UiThread(Camera3D cam3D)
+            {
+                this.cam3D = cam3D;
+            }
+
+            protected override void OnCreate(Bundle bundle)
+            {
+                base.OnCreate(bundle);
+                ThreadPool.QueueUserWorkItem(o => SlowMethod());
+            }
+
+            private void SlowMethod()
+            {
+                Thread.Sleep(200);
+                RunOnUiThread(() => {
+                    cam3D.GPSBackground.IsVisible = false;
+
+                    cam3D.normalGPSRadio.IsVisible = false;
+                    cam3D.customGPSRadio.IsVisible = false;
+
+                    cam3D.normalGPSLabel.IsVisible = false;
+                    cam3D.customGPSLabel.IsVisible = false;
+
+                    cam3D.latitudeLabel.IsVisible = false;
+                    cam3D.longitudeLabel.IsVisible = false;
+                    cam3D.latitudeText.IsVisible = false;
+                    cam3D.longitudeText.IsVisible = false;
+
+                    cam3D.cancelLabel.IsVisible = false;
+                    cam3D.applyLabel.IsVisible = false; });
+            }
+        }
+
+        private void CloseCustomGPS() //chiudo la personalizzazione della posizione
+        {
+            GPSBackground.FadeTo(0, 200);       //sfocatura in uscita
+
+            normalGPSRadio.FadeTo(0, 200);
+            customGPSRadio.FadeTo(0, 200);
+
+            normalGPSLabel.FadeTo(0, 200);
+            customGPSLabel.FadeTo(0, 200);
+
+            latitudeLabel.FadeTo(0, 200);
+            longitudeLabel.FadeTo(0, 200);
+            latitudeText.FadeTo(0, 200);
+            longitudeText.FadeTo(0, 200);
+
+            cancelLabel.FadeTo(0, 200);
+            applyLabel.FadeTo(0, 200);
+
+            UiThread uselessThread = new UiThread(this);    //thread che ritarda il setVisible = false e chiude la tastiera
+
+            var currentFocus = uselessThread.CurrentFocus;
+            if (currentFocus != null)
+            {
+                InputMethodManager inputMethodManager = (InputMethodManager)uselessThread.GetSystemService(Context.InputMethodService);
+                inputMethodManager.HideSoftInputFromWindow(currentFocus.WindowToken, HideSoftInputFlags.None);
+            }
+
+            isCustomLocationOpen = false;
         }
 
         private void SwitchJoystickToggle(object sender, EventArgs e)
         {
+            if (!isBarOnScreen)
+                return;
+
             if (sensorExists)
             {
                 useSensor = !useSensor;
@@ -322,26 +480,30 @@ namespace Horizon
             }
         }
 
-        bool isOnScreen = false;
+        bool isBarOnScreen = false;
         bool isRocketOnScreen = false;
         private void Button_Clicked(object sender, EventArgs e)            //bottombar
         {
-            if (isOnScreen)
+            if (isBarOnScreen)
             {
                 translateBottonBarDown();    //la barra non c'è più
+                if (isCustomLocationOpen)
+                {
+                    CloseCustomGPS();
+                }
                 if (isRocketOnScreen)
                 {
                     translateRocketUp();
                     isRocketOnScreen = false;
                 }
                 bottombartoggle.RotateXTo(0, 300);
-                isOnScreen = false;
+                isBarOnScreen = false;
             }
             else
             {
                 BottomBar.TranslateTo(0, 0, 300);      //la barra c'è
                 bottombartoggle.RotateXTo(-180, 300);
-                isOnScreen = true;
+                isBarOnScreen = true;
             }
         }
 
@@ -350,45 +512,52 @@ namespace Horizon
         private int temp;
         private void getRocketLabel(object sender, EventArgs e)                      //bottone per richiamare/far partire il razzo 
         {
+            if (!isBarOnScreen)
+                return;
 
             if (rocketCount == 10)
             {
                 rocketCount = 0;
+                if (isCustomLocationOpen)
+                    CloseCustomGPS();
                 Navigation.PushModalAsync(new EasterEgg());
+                return;
 			}
 
             rocketCount++;
             if (isRocketOnScreen)
-             {
+            {
                  translateRocketUp();
-             
                  isRocketOnScreen = false;
-             }
-             else
-             {
-                 rocketLabel.TranslateTo(0, 0, 1000, Easing.CubicOut);
-                 rocketLabelImage.TranslateTo(0, 0, 1000, Easing.CubicOut);
-                 isRocketOnScreen = true;
-             }
+            }
+            else
+            {
+                if(isCustomLocationOpen)
+                    CloseCustomGPS();
+                rocketLabel.TranslateTo(0, 0, 1000, Easing.CubicOut);
+                rocketLabelImage.TranslateTo(0, 0, 1000, Easing.CubicOut);
+                isRocketOnScreen = true;
+            }
         }
 
         private void translateBottonBarDown()
         {
-
-            BottomBar.TranslateTo(0, BottomBar.Height - 56, 300);               
-
+            BottomBar.TranslateTo(0, BottomBar.Height - 56, 300);
         }
 
         public void translateRocketUp()
 		{
             rocketLabel.TranslateTo(0, -(rocketLabelImage.Height * 2), 1000 ,Easing.CubicIn);
             rocketLabelImage.TranslateTo(0, -(rocketLabelImage.Height * 2), 1000, Easing.CubicIn);
-
+            isRocketOnScreen = false;
         }
 
         private bool theme1 = true;
         private void ChangeThemeToggle(object sender, EventArgs e)
         {
+            if (!isBarOnScreen)
+                return;
+
             if (theme1)
             {
                 ChangeThemeButton1.FadeTo(0, 200);
@@ -453,7 +622,7 @@ namespace Horizon
         {
             RA = Misc.toDeg((float)main.giroscope.yaw);
             DEC = Misc.toDeg((float)main.giroscope.roll);
-        }
+        }        
 
         #endregion
 
@@ -517,8 +686,9 @@ namespace Horizon
             rocketLabelImage.Source = ImageSource.FromResource("Horizon.Assets.Rocket.rocketLaunch.png", typeof(Camera3D).GetTypeInfo().Assembly);
             SwitchJoystickButton1.Source = ImageSource.FromResource("Horizon.Assets.CustomButton.controllerSwitch.png", typeof(Camera3D).GetTypeInfo().Assembly);
             SwitchJoystickButton2.Source = ImageSource.FromResource("Horizon.Assets.CustomButton.controllerSwitch2.png", typeof(Camera3D).GetTypeInfo().Assembly);
-            GPSMode1.Source = ImageSource.FromResource("Horizon.Assets.CustomButton.controllerSwitch.png", typeof(Camera3D).GetTypeInfo().Assembly);
-            GPSMode2.Source = ImageSource.FromResource("Horizon.Assets.CustomButton.controllerSwitch2.png", typeof(Camera3D).GetTypeInfo().Assembly);
+            GPSMode1.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.gpsEnabled.png", typeof(Camera3D).GetTypeInfo().Assembly);
+            GPSMode2.Source = ImageSource.FromResource("Horizon.Assets.BottomBar.gpsDisabled.png", typeof(Camera3D).GetTypeInfo().Assembly);
+            rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.earth.png", typeof(Camera3D).GetTypeInfo().Assembly);
 
             bottombartoggle.ScaleTo(0.7);
             ChangeThemeButton1.ScaleTo(0.7);
@@ -528,6 +698,19 @@ namespace Horizon
             GPSMode1.ScaleTo(0.7);
             GPSMode2.ScaleTo(0.7);
 
+            normalGPSRadio.FadeTo(0, 0);
+            customGPSRadio.FadeTo(0, 0);
+
+            normalGPSLabel.FadeTo(0, 0);
+            customGPSLabel.FadeTo(0, 0);
+
+            latitudeLabel.FadeTo(0, 0);
+            longitudeLabel.FadeTo(0, 0);
+            latitudeText.FadeTo(0, 0);
+            longitudeText.FadeTo(0, 0);
+
+            cancelLabel.FadeTo(0, 0);
+            applyLabel.FadeTo(0, 0);
 
             ChangeThemeButton2.FadeTo(0, 0);
             if(positionLoaded)
@@ -535,36 +718,15 @@ namespace Horizon
             else
                 GPSMode1.FadeTo(0, 0);
             if (sensorExists)
-                ChangeThemeButton2.FadeTo(0, 0);
+                SwitchJoystickButton2.FadeTo(0, 0);
             else
-                ChangeThemeButton1.FadeTo(0, 0);
+                SwitchJoystickButton1.FadeTo(0, 0);
         }
 
         #endregion
 
         //-------------------------------------------------------------------------------------------------------------------\\
         #region SELEZIONE OSSERVATORE
-
-        private List<Planet> synchronizePlanets(List<Planet> planets)   //conversione sistema di riferimento posizione utente
-        {
-            //https://it.wikipedia.org/wiki/Coordinate_celesti#Conversione_tra_coordinate_di_diversi_sistemi_di_riferimento for more info
-
-            float H, radLatitude, radDEC, newDEC, newRA;
-            for (int i = 0; i < planets.Count; i++)
-            {   
-                H = Misc.toRad(RA - planets[i].RA);
-                radLatitude = Misc.toRad(latitude);
-                radDEC = Misc.toRad(planets[i].DEC);
-
-                newDEC = (float)Math.Asin(Math.Sin(radDEC) * Math.Sin(radLatitude) + Math.Cos(radDEC) * Math.Cos(radLatitude) * Math.Cos(H));
-                newRA = (float)Math.Atan2(Math.Sin(H),  Math.Tan(radDEC) * Math.Cos(radLatitude) - Math.Sin(radLatitude) * Math.Cos(H));
-
-                planets[i].DEC = Misc.toDeg(newDEC);
-                planets[i].RA = 360 - Misc.toDeg(newRA);
-            }
-            
-            return planets;
-        }
 
         private List<Planet> setObserver(List<Planet> planets, String observer)
         {
@@ -615,56 +777,130 @@ namespace Horizon
             if (sender.Equals(sunLabel))
             {
                 setObserver(planets, "sun");
-                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.sun.png", typeof(MainPage).GetTypeInfo().Assembly);
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.sun.png", typeof(Camera3D).GetTypeInfo().Assembly);
             }
             else if (sender.Equals(mercuryLabel))
             {
                 setObserver(planets, "mercury");
-                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.mercury.png", typeof(MainPage).GetTypeInfo().Assembly);
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.mercury.png", typeof(Camera3D).GetTypeInfo().Assembly);
             }
             else if (sender.Equals(venusLabel))
             {
                 setObserver(planets, "venus");
-                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.venus.png", typeof(MainPage).GetTypeInfo().Assembly);
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.venus.png", typeof(Camera3D).GetTypeInfo().Assembly);
             }
             else if (sender.Equals(earthLabel))
             {
                 setObserver(planets, "earth");
-                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.earth.png", typeof(MainPage).GetTypeInfo().Assembly);
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.earth.png", typeof(Camera3D).GetTypeInfo().Assembly);
             }
             else if (sender.Equals(moonLabel))
             {
                 setObserver(planets, "moon");
-                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.moon.png", typeof(MainPage).GetTypeInfo().Assembly);
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.moon.png", typeof(Camera3D).GetTypeInfo().Assembly);
             }
             else if (sender.Equals(marsLabel))
             {
                 setObserver(planets, "mars");
-                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.mars.png", typeof(MainPage).GetTypeInfo().Assembly);
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.mars.png", typeof(Camera3D).GetTypeInfo().Assembly);
             }
             else if (sender.Equals(jupiterLabel))
             {
                 setObserver(planets, "jupiter");
-                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.jupiter.png", typeof(MainPage).GetTypeInfo().Assembly);
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.jupiter.png", typeof(Camera3D).GetTypeInfo().Assembly);
             }
             else if (sender.Equals(saturnLabel))
             {
                 setObserver(planets, "saturn");
-                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.saturn.png", typeof(MainPage).GetTypeInfo().Assembly);
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.saturn.png", typeof(Camera3D).GetTypeInfo().Assembly);
             }
             else if (sender.Equals(neptuneLabel))
             {
                 setObserver(planets, "neptune");
-                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.neptune.png", typeof(MainPage).GetTypeInfo().Assembly);
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.neptune.png", typeof(Camera3D).GetTypeInfo().Assembly);
             }
             else if (sender.Equals(uranusLabel))
             {
                 setObserver(planets, "uranus");
-                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.uranus.png", typeof(MainPage).GetTypeInfo().Assembly);
+                rocketButton.ImageSource = ImageSource.FromResource("Horizon.Assets.BottomBar.uranus.png", typeof(Camera3D).GetTypeInfo().Assembly);
             }
         }
 
         #endregion
 
+        //-------------------------------------------------------------------------------------------------------------------\\
+        #region SYNC
+
+        private List<Planet> synchronizePlanets(List<Planet> planets, float newLongitude, float newLatitude)   //conversione sistema di riferimento posizione utente
+        {
+            //https://it.wikipedia.org/wiki/Coordinate_celesti#Conversione_tra_coordinate_di_diversi_sistemi_di_riferimento for more info
+
+            float H, radLatitude, radDEC, newDEC, newRA;
+            radLatitude = Misc.toRad(newLatitude);
+            for (int i = 0; i < planets.Count; i++)
+            {
+                H = Misc.toRad((float)sidTime.getSiderealTimeFromLongitude(newLongitude) - planets[i].RA);
+                radDEC = Misc.toRad(planets[i].DEC);
+
+                newDEC = (float)Math.Asin(Math.Sin(radDEC) * Math.Sin(radLatitude) + Math.Cos(radDEC) * Math.Cos(radLatitude) * Math.Cos(H));
+                newRA = (float)Math.Atan2(Math.Sin(H), Math.Tan(radDEC) * Math.Cos(radLatitude) - Math.Sin(radLatitude) * Math.Cos(H));
+
+                planets[i].DEC = Misc.toDeg(newDEC);
+                planets[i].RA = 360 - Misc.toDeg(newRA);
+            }
+
+            return planets;
+        }
+
+        //FIX AL RIFERIMENTO DEL POLO SUD E NORD CHE A VOLTE SI BUGGANO
+        private void FixNorthSouthPole()
+        {
+            float ursaRA = -420, ursaDEC = -420, ursaX, ursaY;
+            float poleRA = -420, poleDEC = -420, poleX, poleY;
+
+            //coordinate stella polare
+            for (int i = 0; i < syncConstellations.cons.Length; i++)
+                if (syncConstellations.cons[i].code.Equals("Ursa Minor"))
+                {
+                    ursaRA = syncConstellations.cons[i].costName.RA;
+                    ursaDEC = syncConstellations.cons[i].costName.DEC;
+                    break;
+                }
+            if (ursaRA == -420 && ursaDEC == -420)
+            {
+                Misc.println("\n\n ORSA MINORE NON TROVATA \n\n");
+                return;
+            }
+            ursaX = (float)(Math.Cos(Misc.toRad(ursaDEC)) * Math.Cos(Misc.toRad(ursaRA)));
+            ursaY = (float)(Math.Cos(Misc.toRad(ursaDEC)) * Math.Sin(Misc.toRad(ursaRA)));
+
+            //coordinate polo nord
+            for (int i = 0; i < syncPoints.Count; i++)
+                if (syncPoints[i].name.Equals("NORTHPOLE"))
+                {
+                    poleRA = syncPoints[i].RA;
+                    poleDEC = syncPoints[i].DEC;
+                    break;
+                }
+            if (poleRA == -420 && poleDEC == -420)
+            {
+                Misc.println("\n\n POLO NORD NON TROVATO \n\n");
+                return;
+            }
+            poleX = (float)(Math.Cos(Misc.toRad(poleDEC)) * Math.Cos(Misc.toRad(poleRA)));
+            poleY = (float)(Math.Cos(Misc.toRad(poleDEC)) * Math.Sin(Misc.toRad(poleRA)));
+
+            //calcolo il delta e in caso fixo
+            if (Math.Abs(ursaX - poleX) > 0.2 || Math.Abs(ursaY - poleY) > 0.2)     //le X e le Y vanno da -1 a 1, lo 0.2 è a caso ma funziona
+                for (int i = 0; i < syncPoints.Count; i++)
+                    if (syncPoints[i].name.Equals("SOUTHPOLE") || syncPoints[i].name.Equals("NORTHPOLE"))
+                    {
+                        syncPoints[i].RA += 180;
+                        if (syncPoints[i].RA > 360)
+                            syncPoints[i].RA -= 360;
+                    }
+        }
+
+        #endregion
     }
 }

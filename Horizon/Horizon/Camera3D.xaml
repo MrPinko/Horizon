@@ -22,10 +22,18 @@
 		</skia:SKCanvasView>
 
         <!-- SELEZIONE POSIZIONE -->
+        <Frame x:Name="GPSBackground"  
+           Padding="1"
+           BackgroundColor="#303030"
+           BorderColor="#c3c3c3"
+           IsVisible="false"
+		   AbsoluteLayout.LayoutBounds="0.5,0.13,0.8,0.38"
+		   AbsoluteLayout.LayoutFlags="All"/>
+
         <RadioButton x:Name="normalGPSRadio"
             GroupName="position"
 			IsVisible="false"
-			AbsoluteLayout.LayoutBounds="0.3,0.1,0.6,0.1"
+			AbsoluteLayout.LayoutBounds="0.15,0.1,0.1,0.1"
 			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
         </RadioButton>
         <Label x:Name="normalGPSLabel" 
@@ -34,13 +42,17 @@
             FontSize="Medium" FontFamily="Georgia"
 			TextColor="#c3c3c3"
             HorizontalOptions="Start" VerticalOptions="Center"
-            AbsoluteLayout.LayoutBounds="0.55,0.1,0.6,0.1"
-			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional"/>
+            AbsoluteLayout.LayoutBounds="0.45,0.1,0.5,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped = "NormalGPSPressed"></TapGestureRecognizer>
+            </Label.GestureRecognizers>
+        </Label>
 
         <RadioButton x:Name="customGPSRadio"
             GroupName="position"
 			IsVisible="false"
-			AbsoluteLayout.LayoutBounds="0.3,0.2,0.6,0.1"
+			AbsoluteLayout.LayoutBounds="0.15,0.2,0.1,0.1"
 			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
         </RadioButton>
         <Label x:Name="customGPSLabel" 
@@ -49,9 +61,13 @@
             FontSize="Medium" FontFamily="Georgia"
 			TextColor="#c3c3c3"
             HorizontalOptions="Start" VerticalOptions="Center"
-            AbsoluteLayout.LayoutBounds="0.55,0.2,0.6,0.1"
-			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional"/>
-
+            AbsoluteLayout.LayoutBounds="0.45,0.2,0.5,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped = "CustomGPSPressed"></TapGestureRecognizer>
+            </Label.GestureRecognizers>
+        </Label>
+        
         <Label x:Name="latitudeLabel"
             Text="Latitude: "
 			IsVisible="false"
@@ -72,7 +88,7 @@
 			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
         </Label>
         
-        <Editor x:Name="latitudeText"
+        <Entry x:Name="latitudeText"
 			IsVisible="false"
             MaxLength="10"
             Keyboard="Numeric"
@@ -80,17 +96,42 @@
 			TextColor="#c3c3c3"
 			AbsoluteLayout.LayoutBounds="0.75,0.265,0.3,0.05"
 			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
-        </Editor>
+        </Entry>
 
-        <Editor x:Name="longitudeText"
+        <Entry x:Name="longitudeText"
 			IsVisible="false"
             MaxLength="10"
             Keyboard="Numeric"
 			FontSize="Medium" FontFamily="Georgia"
 			TextColor="#c3c3c3"
-			AbsoluteLayout.LayoutBounds="0.75,0.31,0.30,0.05"
+			AbsoluteLayout.LayoutBounds="0.75,0.315,0.30,0.05"
 			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
-        </Editor>
+        </Entry>
+
+        <Label x:Name="cancelLabel"
+            Text="CANCEL"
+			IsVisible="false"
+			HorizontalTextAlignment="End" VerticalTextAlignment="Center"
+			FontSize="Medium" FontFamily="Georgia"
+			TextColor="#c3c3c3"
+			AbsoluteLayout.LayoutBounds="0.1,0.4,0.35,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped = "CancelPressed"></TapGestureRecognizer>
+            </Label.GestureRecognizers>
+        </Label>
+        <Label x:Name="applyLabel"
+            Text="APPLY"
+			IsVisible="false"
+			HorizontalTextAlignment="Start" VerticalTextAlignment="Center"
+			FontSize="Medium" FontFamily="Georgia"
+			TextColor="#c3c3c3"
+			AbsoluteLayout.LayoutBounds="0.9,0.4,0.35,0.1"
+			AbsoluteLayout.LayoutFlags="XProportional,YProportional,HeightProportional,WidthProportional">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped = "ApplyPressed"></TapGestureRecognizer>
+            </Label.GestureRecognizers>
+        </Label>
 
         <!-- BOTTOM BAR-->
 		<Frame x:Name="BottomBar"  Padding="1" BackgroundColor="#15ffffff"                
@@ -117,10 +158,9 @@
                     
                 </Grid.ColumnDefinitions>
 
-				<Label Background="#2F2F2F" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"></Label>
+                <Label Background="#2F2F2F" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"></Label>
 
-
-				<Image 
+                <Image 
 					x:Name="bottombartoggle"
 					Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
 					<Image.GestureRecognizers>
@@ -183,17 +223,17 @@
 					Grid.Row="3" Grid.Column="3">
                     <Image.GestureRecognizers>
                         <TapGestureRecognizer
-							Tapped="GPSModeToggle"
+							Tapped="GPSModePressed"
 							NumberOfTapsRequired="1" />
                     </Image.GestureRecognizers>
                 </Image>
-
+                    <!-- GPS mode 1 e 2 sono buggati e vanno tappati due volte -->
                 <Image 
 					x:Name="GPSMode2"
 					Grid.Row="3" Grid.Column="3">
                     <Image.GestureRecognizers>
                         <TapGestureRecognizer
-							Tapped="GPSModeToggle"
+							Tapped="GPSModePressed"
 							NumberOfTapsRequired="1" />
                     </Image.GestureRecognizers>
                 </Image>

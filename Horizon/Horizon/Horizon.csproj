@@ -14,6 +14,8 @@
     <None Remove="Assets\BottomBar\backarrow - Copia.png" />
     <None Remove="Assets\BottomBar\backarrow.png" />
     <None Remove="Assets\BottomBar\earth.png" />
+    <None Remove="Assets\BottomBar\gpsDisabled.png" />
+    <None Remove="Assets\BottomBar\gpsEnabled.png" />
     <None Remove="Assets\BottomBar\hourglass - Copia.png" />
     <None Remove="Assets\BottomBar\hourglass.png" />
     <None Remove="Assets\BottomBar\jupiter.png" />
@@ -82,6 +84,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Assets\BottomBar\backarrow.png" />
     <EmbeddedResource Include="Assets\BottomBar\earth.png" />
+    <EmbeddedResource Include="Assets\BottomBar\gpsDisabled.png" />
+    <EmbeddedResource Include="Assets\BottomBar\gpsEnabled.png" />
     <EmbeddedResource Include="Assets\BottomBar\hourglass.png" />
     <EmbeddedResource Include="Assets\BottomBar\jupiter.png" />
     <EmbeddedResource Include="Assets\BottomBar\mars.png" />
