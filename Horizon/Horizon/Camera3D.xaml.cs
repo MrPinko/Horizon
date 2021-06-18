@@ -408,7 +408,7 @@ namespace Horizon
             private void SlowMethod()
             {
                 Thread.Sleep(200);
-                RunOnUiThread(() => {
+                RunOnUiThread(() => {   //isVisible = false per sicurezza nel caso in cui il FadeTo non funzioni
                     cam3D.GPSBackground.IsVisible = false;
 
                     cam3D.normalGPSRadio.IsVisible = false;
@@ -423,7 +423,25 @@ namespace Horizon
                     cam3D.longitudeText.IsVisible = false;
 
                     cam3D.cancelLabel.IsVisible = false;
-                    cam3D.applyLabel.IsVisible = false; });
+                    cam3D.applyLabel.IsVisible = false;
+                    //isEnabled = false perchè isVisible è buggatello
+                    cam3D.GPSBackground.IsEnabled = false;
+
+                    cam3D.normalGPSRadio.IsEnabled = false;
+                    cam3D.customGPSRadio.IsEnabled = false;
+
+                    cam3D.normalGPSLabel.IsEnabled = false;
+                    cam3D.customGPSLabel.IsEnabled = false;
+
+                    cam3D.latitudeLabel.IsEnabled = false;
+                    cam3D.longitudeLabel.IsEnabled = false;
+                    cam3D.latitudeText.IsEnabled = false;
+                    cam3D.longitudeText.IsEnabled = false;
+
+                    cam3D.cancelLabel.IsEnabled = false;
+                    cam3D.applyLabel.IsEnabled = false;
+
+                });
             }
         }
 
@@ -447,7 +465,7 @@ namespace Horizon
 
             UiThread uselessThread = new UiThread(this);    //thread che ritarda il setVisible = false e chiude la tastiera
 
-            var currentFocus = uselessThread.CurrentFocus;
+            var currentFocus = uselessThread.CurrentFocus;  //chiudo la tastiera
             if (currentFocus != null)
             {
                 InputMethodManager inputMethodManager = (InputMethodManager)uselessThread.GetSystemService(Context.InputMethodService);
