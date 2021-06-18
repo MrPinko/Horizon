@@ -313,6 +313,22 @@ namespace Horizon
             cancelLabel.IsVisible = true;
             applyLabel.IsVisible = true;
 
+            GPSBackground.IsEnabled = true;
+
+            normalGPSRadio.IsEnabled = true;
+            customGPSRadio.IsEnabled = true;
+
+            normalGPSLabel.IsEnabled = true;
+            customGPSLabel.IsEnabled = true;
+
+            latitudeLabel.IsEnabled = true;
+            longitudeLabel.IsEnabled = true;
+            latitudeText.IsEnabled = true;
+            longitudeText.IsEnabled = true;
+
+            cancelLabel.IsEnabled = true;
+            applyLabel.IsEnabled = true;
+
             GPSBackground.FadeTo(1, 200);
 
             normalGPSRadio.FadeTo(1, 200);
@@ -463,6 +479,21 @@ namespace Horizon
             cancelLabel.FadeTo(0, 200);
             applyLabel.FadeTo(0, 200);
 
+            GPSBackground.IsEnabled = false;
+
+            normalGPSRadio.IsEnabled = false;
+            customGPSRadio.IsEnabled = false;
+
+            normalGPSLabel.IsEnabled = false;
+            customGPSLabel.IsEnabled = false;
+
+            latitudeLabel.IsEnabled = false;
+            longitudeLabel.IsEnabled = false;
+            latitudeText.IsEnabled = false;
+            longitudeText.IsEnabled = false;
+
+            cancelLabel.IsEnabled = false;
+            applyLabel.IsEnabled = false;
             UiThread uselessThread = new UiThread(this);    //thread che ritarda il setVisible = false e chiude la tastiera
 
             var currentFocus = uselessThread.CurrentFocus;  //chiudo la tastiera
